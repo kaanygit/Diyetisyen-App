@@ -39,6 +39,12 @@ dependencies:
   loader_overlay: ^4.0.0
   firebase_auth: ^4.19.5
   cloud_firestore: ^4.17.3
+  page_transition: ^2.1.0
+  sign_button: ^2.0.6
+  google_nav_bar: ^5.0.6
+  card_loading: ^0.3.2
+  google_sign_in: ^6.2.1
+  salomon_bottom_bar: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -63,8 +69,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
