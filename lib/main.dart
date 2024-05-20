@@ -65,7 +65,11 @@ class MyApp extends StatelessWidget {
                         case 1:
                           print(
                               "Navigating to MessagingScreen for profile type 1");
-                          return MessagingScreen();
+
+                          return DieticianHomeScreen();
+                        // return MessagingScreen(
+                        //   receiverId: 'lGw3xpxvJrYWSdByqPaOClIZ7z43',
+                        // );
                         case 2:
                           print(
                               "Navigating to AdminHomeScreen for profile type 2");

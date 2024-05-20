@@ -6,7 +6,12 @@ class Message {
   final String receiverId;
   final Timestamp timestamp;
 
-  Message({required this.content, required this.senderId, required this.receiverId, required this.timestamp});
+  Message({
+    required this.content,
+    required this.senderId,
+    required this.receiverId,
+    required this.timestamp,
+  });
 
   factory Message.fromDocument(DocumentSnapshot doc) {
     return Message(

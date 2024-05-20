@@ -1,41 +1,17 @@
 import 'package:diyetisyenapp/database/messaging.dart';
-import 'package:diyetisyenapp/model/message.model.dart';
 import 'package:flutter/material.dart';
+import 'package:diyetisyenapp/model/message.model.dart';
 
-class MessagingScreen extends StatefulWidget {
-  @override
-  _MessagingScreenState createState() => _MessagingScreenState();
-}
-
-class _MessagingScreenState extends State<MessagingScreen> {
-  final TextEditingController _messageController = TextEditingController();
+class MessagingScreen extends StatelessWidget {
+  final String receiverId;
   final FirebaseMessagingService _messagingService = FirebaseMessagingService();
-  String _receiverId =
-      "GfeCmwuWcvbiPdcKB7Dx4XR0RSx1"; // Replace with actual receiver's user ID
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeMessaging();
-  }
-
-  void _initializeMessaging() async {
-    await _messagingService.initialize();
-  }
-
-  void _sendMessage() {
-    if (_messageController.text.isNotEmpty) {
-      _messagingService.sendMessage(_messageController.text, _receiverId);
-      _messageController.clear();
-    }
-  }
-
-  Stream<List<Message>> _getMessages() {
-    return _messagingService.getMessages(_receiverId);
-  }
+  MessagingScreen({required this.receiverId});
 
   @override
   Widget build(BuildContext context) {
+    final String userId = _messagingService.auth.currentUser!.uid;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Messaging'),
@@ -44,18 +20,24 @@ class _MessagingScreenState extends State<MessagingScreen> {
         children: [
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: _getMessages(),
+              stream: _messagingService.getMessages(userId, receiverId),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 }
-                var messages = snapshot.data!;
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No messages'));
+                }
+
+                List<Message> messages = snapshot.data!;
+
                 return ListView.builder(
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
-                    var message = messages[index];
                     return ListTile(
-                      title: Text(message.content),
+                      title: Text(messages[index].content),
+                      subtitle: Text(messages[index].senderId),
                     );
                   },
                 );
@@ -69,12 +51,18 @@ class _MessagingScreenState extends State<MessagingScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: InputDecoration(labelText: 'Message'),
+                    decoration: InputDecoration(labelText: 'Send a message'),
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
+                  onPressed: () async {
+                    if (_messageController.text.isNotEmpty) {
+                      await _messagingService.sendMessage(
+                          _messageController.text, receiverId);
+                      _messageController.clear();
+                    }
+                  },
                 ),
               ],
             ),
@@ -83,4 +71,6 @@ class _MessagingScreenState extends State<MessagingScreen> {
       ),
     );
   }
+
+  final TextEditingController _messageController = TextEditingController();
 }
