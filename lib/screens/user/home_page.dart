@@ -27,13 +27,13 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg")),
             Container(
-              child: Text("Home"),
+              child: const Text("Home"),
             ),
-            Icon(
+            const Icon(
               Icons.calendar_month,
               color: Colors.white,
             )
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                     mainColor,
                     Colors.white,
                   ],
-                  stops: [
+                  stops: const [
                     0.1,
                     0.75,
                   ],
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Container(
-                      padding: EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(25),
                       child: Row(
                         // tüm satırı kaplasınlar
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -89,11 +89,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -125,12 +125,12 @@ class _HomePageState extends State<HomePage> {
                     child: Text("Kcal",
                         style: fontStyle(15, Colors.white, FontWeight.normal)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Container(
                     color: Colors.transparent,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
             ),
             // Alttaki kutu (renk geçişsiz)
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               color: Colors.white,
               child: Column(
                 children: [
@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                           "Daily meals",
                           style: fontStyle(20, Colors.black, FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Icon(
@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Container(
@@ -183,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   if (selectedMeal == "Meals")
@@ -199,11 +199,11 @@ class _HomePageState extends State<HomePage> {
                     )
                   else if (selectedMeal == "Activity")
                     Container(
-                      child: Text("Activity"),
+                      child: const Text("Activity"),
                     )
                   else
                     Container(
-                      child: Text("Water"),
+                      child: const Text("Water"),
                     )
                 ],
               ),
@@ -218,7 +218,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                   Colors.white70,
                   mainColor2,
                 ],
-                stops: [
+                stops: const [
                   0.0,
                   2.0,
                 ],
@@ -254,10 +254,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Container(
                       alignment: Alignment.topRight,
-                      child: Icon(Icons.more_horiz_outlined))
+                      child: const Icon(Icons.more_horiz_outlined))
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Row(
@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                     children: [
                       Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
@@ -285,11 +285,11 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           )),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
@@ -307,11 +307,11 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           )),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
@@ -337,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.add_rounded),
+                        icon: const Icon(Icons.add_rounded),
                         onPressed: () {
                           print("Ekle");
                         },
@@ -347,7 +347,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 15,
         )
       ],
@@ -362,15 +362,15 @@ class _HomePageState extends State<HomePage> {
         });
       },
       child: Container(
-        margin: EdgeInsets.all(3),
-        padding: EdgeInsets.all(8),
+        margin: const EdgeInsets.all(3),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: selectedMeal == x ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
           child: Text(
-            "$x",
+            x,
             style: fontStyle(15, Colors.black, FontWeight.normal),
           ),
         ),
@@ -385,9 +385,9 @@ class _HomePageState extends State<HomePage> {
 
     return Container(
       width: maxWidth,
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: Color(0xfff2f2fd),
+        color: const Color(0xfff2f2fd),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -398,7 +398,7 @@ class _HomePageState extends State<HomePage> {
             style: fontStyle(15, Colors.black, FontWeight.bold),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
             "$y%",
             style: fontStyle(15, Colors.grey.shade600, FontWeight.normal),
@@ -417,7 +417,7 @@ class _HomePageState extends State<HomePage> {
             print("Şu güne gidildi");
           },
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -425,7 +425,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
                 color: Colors.transparent),
@@ -443,7 +443,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         )
       ],

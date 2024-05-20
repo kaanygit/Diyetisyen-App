@@ -24,7 +24,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _startDotAnimation() {
-    _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         dotCount = (dotCount % 3) + 1; // Döngüsel olarak 1, 2, 3 arası değişir
       });
@@ -55,11 +55,11 @@ class _ChatPageState extends State<ChatPage> {
         ),
         title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 20,
               backgroundImage: AssetImage("assets/images/avatar.jpg"),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               "Yasin Kaan",
               style: fontStyle(20, Colors.black, FontWeight.bold),
@@ -74,7 +74,7 @@ class _ChatPageState extends State<ChatPage> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     waitingAnswerDot(),
@@ -105,9 +105,9 @@ class _ChatPageState extends State<ChatPage> {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   onPressed: () {
                     // Mesaj gönderme işlemi burada gerçekleşecek
                     print('Send button pressed: ${controller.text}');
@@ -130,23 +130,23 @@ class _ChatPageState extends State<ChatPage> {
           alignment: Alignment.centerLeft, // Solda hizalar
           child: Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg"),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Container(
                 decoration: BoxDecoration(
                   color: mainColor,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10),
                     topRight: Radius.circular(10),
                   ),
                 ),
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Text(
                   '.' * dotCount,
                   style: fontStyle(20, Colors.black, FontWeight.bold),
@@ -155,7 +155,7 @@ class _ChatPageState extends State<ChatPage> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],
@@ -165,32 +165,32 @@ class _ChatPageState extends State<ChatPage> {
   Column chatMessageBox(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Row(
             textDirection:
                 questionAnswer ? TextDirection.rtl : TextDirection.ltr,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg"),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     color: mainColor,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(10),
                       bottomRight: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
                   ),
-                  padding: EdgeInsets.all(10),
-                  child: Text(
+                  padding: const EdgeInsets.all(10),
+                  child: const Text(
                     "chat screenchat screenchat screenchat screenchat screenchat screen",
                     softWrap: true,
                     style: TextStyle(color: Colors.white),
@@ -200,7 +200,7 @@ class _ChatPageState extends State<ChatPage> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ],

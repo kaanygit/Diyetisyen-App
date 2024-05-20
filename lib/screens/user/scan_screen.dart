@@ -10,6 +10,6 @@ class ScanScreen extends StatefulWidget {
 class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Container(child: Text("Scan Screen")));
+    return Scaffold(body: Container(child: const Text("Scan Screen")));
   }
 }

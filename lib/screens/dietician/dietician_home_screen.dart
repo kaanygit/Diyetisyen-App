@@ -1,3 +1,4 @@
+import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +7,9 @@ class DieticianHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return const MaterialApp(
+      home:
+       Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -19,7 +21,8 @@ class DieticianHomeScreen extends StatelessWidget {
                 buttonTextColor: Colors.blue,
                 buttonTextSize: 15,
                 buttonTextWeight: FontWeight.bold,
-              )
+              ),
+              
             ],
           ),
         ),

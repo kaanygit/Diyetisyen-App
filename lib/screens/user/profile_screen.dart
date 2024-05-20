@@ -19,11 +19,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg")),
             Container(
-              child: Text("Profil"),
+              child: const Text("Profil"),
             ),
             Icon(
               Icons.power_off_outlined,
@@ -39,12 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               Container(
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   radius: 60,
                   backgroundImage: AssetImage("assets/images/avatar.jpg"),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -59,8 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Container(
                         width: MediaQuery.of(context).size.width * 0.85,
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -75,8 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width * 0.85,
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: const Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -91,8 +91,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Container(
                           width: MediaQuery.of(context).size.width * 0.85,
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -107,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           )),
                     ],
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       profileButtonsColumn("Language"),
                     ],
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   width: MediaQuery.of(context).size.width,
-                  child: Column(
+                  child: const Column(
                     children: [
                       MyButton(
                         text: "Sign Out",
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Container profileButtonsColumn(final String text) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))),
       child: InkWell(
         onTap: () {
@@ -183,10 +183,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(text),
-                Icon(CupertinoIcons.arrow_right_square_fill)
+                const Icon(CupertinoIcons.arrow_right_square_fill)
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             )
           ],

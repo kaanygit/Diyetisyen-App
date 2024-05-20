@@ -18,7 +18,7 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg")),
             Container(
@@ -35,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 chatBox(),
@@ -55,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
             print("Sayfaya gir");
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatPage()),
+              MaterialPageRoute(builder: (context) => const ChatPage()),
             );
           },
           child: Container(
@@ -68,11 +68,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 Container(
                     child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                         radius: 20,
                         backgroundImage:
                             AssetImage("assets/images/avatar.jpg")),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Column(
@@ -99,12 +99,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         },
                         iconSize: 20,
                         color: Colors.black,
-                        icon: Icon(Icons.arrow_forward_ios))),
+                        icon: const Icon(Icons.arrow_forward_ios))),
               ],
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         )
       ],

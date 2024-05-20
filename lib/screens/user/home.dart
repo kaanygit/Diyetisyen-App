@@ -35,28 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
         }),
         items: [
           SalomonBottomBarItem(
-              icon: Icon(Icons.home),
-              title: Text("Home"),
+              icon: const Icon(Icons.home),
+              title: const Text("Home"),
               selectedColor: Colors.black,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.chat),
-              title: Text("Progress"),
+              icon: const Icon(Icons.chat),
+              title: const Text("Progress"),
               selectedColor: Colors.black,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.add_box),
-              title: Text("Add"),
+              icon: const Icon(Icons.add_box),
+              title: const Text("Add"),
               selectedColor: Colors.black,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.qr_code_scanner),
-              title: Text("Scan"),
+              icon: const Icon(Icons.qr_code_scanner),
+              title: const Text("Scan"),
               selectedColor: Colors.black,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.person),
-              title: Text("Profile"),
+              icon: const Icon(Icons.person),
+              title: const Text("Profile"),
               selectedColor: Colors.black,
               unselectedColor: Colors.grey),
         ],

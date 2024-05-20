@@ -92,7 +92,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Kayıt başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+          PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
         );
       } else {
         // Show error message
@@ -128,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
         print("Giriş başarılı: ${userCredential.user?.email}");
         Navigator.push(
           context,
-          PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+          PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
         );
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
@@ -147,7 +147,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+        PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -258,7 +258,7 @@ Widget startButtons(String text) {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child: Text("Resim")
+              Container(child: const Text("Resim")
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,
@@ -375,7 +375,7 @@ Widget startButtons(String text) {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child: Text("resim")
+              Container(child: const Text("resim")
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,

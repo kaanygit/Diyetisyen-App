@@ -11,13 +11,13 @@ class MyButton extends StatelessWidget {
   final FontWeight buttonTextWeight;
 
   const MyButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.buttonColor,
     required this.buttonTextColor,
     required this.buttonTextSize,
     required this.buttonTextWeight,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +28,16 @@ class MyButton extends StatelessWidget {
           FirebaseOperations().signOut();
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AuthScreen()),
+            MaterialPageRoute(builder: (context) => const AuthScreen()),
           );
         },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+        ),
         child: Text(
           text,
           style: fontStyle(buttonTextSize, buttonTextColor, buttonTextWeight),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor,
-          padding: EdgeInsets.symmetric(vertical: 16.0),
         ),
       ),
     );
