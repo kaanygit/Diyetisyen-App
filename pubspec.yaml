@@ -36,13 +36,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   firebase_core: ^2.31.0
-  loader_overlay: ^4.0.0
   firebase_auth: ^4.19.5
   cloud_firestore: ^4.17.3
   page_transition: ^2.1.0
   sign_button: ^2.0.6
+  flutter_easyloading: ^3.0.5
   google_nav_bar: ^5.0.6
-  card_loading: ^0.3.2
   google_sign_in: ^6.2.1
   salomon_bottom_bar: ^3.3.2
 

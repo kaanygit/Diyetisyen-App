@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  back_button_interceptor:
-    dependency: transitive
-    description:
-      name: back_button_interceptor
-      sha256: "8354b03320043db546e3f446af171faaa71384100486444113628f7db1e7fe9b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -33,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  card_loading:
-    dependency: "direct main"
-    description:
-      name: card_loading
-      sha256: "40cf98405a104ee8151600510033a9e22a3f9ad808e613c0e563ee7bd85a644c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.2"
   characters:
     dependency: transitive
     description:
@@ -158,6 +142,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_easyloading:
+    dependency: "direct main"
+    description:
+      name: flutter_easyloading
+      sha256: ba21a3c883544e582f9cc455a4a0907556714e1e9cf0eababfcb600da191d17c
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.5"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -166,6 +158,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  flutter_spinkit:
+    dependency: transitive
+    description:
+      name: flutter_spinkit
+      sha256: d2696eed13732831414595b98863260e33e8882fc069ee80ec35d4ac9ddb0472
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -280,14 +280,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  loader_overlay:
-    dependency: "direct main"
-    description:
-      name: loader_overlay
-      sha256: "02deeeed0d4eaaeeada6ce7bb13426d7548acad1f71e4884ec4a010e0e4824d6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   matcher:
     dependency: transitive
     description:

@@ -1,6 +1,7 @@
 import 'package:diyetisyenapp/database/firebase.dart';
-import 'package:diyetisyenapp/screens/home.dart';
+import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:page_transition/page_transition.dart';
@@ -33,6 +34,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _nameController = TextEditingController();
   late bool loginPageController = false;
   late bool startLoginPageController = false;
+  String _selectedOption = 'Kullanıcı';
+  int _selectedOptionNumber = 0;
 
   @override
   void dispose() {
@@ -66,8 +69,22 @@ class _AuthScreenState extends State<AuthScreen> {
 
     // Email and password are not empty
     if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
-      UserCredential? userCredential = await _firebaseOperations
-          .signUpWithEmailAndPassword(email, password, name);
+      if (_selectedOption == "Kullanıcı") {
+        setState(() {
+          _selectedOptionNumber = 0;
+        });
+      } else if (_selectedOption == "Diyetisyen") {
+        setState(() {
+          _selectedOptionNumber = 1;
+        });
+      } else {
+        setState(() {
+          _selectedOptionNumber = 2;
+        });
+      }
+      UserCredential? userCredential =
+          await _firebaseOperations.signUpWithEmailAndPassword(
+              email, password, name, _selectedOptionNumber);
       if (userCredential != null && mounted) {
         // Check if the state is still mounted
         print("Kayıt başarılı: ${userCredential.user?.email}");
@@ -152,7 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/auth_page_photo.jpeg"),
+          image: AssetImage("assets/images/avatar.jpg"),
           fit: BoxFit.cover, // Adjusted BoxFit to cover the entire screen
         ),
       ),
@@ -370,6 +387,25 @@ class _AuthScreenState extends State<AuthScreen> {
                 decoration: InputDecoration(
                   labelText: "Şifre Doğrulama",
                   border: _border,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedOption,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedOption = newValue!;
+                    });
+                  },
+                  items: <String>['Kullanıcı', 'Diyetisyen', 'Admin']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ),
               const SizedBox(height: 24),
