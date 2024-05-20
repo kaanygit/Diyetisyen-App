@@ -1,4 +1,6 @@
+import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
+import 'package:diyetisyenapp/screens/not_found_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -61,21 +63,20 @@ class MyApp extends StatelessWidget {
                           print("Navigating to HomeScreen for profile type 0");
                           return HomeScreen();
                         case 1:
-                          print("Navigating to MessagingScreen for profile type 1");
+                          print(
+                              "Navigating to MessagingScreen for profile type 1");
                           return MessagingScreen();
                         case 2:
-                          print("Navigating to AdminHomeScreen for profile type 2");
+                          print(
+                              "Navigating to AdminHomeScreen for profile type 2");
                           return AdminHomeScreen();
                         default:
                           print("Unknown profile type: $profileType");
-                          return Scaffold(
-                            body: Center(
-                              child: Text("Tanımsız kullanıcı tipi: $profileType"),
-                            ),
-                          );
+                          return NotFoundScreen();
                       }
                     } else if (profileTypeSnapshot.hasError) {
-                      print("Error fetching profile type: ${profileTypeSnapshot.error}");
+                      print(
+                          "Error fetching profile type: ${profileTypeSnapshot.error}");
                       return Scaffold(
                         body: Center(
                           child: Text(
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
                       );
                     } else {
                       print("Profile type not found");
-                      return Scaffold(
+                      return const Scaffold(
                         body: Center(
                           child: Text("Profil tipi bulunamadı"),
                         ),

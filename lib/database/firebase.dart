@@ -1,19 +1,66 @@
+import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
+import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
+import 'package:diyetisyenapp/screens/user/home.dart';
+import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:page_transition/page_transition.dart';
 
 class FirebaseOperations {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<UserCredential?> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<void> signInWithEmailAndPassword(
+      BuildContext context, String email, String password) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      // Firebase kimlik doğrulaması
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
+
+      // Giriş başarılı, kullanıcıyı yönlendir veya gerekli işlemleri yap
+      print("Giriş başarılı: ${userCredential.user?.email}");
+
+      // Profil tipi almak için getProfileType fonksiyonunu çağır
+      int profileType = await getProfileType();
+
+      // Profil tipine göre yönlendirme yap
+      print("SİGN İN GELİYOR : $profileType");
+      switch (profileType) {
+        case 0:
+          print("Navigating to HomeScreen for profile type 0");
+          Navigator.pushReplacement(
+            context,
+            PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+          );
+          break;
+        case 1:
+          print("Navigating to DieticianHomeScreen for profile type 1");
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+                type: PageTransitionType.fade, child: DieticianHomeScreen()),
+          );
+          break;
+        case 2:
+          print("Navigating to AdminHomeScreen for profile type 2");
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+                type: PageTransitionType.fade, child: AdminHomeScreen()),
+          );
+          break;
+        default:
+          print("Unknown profile type: $profileType");
+          showErrorSnackBar(context, "Tanımsız kullanıcı tipi: $profileType");
+          break;
+      }
     } catch (e) {
-      print("Hata: $e");
-      return null;
+      // Giriş başarısız, hata mesajını göster
+      print("Giriş başarısız: $e");
+      showErrorSnackBar(
+          context, "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
     }
   }
 
@@ -25,7 +72,7 @@ class FirebaseOperations {
     }
   }
 
-  Future<UserCredential?> signUpWithEmailAndPassword(
+  Future<UserCredential?> signUpWithEmailAndPassword(BuildContext context,
       String email, String password, String name, int methodsType) async {
     try {
       var existingUser = await _auth.fetchSignInMethodsForEmail(email);
@@ -46,6 +93,7 @@ class FirebaseOperations {
           'phoneNumber': '',
           'educationLevel': '',
           'address': '',
+          "fcmToken": "",
           'email': email,
           'userType': methodsType == 0
               ? 'kullanici'
@@ -57,6 +105,40 @@ class FirebaseOperations {
           // İsteğe bağlı diğer kullanıcı bilgileri buraya eklenebilir
         });
         print('Firestore\'a veri başarıyla kaydedildi.');
+
+        int profileType = await getProfileType();
+
+        // Profil tipine göre yönlendirme yap
+        switch (profileType) {
+          case 0:
+            print("Navigating to HomeScreen for profile type 0");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: HomeScreen()),
+            );
+            break;
+          case 1:
+            print("Navigating to DieticianHomeScreen for profile type 1");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: DieticianHomeScreen()),
+            );
+            break;
+          case 2:
+            print("Navigating to AdminHomeScreen for profile type 2");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: AdminHomeScreen()),
+            );
+            break;
+          default:
+            print("Unknown profile type: $profileType");
+            showErrorSnackBar(context, "Tanımsız kullanıcı tipi: $profileType");
+            break;
+        }
       } catch (e) {
         print('Firestore\'a veri kaydederken hata oluştu: $e');
       }
@@ -90,6 +172,7 @@ class FirebaseOperations {
             'phoneNumber': '',
             'educationLevel': '',
             'address': '',
+            "fcmToken": "",
             'email': user.email,
             'userType': 'kullanici',
             'updatedUser': DateTime.now(),
@@ -107,20 +190,28 @@ class FirebaseOperations {
 
   Future<int> getProfileType() async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .get();
+      String uid = _auth.currentUser?.uid ?? '';
+      if (uid.isEmpty) {
+        print("Kullanıcı oturum açmamış.");
+        return 4;
+      }
+
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('users').doc(uid).get();
+
       if (snapshot.exists) {
         Map<String, dynamic> data = snapshot.data()!;
-
-        if (data['userType'] == "kullanici") {
-          return 0;
-        } else if (data['userType'] == "diyetisyen") {
-          return 1;
-        } else {
-          return 2;
+        print("Veri tipi ana sunucudan gelen cevap : $data");
+        if (data.containsKey('userType')) {
+          if (data['userType'] == "kullanici") {
+            return 0;
+          } else if (data['userType'] == "diyetisyen") {
+            return 1;
+          } else if (data['userType'] == "admin") {
+            return 2;
+          }
         }
+        return 3; // Unrecognized userType
       } else {
         print("Belirtilen kullanıcının profil bilgisi bulunamadı.");
         return 3;

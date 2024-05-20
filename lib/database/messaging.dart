@@ -24,7 +24,10 @@ class FirebaseMessagingService {
 
     String? token = await _messaging.getToken();
     if (token != null) {
-      await _firestore.collection('users').doc(_auth.currentUser?.uid).set({'fcmToken': token});
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser?.uid)
+          .update({'fcmToken': token});
     }
   }
 
@@ -41,18 +44,26 @@ class FirebaseMessagingService {
   }
 
   Stream<List<Message>> getMessages(String userId) {
+    dynamic data = _firestore
+        .collection('messages')
+        .where('receiverId', isEqualTo: userId)
+        .orderBy('timestamp')
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Message.fromDocument(doc)).toList());
+    print(data);
     return _firestore
         .collection('messages')
         .where('receiverId', isEqualTo: userId)
         .orderBy('timestamp')
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => Message.fromDocument(doc)).toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Message.fromDocument(doc)).toList());
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
     await Firebase.initializeApp();
     // Handle background messages
   }
 }
-
-

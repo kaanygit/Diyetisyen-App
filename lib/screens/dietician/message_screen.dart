@@ -10,7 +10,8 @@ class MessagingScreen extends StatefulWidget {
 class _MessagingScreenState extends State<MessagingScreen> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseMessagingService _messagingService = FirebaseMessagingService();
-  String _receiverId = 'receiver_user_id'; // Replace with actual receiver's user ID
+  String _receiverId =
+      "GfeCmwuWcvbiPdcKB7Dx4XR0RSx1"; // Replace with actual receiver's user ID
 
   @override
   void initState() {

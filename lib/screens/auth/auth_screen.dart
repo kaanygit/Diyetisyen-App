@@ -37,7 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
   late bool startLoginPageController = false;
   String _selectedOption = 'Kullanıcı';
   int _selectedOptionNumber = 0;
-  late int _loginPageSelectionType=0;
+  late int _loginPageSelectionType = 0;
 
   @override
   void dispose() {
@@ -86,14 +86,10 @@ class _AuthScreenState extends State<AuthScreen> {
       }
       UserCredential? userCredential =
           await _firebaseOperations.signUpWithEmailAndPassword(
-              email, password, name, _selectedOptionNumber);
+              context, email, password, name, _selectedOptionNumber);
       if (userCredential != null && mounted) {
         // Check if the state is still mounted
         print("Kayıt başarılı: ${userCredential.user?.email}");
-        Navigator.push(
-          context,
-          PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
-        );
       } else {
         // Show error message
         if (mounted) {
@@ -126,10 +122,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // Giriş başarılı, kullanıcıyı yönlendir veya gerekli işlemleri yap
         print("Giriş başarılı: ${userCredential.user?.email}");
-        Navigator.push(
-          context,
-          PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
-        );
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
         print("Giriş başarısız: $e");
@@ -147,7 +139,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
+        PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -167,87 +159,86 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
- Container startLoginPageScreen() {
-  return Container(
-    decoration: const BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage("assets/images/avatar.jpg"),
-        fit: BoxFit.cover,
+  Container startLoginPageScreen() {
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/avatar.jpg"),
+          fit: BoxFit.cover,
+        ),
       ),
-    ),
-    child: Stack(
-      children: [
-        Positioned(
-          top: 100,
-          left: 20,
-          right: 20,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Spacer(),
-              Text(
-                "DiyetisyenApp",
-                style: fontStyle(50, mainColor, FontWeight.bold),
-              ),
-              const Spacer(),
-            ],
+      child: Stack(
+        children: [
+          Positioned(
+            top: 100,
+            left: 20,
+            right: 20,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Spacer(),
+                Text(
+                  "DiyetisyenApp",
+                  style: fontStyle(50, mainColor, FontWeight.bold),
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 50,
+            left: 20,
+            right: 20,
+            child: Column(
+              children: [
+                startButtons("Admin"),
+                startButtons("Diyetisyen"),
+                startButtons("Kullanıcı"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget startButtons(String text) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF007AFF),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
-        Positioned(
-          bottom: 50,
-          left: 20,
-          right: 20,
-          child: Column(
-            children: [
-              startButtons("Admin"),
-              startButtons("Diyetisyen"),
-              startButtons("Kullanıcı"),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget startButtons(String text) {
-  return SizedBox(
-    width: double.infinity,
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF007AFF),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        onPressed: () {
+          print("Start App");
+          setState(() {
+            startLoginPageController = true;
+            if (text == "Admin") {
+              setState(() {
+                _loginPageSelectionType = 2;
+              });
+            } else if (text == "Diyetisyen") {
+              setState(() {
+                _loginPageSelectionType = 1;
+              });
+            } else {
+              setState(() {
+                _loginPageSelectionType = 0;
+              });
+            }
+            print(_loginPageSelectionType);
+          });
+        },
+        child: Text(
+          text,
+          style: fontStyle(25, Colors.white, FontWeight.normal),
         ),
       ),
-      onPressed: () {
-        print("Start App");
-        setState(() {
-          startLoginPageController = true;
-          if(text=="Admin"){
-            setState(() {
-              _loginPageSelectionType=2;
-            });
-          }else if(text=="Diyetisyen"){
-            setState(() {
-              _loginPageSelectionType=1;
-            });
-          }else{
-            setState(() {
-              _loginPageSelectionType=0;
-            });
-          }
-          print(_loginPageSelectionType);
-        });
-      },
-      child: Text(
-        text,
-        style: fontStyle(25, Colors.white, FontWeight.normal),
-      ),
-    ),
-  );
-}
-
+    );
+  }
 
   Center signInScreen() {
     return Center(
@@ -276,8 +267,7 @@ Widget startButtons(String text) {
               ),
               const SizedBox(height: 16),
               TextField(
-                                keyboardType: TextInputType.visiblePassword,
-
+                keyboardType: TextInputType.visiblePassword,
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
@@ -340,7 +330,7 @@ Widget startButtons(String text) {
                 ],
               ),
               const SizedBox(height: 16),
-              if(_loginPageSelectionType!=2)
+              if (_loginPageSelectionType != 2)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
