@@ -1,3 +1,4 @@
+import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -36,6 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
   late bool startLoginPageController = false;
   String _selectedOption = 'Kullanıcı';
   int _selectedOptionNumber = 0;
+  late int _loginPageSelectionType=0;
 
   @override
   void dispose() {
@@ -165,66 +167,87 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Container startLoginPageScreen() {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/images/avatar.jpg"),
-          fit: BoxFit.cover, // Adjusted BoxFit to cover the entire screen
+ Container startLoginPageScreen() {
+  return Container(
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage("assets/images/avatar.jpg"),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          top: 100,
+          left: 20,
+          right: 20,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Spacer(),
+              Text(
+                "DiyetisyenApp",
+                style: fontStyle(50, mainColor, FontWeight.bold),
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          left: 20,
+          right: 20,
+          child: Column(
+            children: [
+              startButtons("Admin"),
+              startButtons("Diyetisyen"),
+              startButtons("Kullanıcı"),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget startButtons(String text) {
+  return SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF007AFF),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 100, // Adjust as needed to position vertically
-            left: 20, // Adjust as needed to position horizontally from the left
-            right:
-                20, // Adjust as needed to position horizontally from the right
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Spacer(),
-                Text(
-                  "GezginAt",
-                  // style:
-                  //     fontStyle(50, const Color(0xFFDBFF00), FontWeight.bold),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 100, // Adjust as needed to position vertically
-            left: 20, // Adjust as needed to position horizontally from the left
-            right:
-                20, // Adjust as needed to position horizontally from the right
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF007AFF),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      onPressed: () {
-                        print("Start App");
-                        setState(() {
-                          startLoginPageController = true;
-                        });
-                      },
-                      child: Text(
-                        "Başla",
-                        // style: fontStyle(25, Colors.white, FontWeight.normal),
-                      )),
-                ),
-              ],
-            ),
-          ),
-        ],
+      onPressed: () {
+        print("Start App");
+        setState(() {
+          startLoginPageController = true;
+          if(text=="Admin"){
+            setState(() {
+              _loginPageSelectionType=2;
+            });
+          }else if(text=="Diyetisyen"){
+            setState(() {
+              _loginPageSelectionType=1;
+            });
+          }else{
+            setState(() {
+              _loginPageSelectionType=0;
+            });
+          }
+          print(_loginPageSelectionType);
+        });
+      },
+      child: Text(
+        text,
+        style: fontStyle(25, Colors.white, FontWeight.normal),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Center signInScreen() {
     return Center(
@@ -244,6 +267,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
               const SizedBox(height: 30),
               TextField(
+                keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: "E-posta",
@@ -252,6 +276,8 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                                keyboardType: TextInputType.visiblePassword,
+
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
@@ -314,24 +340,25 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Hesabın Yokmu ? "),
-                  TextButton(
-                    onPressed: () {
-                      print("Login In");
-                      setState(() {
-                        loginPageController = !loginPageController;
-                      });
-                    },
-                    child: const Text(
-                      "Üye ol",
-                      style: TextStyle(color: Colors.lightGreen),
-                    ),
-                  )
-                ],
-              )
+              if(_loginPageSelectionType!=2)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Hesabın Yokmu ? "),
+                    TextButton(
+                      onPressed: () {
+                        print("Login In");
+                        setState(() {
+                          loginPageController = !loginPageController;
+                        });
+                      },
+                      child: const Text(
+                        "Üye ol",
+                        style: TextStyle(color: Colors.lightGreen),
+                      ),
+                    )
+                  ],
+                )
             ],
           ),
         ),
@@ -357,6 +384,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
               const SizedBox(height: 24),
               TextField(
+                keyboardType: TextInputType.multiline,
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: "İsim",
@@ -365,6 +393,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: "E-posta",
@@ -373,6 +402,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                keyboardType: TextInputType.visiblePassword,
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
@@ -382,6 +412,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
+                keyboardType: TextInputType.visiblePassword,
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
