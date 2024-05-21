@@ -71,7 +71,8 @@ class FirebaseMessagingService {
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'Authorization': 'key=AIzaSyCNp7oWWV1P5v2mJi1BUutAUpirkoHzxwM',
+          'Authorization':
+              'key=AIzaSyCNp7oWWV1P5v2mJi1BUutAUpirkoHzxwM', // Buraya kendi server key'inizi ekleyin
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -111,15 +112,12 @@ class FirebaseMessagingService {
         .snapshots()
         .asyncMap((sentSnapshot) async {
       var receivedSnapshot = await receivedMessagesQuery.get();
-
       var combinedList = [
         ...sentSnapshot.docs,
         ...receivedSnapshot.docs,
       ];
-
       combinedList.sort((a, b) =>
           (a['timestamp'] as Timestamp).compareTo(b['timestamp'] as Timestamp));
-
       return combinedList;
     }).map((snapshot) =>
             snapshot.map((doc) => Message.fromDocument(doc)).toList());

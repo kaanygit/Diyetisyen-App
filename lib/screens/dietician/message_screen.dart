@@ -1,12 +1,25 @@
-import 'package:diyetisyenapp/database/messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:diyetisyenapp/database/messaging.dart';
 import 'package:diyetisyenapp/model/message.model.dart';
 
-class MessagingScreen extends StatelessWidget {
+class MessagingScreen extends StatefulWidget {
   final String receiverId;
-  final FirebaseMessagingService _messagingService = FirebaseMessagingService();
 
   MessagingScreen({required this.receiverId});
+
+  @override
+  _MessagingScreenState createState() => _MessagingScreenState();
+}
+
+class _MessagingScreenState extends State<MessagingScreen> {
+  final FirebaseMessagingService _messagingService = FirebaseMessagingService();
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _messagingService.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +33,7 @@ class MessagingScreen extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: _messagingService.getMessages(userId, receiverId),
+              stream: _messagingService.getMessages(userId, widget.receiverId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -59,7 +72,7 @@ class MessagingScreen extends StatelessWidget {
                   onPressed: () async {
                     if (_messageController.text.isNotEmpty) {
                       await _messagingService.sendMessage(
-                          _messageController.text, receiverId);
+                          _messageController.text, widget.receiverId);
                       _messageController.clear();
                     }
                   },
@@ -72,5 +85,9 @@ class MessagingScreen extends StatelessWidget {
     );
   }
 
-  final TextEditingController _messageController = TextEditingController();
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
 }
