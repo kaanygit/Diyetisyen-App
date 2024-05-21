@@ -54,16 +54,6 @@ class _MessagingScreenState extends State<MessagingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Messaging'),
-        actions: [
-          // Burada kullanıcının fotoğrafını ve diğer bilgilerini gösterebilirsiniz
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/avatar.jpg'),
-            radius: 20,
-          ),
-          SizedBox(width: 16),
-          Text('Kullanıcı Adı'),
-          SizedBox(width: 16),
-        ],
       ),
       body: Column(
         children: [
@@ -85,28 +75,10 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   onRefresh: _handleRefresh,
                   child: ListView.builder(
                     itemCount: messages.length,
-                    reverse: true, // Yeni mesajlar en üste çıksın
                     itemBuilder: (context, index) {
-                      Message message = messages[index];
-                      bool isMyMessage = message.senderId ==
-                          _messagingService.auth.currentUser!.uid;
-                      return Align(
-                        alignment: isMyMessage
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          margin:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isMyMessage ? Colors.blue : Colors.grey,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            message.content,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                      return ListTile(
+                        title: Text(messages[index].content),
+                        subtitle: Text(messages[index].senderId),
                       );
                     },
                   ),
