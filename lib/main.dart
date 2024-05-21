@@ -1,6 +1,6 @@
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
-import 'package:diyetisyenapp/screens/not_found_screen.dart';
+import 'package:diyetisyenapp/widget/not_found_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
 
                           return DieticianHomeScreen();
                         // return MessagingScreen(
-                        //   receiverId: 'lGw3xpxvJrYWSdByqPaOClIZ7z43',
+                        //   receiverId: 'ERbueLCOvFR9cVpyiqZavXoM7Pr2',
                         // );
                         case 2:
                           print(
