@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
 
                           // return DieticianHomeScreen();
                           return MessagingScreen(
-                            receiverId: 'QhmK9UJcR2bjTzn9fTsm7HJil3T2',
+                            receiverId: 'ERbueLCOvFR9cVpyiqZavXoM7Pr2',
                           );
                         case 2:
                           print(

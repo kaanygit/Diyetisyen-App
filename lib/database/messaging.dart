@@ -1,17 +1,26 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/model/message.model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class FirebaseMessagingService {
+class FirebaseMessagingService with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  StreamController<List<Message>> _messagesController =
+      StreamController<List<Message>>.broadcast();
+
   FirebaseAuth get auth => _auth;
+
+  FirebaseMessagingService() {
+    initialize();
+  }
 
   Future<void> initialize() async {
     await Firebase.initializeApp();
@@ -21,6 +30,7 @@ class FirebaseMessagingService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       // Handle foreground messages
       print('Message received: ${message.notification?.body}');
+      _handleMessage(message);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -72,7 +82,7 @@ class FirebaseMessagingService {
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization':
-              'key=AIzaSyCNp7oWWV1P5v2mJi1BUutAUpirkoHzxwM', // Buraya kendi server key'inizi ekleyin
+              'key=AAAApZrZL6E:APA91bGTLRT_Ws3cKzW99lZdhEgzjfGFbPV8bYZcP35qmwdFhRNBK5dDOPK7weNs046XGdOGAs76dFxRXG0vlkWQfOoLE_277htlpvNIhcJKzYy9bzi9jj8uAN-Z-A_6B8j6ijSIkGm6', // Buraya kendi server key'inizi ekleyin
         },
         body: jsonEncode(
           <String, dynamic>{
@@ -95,6 +105,21 @@ class FirebaseMessagingService {
     }
   }
 
+  Stream<List<Message>> get messagesStream => _messagesController.stream;
+
+  void _handleMessage(RemoteMessage message) {
+    // Handle incoming message and trigger message retrieval
+    String? userId = _auth.currentUser?.uid;
+    if (userId != null) {
+      String? senderId = message.data['senderId'];
+      String? receiverId = userId;
+      if (senderId != null) {
+        // Refresh messages for the sender and current user
+        getMessages(userId, senderId);
+      }
+    }
+  }
+
   Stream<List<Message>> getMessages(String userId, String otherUserId) {
     var sentMessagesQuery = _firestore
         .collection('messages')
@@ -108,9 +133,8 @@ class FirebaseMessagingService {
         .where('receiverId', isEqualTo: userId)
         .orderBy('timestamp');
 
-    var mainQuery = sentMessagesQuery
-        .snapshots()
-        .asyncMap((sentSnapshot) async {
+    var mainQuery =
+        sentMessagesQuery.snapshots().asyncMap((sentSnapshot) async {
       var receivedSnapshot = await receivedMessagesQuery.get();
       var combinedList = [
         ...sentSnapshot.docs,
@@ -118,9 +142,8 @@ class FirebaseMessagingService {
       ];
       combinedList.sort((a, b) =>
           (a['timestamp'] as Timestamp).compareTo(b['timestamp'] as Timestamp));
-      return combinedList;
-    }).map((snapshot) =>
-            snapshot.map((doc) => Message.fromDocument(doc)).toList());
+      return combinedList.map((doc) => Message.fromDocument(doc)).toList();
+    });
 
     return mainQuery;
   }
