@@ -1,5 +1,5 @@
 import 'package:diyetisyenapp/screens/user/add_meals_screen.dart';
-import 'package:diyetisyenapp/screens/user/chat_screen.dart';
+import 'package:diyetisyenapp/screens/user/chat/chat_screen.dart';
 import 'package:diyetisyenapp/screens/user/home_page.dart';
 import 'package:diyetisyenapp/screens/user/profile_screen.dart';
 import 'package:diyetisyenapp/screens/user/scan_screen.dart';

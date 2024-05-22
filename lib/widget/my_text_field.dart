@@ -12,6 +12,7 @@ class MyTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final String? errorMsg;
   final String? Function(String?)? onChanged;
+  final bool enabled;
 
   const MyTextField(
       {super.key,
@@ -25,7 +26,8 @@ class MyTextField extends StatelessWidget {
       this.validator,
       this.focusNode,
       this.errorMsg,
-      this.onChanged});
+      this.onChanged,
+      required this.enabled});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class MyTextField extends StatelessWidget {
       onTap: onTap,
       textInputAction: TextInputAction.next,
       onChanged: onChanged,
+      enabled: enabled,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,

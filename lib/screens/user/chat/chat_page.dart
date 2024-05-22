@@ -103,6 +103,7 @@ class _ChatPageState extends State<ChatPage> {
                     hintText: "Type your message",
                     obscureText: false,
                     keyboardType: TextInputType.multiline,
+                    enabled: true,
                   ),
                 ),
                 const SizedBox(width: 8),

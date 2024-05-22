@@ -16,14 +16,15 @@ class MessagingScreen extends StatefulWidget {
 class _MessagingScreenState extends State<MessagingScreen> {
   final FirebaseMessagingService _messagingService = FirebaseMessagingService();
   final TextEditingController _messageController = TextEditingController();
-  late Stream<List<Message>> _messagesStream;
+  late Stream<List<Message>> messagesStream;
   late StreamController<List<Message>> _streamController;
+  bool disableInput = false;
 
   @override
   void initState() {
     super.initState();
     _messagingService.initialize();
-    _messagesStream = _messagingService.getMessages(
+    messagesStream = _messagingService.getMessages(
         _messagingService.auth.currentUser!.uid, widget.receiverId);
 
     _streamController = StreamController<List<Message>>.broadcast();
@@ -46,7 +47,34 @@ class _MessagingScreenState extends State<MessagingScreen> {
         .getMessages(_messagingService.auth.currentUser!.uid, widget.receiverId)
         .listen((messages) {
       _streamController.add(messages);
+
+      // Eğer sadece bir mesaj varsa ve bu mesaj kullanıcının kendi mesajıysa
+      if (messages.length == 1 &&
+          messages[0].senderId == _messagingService.auth.currentUser!.uid) {
+        setState(() {
+          disableInput = true; // TextField ve IconButton devre dışı bırakılır
+        });
+      } else {
+        setState(() {
+          disableInput = false; // TextField ve IconButton aktif edilir
+        });
+      }
     });
+  }
+
+  void _handleSendMessage() async {
+    if (_messageController.text.isNotEmpty) {
+      try {
+        await _messagingService.sendMessage(
+          _messageController.text,
+          widget.receiverId,
+        );
+        _messageController.clear();
+        _loadMessages(); // Mesaj gönderildikten sonra ekranı güncelle
+      } catch (e) {
+        print('Message sending error: $e');
+      }
+    }
   }
 
   @override
@@ -94,17 +122,18 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(labelText: 'Send a message'),
+                    enabled: !disableInput, // TextField aktif ise true
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: () async {
-                    if (_messageController.text.isNotEmpty) {
-                      await _messagingService.sendMessage(
-                          _messageController.text, widget.receiverId);
-                      _messageController.clear();
-                    }
-                  },
+                  onPressed: disableInput
+                      ? null // disableInput true ise IconButton devre dışı
+                      : () async {
+                          if (_messageController.text.isNotEmpty) {
+                            _handleSendMessage();
+                          }
+                        },
                 ),
               ],
             ),
@@ -115,8 +144,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
   }
 
   Future<void> _handleRefresh() async {
-    // Yenileme işlemi burada gerçekleştirilebilir
-    _loadMessages();
+    _loadMessages(); // Yenileme işlemi burada gerçekleştirilebilir
   }
 
   @override

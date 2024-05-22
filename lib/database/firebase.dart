@@ -95,6 +95,9 @@ class FirebaseOperations {
           'address': '',
           "fcmToken": "",
           'email': email,
+          "aiChats": [],
+          "diet-program": [],
+          "dietician-person-uid": [],
           'userType': methodsType == 0
               ? 'kullanici'
               : methodsType == 1
@@ -174,6 +177,9 @@ class FirebaseOperations {
             'address': '',
             "fcmToken": "",
             'email': user.email,
+            "aiChats": [],
+            "diet-program": [],
+            "dietician-person-uid": [],
             'userType': 'kullanici',
             'updatedUser': DateTime.now(),
             'createdAt': DateTime.now(),
@@ -219,6 +225,31 @@ class FirebaseOperations {
     } catch (e) {
       print("Profil verisi getirilirken hata oluştu: $e");
       return 4;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getDieticianData() async {
+    try {
+      print("Diyetisyenler getiriliyor");
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('users')
+          .where('userType', isEqualTo: 'diyetisyen')
+          .get();
+
+      List<Map<String, dynamic>> dieticians = [];
+
+      snapshot.docs.forEach((doc) {
+        Map<String, dynamic> data = doc.data();
+        data['id'] = doc.id;
+        dieticians.add(data);
+      });
+
+      print("Diyetisyenler getirildi");
+      return dieticians;
+    } catch (e) {
+      print("Diyetisyenler getirilirken hata oluştu : $e");
+      return []; // veya null dönebilirsiniz, işlem başarısız olduğunda
     }
   }
 
