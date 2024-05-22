@@ -3,6 +3,8 @@ import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/screens/user/chat/chat_page.dart';
 import 'package:diyetisyenapp/screens/user/chat/dietitians_request_screen.dart';
 import 'package:diyetisyenapp/screens/user/chat/gemini_chat_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -13,6 +15,32 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  bool hasDietician = false;
+  String dieticianId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkDieticianStatus();
+  }
+
+  Future<void> _checkDieticianStatus() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      List<dynamic> dieticianList = userDoc['dietician-person-uid'] ?? [];
+      if (dieticianList.isNotEmpty) {
+        setState(() {
+          hasDietician = true;
+          dieticianId = dieticianList[0]; // İlk diyetisyen kimliği
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Column(
               children: [
                 chatBoxGemini(),
-                dietRequest(context),
+                hasDietician ? dieticianBox(context) : dietRequest(context),
               ],
             )),
       ),
@@ -88,12 +116,63 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             )),
             Container(
-                // decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(16)),
                 child: IconButton(
                     onPressed: () {
                       print("İÇİNE GİR");
+                    },
+                    iconSize: 20,
+                    color: Colors.black,
+                    icon: const Icon(Icons.arrow_forward_ios))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InkWell dieticianBox(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        print("Diyetisyenle sohbet ekranına git");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MessagingScreen(receiverId: dieticianId),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: mainColor2, borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+                child: Column(
+              children: [
+                const CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage("assets/images/avatar.jpg")),
+                const SizedBox(
+                  width: 5,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Diyetisyenim",
+                        style: fontStyle(15, Colors.black, FontWeight.bold)),
+                    Text(
+                      "Diyetisyeninizle sohbet edin",
+                      style: fontStyle(15, Colors.grey, FontWeight.normal),
+                    ),
+                  ],
+                ),
+              ],
+            )),
+            Container(
+                child: IconButton(
+                    onPressed: () {
+                      print("Diyetisyenle sohbet ekranına git");
                     },
                     iconSize: 20,
                     color: Colors.black,
@@ -147,9 +226,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 )),
                 Container(
-                    // decoration: BoxDecoration(
-                    //     color: Colors.white,
-                    //     borderRadius: BorderRadius.circular(16)),
                     child: IconButton(
                         onPressed: () {
                           print("İÇİNE GİR");
@@ -214,9 +290,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 )),
                 Container(
-                    // decoration: BoxDecoration(
-                    //     color: Colors.white,
-                    //     borderRadius: BorderRadius.circular(16)),
                     child: IconButton(
                         onPressed: () {
                           print("İÇİNE GİR");

@@ -32,7 +32,8 @@ class FirebaseOperations {
           print("Navigating to HomeScreen for profile type 0");
           Navigator.pushReplacement(
             context,
-            PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+            PageTransition(
+                type: PageTransitionType.fade, child: new HomeScreen()),
           );
           break;
         case 1:
@@ -40,7 +41,8 @@ class FirebaseOperations {
           Navigator.pushReplacement(
             context,
             PageTransition(
-                type: PageTransitionType.fade, child: DieticianHomeScreen()),
+                type: PageTransitionType.fade,
+                child: new DieticianHomeScreen()),
           );
           break;
         case 2:
@@ -48,7 +50,7 @@ class FirebaseOperations {
           Navigator.pushReplacement(
             context,
             PageTransition(
-                type: PageTransitionType.fade, child: AdminHomeScreen()),
+                type: PageTransitionType.fade, child: new AdminHomeScreen()),
           );
           break;
         default:
@@ -98,6 +100,8 @@ class FirebaseOperations {
           "aiChats": [],
           "diet-program": [],
           "dietician-person-uid": [],
+          "dietician-danisanlar-uid": [],
+          "danisanlar-istek": [],
           'userType': methodsType == 0
               ? 'kullanici'
               : methodsType == 1
@@ -118,7 +122,7 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: HomeScreen()),
+                  type: PageTransitionType.fade, child: new HomeScreen()),
             );
             break;
           case 1:
@@ -126,7 +130,8 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: DieticianHomeScreen()),
+                  type: PageTransitionType.fade,
+                  child: new DieticianHomeScreen()),
             );
             break;
           case 2:
@@ -134,7 +139,7 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: AdminHomeScreen()),
+                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
             );
             break;
           default:
@@ -180,6 +185,8 @@ class FirebaseOperations {
             "aiChats": [],
             "diet-program": [],
             "dietician-person-uid": [],
+            "dietician-danisanlar-uid": [],
+            "danisanlar-istek": [],
             'userType': 'kullanici',
             'updatedUser': DateTime.now(),
             'createdAt': DateTime.now(),

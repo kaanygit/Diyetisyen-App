@@ -148,6 +148,16 @@ class FirebaseMessagingService with ChangeNotifier {
     return mainQuery;
   }
 
+  Future<void> acceptUser(String userId, String dieticianId) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'dietician-person-uid': FieldValue.arrayUnion([dieticianId])
+      });
+    } catch (e) {
+      print('Error accepting user: $e');
+    }
+  }
+
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
     await Firebase.initializeApp();
