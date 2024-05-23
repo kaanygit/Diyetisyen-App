@@ -22,103 +22,106 @@ void main() async {
   runApp(const MyApp());
 }
 
-// Future<void> saveDietPlans() async {
-//   // Create the diet plans
-//   List<Map<String, dynamic>> dietPlans = createDietPlans();
+Future<void> saveDietPlans() async {
+  // Create the diet plans
+  List<Map<String, dynamic>> dietPlans = createDietPlans();
 
-//   try {
-//     // Save each diet plan to Firestore
-//     for (var dietPlan in dietPlans) {
-//       await FirebaseFirestore.instance.collection('diet_list').add(dietPlan);
-//     }
-//     print('Diet plans saved successfully');
-//   } catch (e) {
-//     print('Error saving diet plans: $e');
-//   }
-// }
+  try {
+    // Save each diet plan to Firestore
+    for (var dietPlan in dietPlans) {
+      await FirebaseFirestore.instance.collection('diet_list').add(dietPlan);
+    }
+    print('Diet plans saved successfully');
+  } catch (e) {
+    print('Error saving diet plans: $e');
+  }
+}
 
-// List<Map<String, dynamic>> createDietPlans() {
-//   List<Map<String, dynamic>> dietPlans = [];
-//   for (int i = 0; i < 3; i++) {
-//     dietPlans.add(createDietPlan());
-//   }
-//   return dietPlans;
-// }
+List<Map<String, dynamic>> createDietPlans() {
+  List<Map<String, dynamic>> dietPlans = [];
+  for (int i = 0; i < 3; i++) {
+    dietPlans.add(createDietPlan());
+  }
+  return dietPlans;
+}
 
-// Map<String, dynamic> createDietPlan() {
-//   List<String> days = [
-//     'Monday',
-//     'Tuesday',
-//     'Wednesday',
-//     'Thursday',
-//     'Friday',
-//     'Saturday',
-//     'Sunday'
-//   ];
-//   List<String> meals = ['breakfast', 'lunch', 'dinner'];
-//   Map<String, dynamic> dietPlan = {};
+Map<String, dynamic> createDietPlan() {
+  List<String> days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  List<String> meals = ['breakfast', 'lunch', 'dinner'];
+  Map<String, dynamic> dietPlan = {};
 
-//   for (int week = 1; week <= 4; week++) {
-//     Map<String, dynamic> weekData = {};
-//     for (String day in days) {
-//       Map<String, dynamic> dayData = {};
-//       for (String meal in meals) {
-//         dayData[meal] = generateMeal(meal);
-//       }
-//       weekData[day] = dayData;
-//     }
-//     dietPlan['week$week'] = weekData;
-//   }
+  for (int week = 1; week <= 4; week++) {
+    Map<String, dynamic> weekData = {};
+    for (String day in days) {
+      Map<String, dynamic> dayData = {};
+      for (String meal in meals) {
+        dayData[meal] = generateMeal(meal);
+      }
+      weekData[day] = dayData;
+    }
+    dietPlan['week$week'] = weekData;
+  }
 
-//   return dietPlan;
-// }
+  return dietPlan;
+}
 
-// Map<String, dynamic> generateMeal(String mealType) {
-//   String diet = generateDiet(mealType);
-//   return {
-//     'diet': diet,
-//     'calories': calculateCalories(diet),
-//     'fat': calculateFat(diet),
-//     'protein': calculateProtein(diet),
-//     'carbs': calculateCarbs(diet),
-//     'water': 5, // Replace with actual water data
-//   };
-// }
+Map<String, dynamic> generateMeal(String mealType) {
+  String diet = generateDiet(mealType);
+  return {
+    'diet': diet,
+    'calories': calculateCalories(diet),
+    'fat': calculateFat(diet),
+    'protein': calculateProtein(diet),
+    'carbs': calculateCarbs(diet),
+    'water': 5, // Replace with actual water data
+    'dailyMeat': [],
+    'eat': false,
+    "drinkWater": false
+  };
+}
 
-// String generateDiet(String mealType) {
-//   // Replace with actual diet generation logic
-//   switch (mealType) {
-//     case 'breakfast':
-//       return 'Oatmeal with fruits';
-//     case 'lunch':
-//       return 'Grilled chicken with vegetables';
-//     case 'dinner':
-//       return 'Salmon with quinoa';
-//     default:
-//       return 'Meal';
-//   }
-// }
+String generateDiet(String mealType) {
+  // Replace with actual diet generation logic
+  switch (mealType) {
+    case 'breakfast':
+      return 'Oatmeal with fruits';
+    case 'lunch':
+      return 'Grilled chicken with vegetables';
+    case 'dinner':
+      return 'Salmon with quinoa';
+    default:
+      return 'Meal';
+  }
+}
 
-// // Placeholder functions for calculating nutritional values
-// int calculateCalories(String diet) {
-//   // Replace with actual calculation logic
-//   return 500;
-// }
+// Placeholder functions for calculating nutritional values
+int calculateCalories(String diet) {
+  // Replace with actual calculation logic
+  return 500;
+}
 
-// int calculateFat(String diet) {
-//   // Replace with actual calculation logic
-//   return 20;
-// }
+int calculateFat(String diet) {
+  // Replace with actual calculation logic
+  return 20;
+}
 
-// int calculateProtein(String diet) {
-//   // Replace with actual calculation logic
-//   return 30;
-// }
+int calculateProtein(String diet) {
+  // Replace with actual calculation logic
+  return 30;
+}
 
-// int calculateCarbs(String diet) {
-//   // Replace with actual calculation logic
-//   return 50;
-// }
+int calculateCarbs(String diet) {
+  // Replace with actual calculation logic
+  return 50;
+}
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();

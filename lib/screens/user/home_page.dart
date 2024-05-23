@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   String selectedMeal = "Meals"; // Seçilen butonu takip etmek için değişken
   List<Map<String, dynamic>> dietProgram = [];
   bool isLoading = true;
+  int currentDayIndex = 0; // Günlük veriler için indeks
 
   int totalCalories = 0;
   int totalProtein = 0;
@@ -50,7 +51,6 @@ class _HomePageState extends State<HomePage> {
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
         List<Map<String, dynamic>> weeklyProgram = [];
-        int totalCalories = 0; // Toplam kalorileri takip etmek için değişken
 
         // Haftalık programı düzenle
         for (int i = 1; i <= 4; i++) {
@@ -82,52 +82,44 @@ class _HomePageState extends State<HomePage> {
                 dayName = '';
             }
 
+            // Günlük öğünler
+            var breakfast = data['week$i'][dayName]['breakfast'];
+            var lunch = data['week$i'][dayName]['lunch'];
+            var dinner = data['week$i'][dayName]['dinner'];
+
+            int dayCalories = (breakfast['calories'] ?? 0) +
+                (lunch['calories'] ?? 0) +
+                (dinner['calories'] ?? 0);
+
+            int dayProtein = (breakfast['protein'] ?? 0) +
+                (lunch['protein'] ?? 0) +
+                (dinner['protein'] ?? 0);
+
+            int dayCarbs = (breakfast['carbs'] ?? 0) +
+                (lunch['carbs'] ?? 0) +
+                (dinner['carbs'] ?? 0);
+
+            int dayFat = (breakfast['fat'] ?? 0) +
+                (lunch['fat'] ?? 0) +
+                (dinner['fat'] ?? 0);
+
+            int dayWater = (breakfast['water'] ?? 0) +
+                (lunch['water'] ?? 0) +
+                (dinner['water'] ?? 0);
+
             Map<String, dynamic> dayProgram = {
               'day': dayName,
               'meals': {
-                'breakfast': {
-                  'diet': data['week$i'][dayName]['breakfast']['diet'] ?? '',
-                  'calories':
-                      data['week$i'][dayName]['breakfast']['calories'] ?? 0,
-                  'protein':
-                      data['week$i'][dayName]['breakfast']['protein'] ?? 0,
-                  'carbs': data['week$i'][dayName]['breakfast']['carbs'] ?? 0,
-                  'fat': data['week$i'][dayName]['breakfast']['fat'] ?? 0,
-                  'water': data['week$i'][dayName]['breakfast']['water'] ?? 0,
-                },
-                'lunch': {
-                  'diet': data['week$i'][dayName]['lunch']['diet'] ?? '',
-                  'calories': data['week$i'][dayName]['lunch']['calories'] ?? 0,
-                  'protein': data['week$i'][dayName]['lunch']['protein'] ?? 0,
-                  'carbs': data['week$i'][dayName]['lunch']['carbs'] ?? 0,
-                  'fat': data['week$i'][dayName]['lunch']['fat'] ?? 0,
-                  'water': data['week$i'][dayName]['lunch']['water'] ?? 0,
-                },
-                'dinner': {
-                  'diet': data['week$i'][dayName]['dinner']['diet'] ?? '',
-                  'calories':
-                      data['week$i'][dayName]['dinner']['calories'] ?? 0,
-                  'protein': data['week$i'][dayName]['dinner']['protein'] ?? 0,
-                  'carbs': data['week$i'][dayName]['dinner']['carbs'] ?? 0,
-                  'fat': data['week$i'][dayName]['dinner']['fat'] ?? 0,
-                  'water': data['week$i'][dayName]['dinner']['water'] ?? 0,
-                },
+                'breakfast': breakfast,
+                'lunch': lunch,
+                'dinner': dinner,
               },
-              'calories': data['week$i'][dayName]['calories'] ?? 0,
-              'protein': data['week$i'][dayName]['protein'] ?? 0,
-              'carbs': data['week$i'][dayName]['carbs'] ?? 0,
-              'fat': data['week$i'][dayName]['fat'] ?? 0,
-              'water': data['week$i'][dayName]['water'] ?? 0,
+              'calories': dayCalories,
+              'protein': dayProtein,
+              'carbs': dayCarbs,
+              'fat': dayFat,
+              'water': dayWater,
             };
-            print(data['week1']["Monday"]['calories'] ?? 'Htalı');
-            // Günlük toplam kaloriyi, protein, karbonhidrat ve yağ miktarlarını hesapla
-            totalCalories +=
-                int.parse(data['week$i'][dayName]['calories'] ?? '0');
-            totalProtein +=
-                int.parse(data['week$i'][dayName]['protein'] ?? '0');
-            totalCarbs += int.parse(data['week$i'][dayName]['carbs'] ?? '0');
-            totalFat += int.parse(data['week$i'][dayName]['fat'] ?? '0');
-            totalWater += int.parse(data['week$i'][dayName]['water'] ?? '0');
 
             weeklyProgram.add(dayProgram);
           }
@@ -135,13 +127,9 @@ class _HomePageState extends State<HomePage> {
 
         setState(() {
           dietProgram = weeklyProgram;
-          dailyCalories = totalCalories;
-          dailyProtein = totalProtein;
-          dailyCarbs = totalCarbs;
-          dailyFat = totalFat;
-          dailyWater = totalWater;
+          updateDailyValues();
+
           isLoading = false;
-          print(dietProgram[0]);
         });
       } else {
         setState(() {
@@ -153,6 +141,135 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> updateEatField(
+      String mealType, dynamic dietProgram, int weekIndex, int dayss) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('Kullanıcı oturumu bulunamadı.');
+        return;
+      }
+
+      print("diyet programı : $mealType");
+      final int hafta;
+      final String yemekVakti;
+
+      if (currentDayIndex >= 0 && currentDayIndex <= 6) {
+        hafta = 1;
+      } else if (currentDayIndex >= 7 && currentDayIndex <= 13) {
+        hafta = 2;
+      } else if (currentDayIndex >= 14 && currentDayIndex <= 20) {
+        hafta = 3;
+      } else if (currentDayIndex >= 21 && currentDayIndex <= 27) {
+        hafta = 4;
+      } else {
+        throw Exception("Geçersiz gün indeksi: $currentDayIndex");
+      }
+
+      if (mealType == "kahvaltı") {
+        yemekVakti = "breakfast";
+      } else if (mealType == "öğlen yemeği") {
+        yemekVakti = "lunch";
+      } else {
+        yemekVakti = "dinner";
+      }
+
+      String getDayName(int index) {
+        String dayName = "";
+        if (index == 0) {
+          dayName = "Monday";
+        } else if (index == 1) {
+          dayName = "Tuesday";
+        } else if (index == 2) {
+          dayName = "Wednesday";
+        } else if (index == 3) {
+          dayName = "Thursday";
+        } else if (index == 4) {
+          dayName = "Friday";
+        } else if (index == 5) {
+          dayName = "Saturday";
+        } else if (index == 6) {
+          dayName = "Sunday";
+        } else {
+          // Geçersiz indeks durumu
+          dayName = "Invalid Day";
+        }
+        return dayName;
+      }
+
+      String gun = getDayName(currentDayIndex % 7);
+      print("gun $currentDayIndex => $gun");
+      String uid = user.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DocumentReference dietProgramRef = firestore
+          .collection('users')
+          .doc(uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram');
+
+      Map<String, dynamic> updateData = {
+        'week$hafta.$gun.$yemekVakti.eat': true,
+      };
+
+      await dietProgramRef.update(updateData);
+
+      print('Eat alanı başarıyla güncellendi.');
+    } catch (e) {
+      print('Hata oluştu: $e');
+    }
+  }
+
+  void updateDailyValues() {
+    if (dietProgram.isNotEmpty && currentDayIndex < dietProgram.length) {
+      var dayData = dietProgram[currentDayIndex];
+      dailyCalories = dayData['calories'] ?? 0;
+      dailyProtein = dayData['protein'] ?? 0;
+      dailyCarbs = dayData['carbs'] ?? 0;
+      dailyFat = dayData['fat'] ?? 0;
+      dailyWater = dayData['water'] ?? 0;
+    }
+  }
+
+  void nextDay() {
+    setState(() {
+      if (currentDayIndex < dietProgram.length - 1) {
+        currentDayIndex++;
+        updateDailyValues();
+      }
+    });
+  }
+
+  void previousDay() {
+    setState(() {
+      if (currentDayIndex > 0) {
+        currentDayIndex--;
+        updateDailyValues();
+      }
+    });
+  }
+
+  String getDayInitial(String day) {
+    switch (day) {
+      case 'Monday':
+        return 'M';
+      case 'Tuesday':
+        return 'T';
+      case 'Wednesday':
+        return 'W';
+      case 'Thursday':
+        return 'T';
+      case 'Friday':
+        return 'F';
+      case 'Saturday':
+        return 'S';
+      case 'Sunday':
+        return 'S';
+      default:
+        return '';
     }
   }
 
@@ -177,6 +294,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -205,8 +323,8 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: List.generate(
-                          14,
-                          (index) => daysScroll("w", "25"),
+                          dietProgram.length,
+                          (index) => daysScroll(index),
                         ),
                       ),
                     ),
@@ -219,9 +337,12 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey.shade200,
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.grey.shade200,
+                          ),
+                          onPressed: previousDay,
                         ),
                         Container(
                           child: Text(
@@ -232,9 +353,12 @@ class _HomePageState extends State<HomePage> {
                                 FontWeight.bold),
                           ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.grey.shade200,
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey.shade200,
+                          ),
+                          onPressed: nextDay,
                         ),
                       ],
                     ),
@@ -242,7 +366,8 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     alignment: Alignment.center,
                     child: Text("Kcal",
-                        style: fontStyle(15, Colors.white, FontWeight.normal)),
+                        style: fontStyle(
+                            15, Colors.transparent, FontWeight.normal)),
                   ),
                   const SizedBox(
                     height: 15,
@@ -254,46 +379,51 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        proteinCarbsFat("Protein", "32"),
-                        proteinCarbsFat("Carbs", "44"),
-                        proteinCarbsFat("Fat", "28"),
+                        proteinCarbsFat("Protein", "${dailyProtein}"),
+                        proteinCarbsFat("Carbs", "${dailyCarbs}"),
+                        proteinCarbsFat("Fat", "${dailyFat}"),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(
+              height: 15,
+            ),
             Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.white,
+              padding: const EdgeInsets.all(8),
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  Text("Günlük Yemek",
+                      style: fontStyle(18, Colors.black, FontWeight.bold)),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.transparent,
               child: Column(
                 children: [
                   Container(
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      children: [
-                        Text(
-                          "Daily meals",
-                          style: fontStyle(20, Colors.black, FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.grey.shade700,
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20)),
+                      color: const Color(0xfff2f2fd),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(child: dailyMeals("Meals")),
                         Expanded(child: dailyMeals("Activity")),
@@ -309,9 +439,26 @@ class _HomePageState extends State<HomePage> {
                       child: isLoading
                           ? CircularProgressIndicator()
                           : Column(
-                              children: dietProgram
-                                  .map((meal) => meals(meal))
-                                  .toList(),
+                              children: [
+                                meals(
+                                    dietProgram[currentDayIndex]['meals']
+                                        ['breakfast'],
+                                    'Kahvaltı',
+                                    dietProgram,
+                                    currentDayIndex),
+                                meals(
+                                    dietProgram[currentDayIndex]['meals']
+                                        ['lunch'],
+                                    'Öğlen Yemeği',
+                                    dietProgram,
+                                    currentDayIndex),
+                                meals(
+                                    dietProgram[currentDayIndex]['meals']
+                                        ['dinner'],
+                                    'Akşam Yemeği',
+                                    dietProgram,
+                                    currentDayIndex),
+                              ],
                             ),
                     )
                   else if (selectedMeal == "Activity")
@@ -320,7 +467,18 @@ class _HomePageState extends State<HomePage> {
                     )
                   else
                     Container(
-                      child: const Text("Water"),
+                      child: Column(
+                        children: [
+                          water(
+                              dietProgram[currentDayIndex]['meals']
+                                  ['breakfast'],
+                              'Kahvaltı'),
+                          water(dietProgram[currentDayIndex]['meals']['lunch'],
+                              'Öğlen Yemeği'),
+                          water(dietProgram[currentDayIndex]['meals']['dinner'],
+                              'Akşam Yemeği'),
+                        ],
+                      ),
                     )
                 ],
               ),
@@ -331,137 +489,210 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column meals(Map<dynamic, dynamic> meal) {
+  Column meals(Map<dynamic, dynamic> meal, String mealType, dynamic dietProgram,
+      int dayss) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white70,
-                  mainColor2,
-                ],
-                stops: const [
-                  0.0,
-                  2.0,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16)),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${meal['diet']}",
-                        style: fontStyle(15, Colors.black, FontWeight.bold),
-                      ),
-                      Text(
-                        "${meal['calories']} kcal",
-                        style: fontStyle(15, Colors.grey, FontWeight.normal),
-                      ),
-                    ],
-                  ),
-                  Container(
-                      alignment: Alignment.topRight,
-                      child: const Icon(Icons.more_horiz_outlined))
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                      child: Row(
-                    children: [
-                      Container(
-                          padding: const EdgeInsets.all(5),
+        GestureDetector(
+          onTap: () => showMealDetails(meal, mealType),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white70,
+                    mainColor2,
+                  ],
+                  stops: const [
+                    0.0,
+                    2.0,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16)),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          mealType,
+                          style: fontStyle(15, Colors.black, FontWeight.bold),
+                        ),
+                        Text(
+                          "${meal['calories']} kcal",
+                          style: fontStyle(15, Colors.grey, FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                    Container(
+                        alignment: Alignment.topRight,
+                        child: const Icon(Icons.more_horiz_outlined))
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                        child: Row(
+                      children: [
+                        Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Protein :",
+                                  style: fontStyle(
+                                      10, Colors.grey, FontWeight.normal),
+                                ),
+                                Text(
+                                  "${meal['protein']}%",
+                                  style: fontStyle(
+                                      10, Colors.black, FontWeight.bold),
+                                ),
+                              ],
+                            )),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Carbs :",
+                                  style: fontStyle(
+                                      10, Colors.grey, FontWeight.normal),
+                                ),
+                                Text(
+                                  "${meal['carbs']}%",
+                                  style: fontStyle(
+                                      10, Colors.black, FontWeight.bold),
+                                ),
+                              ],
+                            )),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Fat :",
+                                  style: fontStyle(
+                                      10, Colors.grey, FontWeight.normal),
+                                ),
+                                Text(
+                                  "${meal['fat']}%",
+                                  style: fontStyle(
+                                      10, Colors.black, FontWeight.bold),
+                                ),
+                              ],
+                            )),
+                      ],
+                    )),
+                    Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Colors.white,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.add_rounded),
+                          onPressed: () async {
+                            print("Ekle");
+                            print(mealType);
+                            await updateEatField(
+                                mealType.toLowerCase(), dietProgram, 1, dayss);
+                          },
+                        )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        )
+      ],
+    );
+  }
+
+  Column water(Map<dynamic, dynamic> meal, String mealType) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => print("Su"),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white70,
+                    mainColor2,
+                  ],
+                  stops: const [
+                    0.0,
+                    2.0,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16)),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          mealType,
+                          style: fontStyle(15, Colors.black, FontWeight.bold),
+                        ),
+                        Text(
+                          "${meal['water']} Bardak",
+                          style: fontStyle(
+                              15, Colors.grey.shade600, FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                    InkWell(
+                      onTap: () {
+                        print("Suyu içtim");
+                      },
+                      child: Container(
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Protein :",
-                                style: fontStyle(
-                                    10, Colors.grey, FontWeight.normal),
-                              ),
-                              Text(
-                                "${meal['protein']}%",
-                                style: fontStyle(
-                                    10, Colors.black, FontWeight.bold),
-                              ),
-                            ],
-                          )),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Carbs :",
-                                style: fontStyle(
-                                    10, Colors.grey, FontWeight.normal),
-                              ),
-                              Text(
-                                "${meal['carbs']}%",
-                                style: fontStyle(
-                                    10, Colors.black, FontWeight.bold),
-                              ),
-                            ],
-                          )),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Fat :",
-                                style: fontStyle(
-                                    10, Colors.grey, FontWeight.normal),
-                              ),
-                              Text(
-                                "${meal['fat']}%",
-                                style: fontStyle(
-                                    10, Colors.black, FontWeight.bold),
-                              ),
-                            ],
-                          )),
-                    ],
-                  )),
-                  Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.white,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.add_rounded),
-                        onPressed: () {
-                          print("Ekle");
-                        },
-                      )),
-                ],
-              ),
-            ],
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.white),
+                          alignment: Alignment.topRight,
+                          child: const Icon(Icons.add_outlined)),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(
@@ -525,12 +756,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Row daysScroll(String x, String y) {
+  Row daysScroll(int index) {
+    var dayData = dietProgram[index];
+    String dayInitial = getDayInitial(dayData['day']);
+    String dayNumber = (index + 1).toString();
+
     return Row(
       children: [
         InkWell(
           onTap: () {
-            print("Şu güne gidildi");
+            setState(() {
+              currentDayIndex = index;
+              updateDailyValues();
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(10),
@@ -544,15 +782,16 @@ class _HomePageState extends State<HomePage> {
                     offset: const Offset(0, 3),
                   ),
                 ],
-                color: Colors.transparent),
+                color:
+                    currentDayIndex == index ? mainColor2 : Colors.transparent),
             child: Column(
               children: [
                 Text(
-                  x,
+                  dayInitial,
                   style: fontStyle(14, Colors.white, FontWeight.bold),
                 ),
                 Text(
-                  y,
+                  dayNumber,
                   style: fontStyle(14, Colors.white, FontWeight.bold),
                 ),
               ],
@@ -563,6 +802,34 @@ class _HomePageState extends State<HomePage> {
           width: 10,
         )
       ],
+    );
+  }
+
+  void showMealDetails(Map<dynamic, dynamic> meal, String mealType) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$mealType Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Calories: ${meal['calories']} kcal'),
+              Text('Protein: ${meal['protein']}%'),
+              Text('Carbs: ${meal['carbs']}%'),
+              Text('Fat: ${meal['fat']}%'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
