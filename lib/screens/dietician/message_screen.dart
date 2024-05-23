@@ -135,6 +135,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
               onPressed: () async {
                 String dieticianId = _messagingService.auth.currentUser!.uid;
                 String clientId = widget.receiverId;
+
                 await _messagingService.acceptUser(clientId, dieticianId);
                 await _addClientToDietician(dieticianId, clientId);
 

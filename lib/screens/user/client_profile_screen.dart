@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore kütüphanesi
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ClientProfileScreen extends StatefulWidget {
   final dynamic uid;
@@ -16,33 +16,16 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
   double weight = 0.0;
   List<String> likedFoods = [];
   List<String> dislikedFoods = [];
-  List<List<String>> dietOptions = [];
-  List<String> selectedDiet = [];
+  List<Map<String, dynamic>> dietOptions = [];
+  Map<String, dynamic> selectedDiet = {};
 
   @override
   void initState() {
     super.initState();
     // Fetch user data using widget.uid and update state variables
     fetchData(widget.uid);
-
-    // Initialize example diet options
-    dietOptions = [
-      [
-        "Kahvaltı: Yulaf ezmesi ve meyve",
-        "Öğle yemeği: Tavuklu salata",
-        "Akşam yemeği: Somon ve brokoli"
-      ],
-      [
-        "Kahvaltı: Yoğurt ve granola",
-        "Öğle yemeği: Izgara balık ve sebzeler",
-        "Akşam yemeği: Tavuk sote"
-      ],
-      [
-        "Kahvaltı: Yumurta ve tam buğday ekmeği",
-        "Öğle yemeği: Mercimek çorbası ve salata",
-        "Akşam yemeği: Sebze sote"
-      ],
-    ];
+    // Fetch diet plans from Firestore
+    fetchDietPlans();
   }
 
   void fetchData(dynamic uid) {
@@ -58,46 +41,31 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     });
   }
 
+  Future<void> fetchDietPlans() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('diet_list').get();
+      setState(() {
+        dietOptions = querySnapshot.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+      });
+    } catch (e) {
+      print('Error fetching diet plans: $e');
+    }
+  }
+
   Future<void> addToDietProgram() async {
     try {
-      // Access Firestore instance
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Replace 'users' with your Firestore collection name
       CollectionReference users = firestore.collection('users');
 
-      // Replace 'userID' with the actual user ID (widget.uid)
       await users
           .doc(widget.uid)
           .collection('dietProgram')
           .doc('weeklyProgram')
-          .set({
-        'week1': {
-          'Monday': {
-            'diet': selectedDiet,
-            'calories':
-                calculateCalories(selectedDiet), // Calculate calories function
-            'fat': calculateFat(selectedDiet), // Calculate fat function
-            'protein':
-                calculateProtein(selectedDiet), // Calculate protein function
-            'carbs': calculateCarbs(selectedDiet), // Calculate carbs function
-          },
-          'Tuesday': {
-            'diet': selectedDiet,
-            'calories': calculateCalories(selectedDiet),
-            'fat': calculateFat(selectedDiet),
-            'protein': calculateProtein(selectedDiet),
-            'carbs': calculateCarbs(selectedDiet),
-          },
-          // Add other days for week 1
-        },
-        'week2': {
-          // Add days for week 2
-        },
-        // Add other weeks as needed
-      });
+          .set(selectedDiet);
 
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Diyet programı başarıyla kaydedildi."),
@@ -105,7 +73,6 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
         ),
       );
     } catch (e) {
-      // Handle errors
       print("Error adding diet program: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -122,17 +89,80 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Diyet Programı Onayı"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Seçilen Diyet Listesi:"),
-              SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: selectedDiet.map((item) => Text(item)).toList(),
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Seçilen Diyet Listesi:"),
+                SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: selectedDiet.entries.map((entry) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${entry.key}:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (entry.key == 'meals')
+                              ...entry.value.entries.map((mealEntry) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${mealEntry.key}:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Diet: ${mealEntry.value['diet']}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                'Calories: ${mealEntry.value['calories']} kcal'),
+                                            Text(
+                                                'Protein: ${mealEntry.value['protein']}%'),
+                                            Text(
+                                                'Carbs: ${mealEntry.value['carbs']}%'),
+                                            Text(
+                                                'Fat: ${mealEntry.value['fat']}%'),
+                                            Text(
+                                                'Water: ${mealEntry.value['water']} ml'),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                  ],
+                                );
+                              }).toList()
+                            else
+                              Text('${entry.value}'),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -152,50 +182,6 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
         );
       },
     );
-  }
-
-  double calculateCalories(List<String> diet) {
-    double totalCalories = 0.0;
-
-    // Example calorie values per food item (replace with actual data)
-    Map<String, double> calorieValues = {
-      "Yulaf ezmesi ve meyve": 300.0,
-      "Tavuklu salata": 400.0,
-      "Somon ve brokoli": 350.0,
-      "Yoğurt ve granola": 250.0,
-      "Izgara balık ve sebzeler": 380.0,
-      "Tavuk sote": 370.0,
-      "Yumurta ve tam buğday ekmeği": 320.0,
-      "Mercimek çorbası ve salata": 280.0,
-      "Sebze sote": 300.0,
-    };
-
-    // Calculate total calories based on selected diet
-    for (String food in diet) {
-      if (calorieValues.containsKey(food)) {
-        totalCalories += calorieValues[food]!;
-      }
-    }
-
-    return totalCalories;
-  }
-
-  double calculateFat(List<String> diet) {
-    // Calculate total fat content based on selected diet
-    // Replace with actual calculation logic
-    return 0.0; // Placeholder
-  }
-
-  double calculateProtein(List<String> diet) {
-    // Calculate total protein content based on selected diet
-    // Replace with actual calculation logic
-    return 0.0; // Placeholder
-  }
-
-  double calculateCarbs(List<String> diet) {
-    // Calculate total carbs content based on selected diet
-    // Replace with actual calculation logic
-    return 0.0; // Placeholder
   }
 
   @override

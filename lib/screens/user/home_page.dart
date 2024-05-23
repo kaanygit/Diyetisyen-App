@@ -1,6 +1,8 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,13 +12,148 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String selectedMeal = "Meals"; // State variable to track the selected button
+  String selectedMeal = "Meals"; // Seçilen butonu takip etmek için değişken
+  List<Map<String, dynamic>> dietProgram = [];
+  bool isLoading = true;
+
+  int totalCalories = 0;
+  int totalProtein = 0;
+  int totalCarbs = 0;
+  int totalFat = 0;
+  int totalWater = 0;
+
+  int dailyCalories = 0; // Günlük toplam kalorileri saklamak için değişken
+  int dailyProtein =
+      0; // Günlük toplam protein miktarını saklamak için değişken
+  int dailyCarbs =
+      0; // Günlük toplam karbonhidrat miktarını saklamak için değişken
+  int dailyFat = 0;
+  int dailyWater = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    FirebaseOperations().getProfileType();
+    fetchDietProgram();
+  }
+
+  Future<void> fetchDietProgram() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? uid = user?.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      DocumentSnapshot snapshot = await firestore
+          .collection('users')
+          .doc(uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram')
+          .get();
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        List<Map<String, dynamic>> weeklyProgram = [];
+        int totalCalories = 0; // Toplam kalorileri takip etmek için değişken
+
+        // Haftalık programı düzenle
+        for (int i = 1; i <= 4; i++) {
+          for (int j = 1; j <= 7; j++) {
+            String dayName = '';
+            switch (j) {
+              case 1:
+                dayName = 'Monday';
+                break;
+              case 2:
+                dayName = 'Tuesday';
+                break;
+              case 3:
+                dayName = 'Wednesday';
+                break;
+              case 4:
+                dayName = 'Thursday';
+                break;
+              case 5:
+                dayName = 'Friday';
+                break;
+              case 6:
+                dayName = 'Saturday';
+                break;
+              case 7:
+                dayName = 'Sunday';
+                break;
+              default:
+                dayName = '';
+            }
+
+            Map<String, dynamic> dayProgram = {
+              'day': dayName,
+              'meals': {
+                'breakfast': {
+                  'diet': data['week$i'][dayName]['breakfast']['diet'] ?? '',
+                  'calories':
+                      data['week$i'][dayName]['breakfast']['calories'] ?? 0,
+                  'protein':
+                      data['week$i'][dayName]['breakfast']['protein'] ?? 0,
+                  'carbs': data['week$i'][dayName]['breakfast']['carbs'] ?? 0,
+                  'fat': data['week$i'][dayName]['breakfast']['fat'] ?? 0,
+                  'water': data['week$i'][dayName]['breakfast']['water'] ?? 0,
+                },
+                'lunch': {
+                  'diet': data['week$i'][dayName]['lunch']['diet'] ?? '',
+                  'calories': data['week$i'][dayName]['lunch']['calories'] ?? 0,
+                  'protein': data['week$i'][dayName]['lunch']['protein'] ?? 0,
+                  'carbs': data['week$i'][dayName]['lunch']['carbs'] ?? 0,
+                  'fat': data['week$i'][dayName]['lunch']['fat'] ?? 0,
+                  'water': data['week$i'][dayName]['lunch']['water'] ?? 0,
+                },
+                'dinner': {
+                  'diet': data['week$i'][dayName]['dinner']['diet'] ?? '',
+                  'calories':
+                      data['week$i'][dayName]['dinner']['calories'] ?? 0,
+                  'protein': data['week$i'][dayName]['dinner']['protein'] ?? 0,
+                  'carbs': data['week$i'][dayName]['dinner']['carbs'] ?? 0,
+                  'fat': data['week$i'][dayName]['dinner']['fat'] ?? 0,
+                  'water': data['week$i'][dayName]['dinner']['water'] ?? 0,
+                },
+              },
+              'calories': data['week$i'][dayName]['calories'] ?? 0,
+              'protein': data['week$i'][dayName]['protein'] ?? 0,
+              'carbs': data['week$i'][dayName]['carbs'] ?? 0,
+              'fat': data['week$i'][dayName]['fat'] ?? 0,
+              'water': data['week$i'][dayName]['water'] ?? 0,
+            };
+            print(data['week1']["Monday"]['calories'] ?? 'Htalı');
+            // Günlük toplam kaloriyi, protein, karbonhidrat ve yağ miktarlarını hesapla
+            totalCalories +=
+                int.parse(data['week$i'][dayName]['calories'] ?? '0');
+            totalProtein +=
+                int.parse(data['week$i'][dayName]['protein'] ?? '0');
+            totalCarbs += int.parse(data['week$i'][dayName]['carbs'] ?? '0');
+            totalFat += int.parse(data['week$i'][dayName]['fat'] ?? '0');
+            totalWater += int.parse(data['week$i'][dayName]['water'] ?? '0');
+
+            weeklyProgram.add(dayProgram);
+          }
+        }
+
+        setState(() {
+          dietProgram = weeklyProgram;
+          dailyCalories = totalCalories;
+          dailyProtein = totalProtein;
+          dailyCarbs = totalCarbs;
+          dailyFat = totalFat;
+          dailyWater = totalWater;
+          isLoading = false;
+          print(dietProgram[0]);
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching diet program: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -45,8 +182,6 @@ class _HomePageState extends State<HomePage> {
           children: [
             // Üstteki kutu (renk geçişli)
             Container(
-              // height: MediaQuery.of(context).size.height *
-              // 0.4, // Yüksekliği ayarlayabilirsiniz
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -68,24 +203,11 @@ class _HomePageState extends State<HomePage> {
                     child: Container(
                       padding: const EdgeInsets.all(25),
                       child: Row(
-                        // tüm satırı kaplasınlar
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                          daysScroll("w", "25"),
-                        ],
+                        children: List.generate(
+                          14,
+                          (index) => daysScroll("w", "25"),
+                        ),
                       ),
                     ),
                   ),
@@ -103,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Container(
                           child: Text(
-                            "1286",
+                            "${dailyCalories}",
                             style: fontStyle(
                                 MediaQuery.of(context).size.width / 4,
                                 Colors.white,
@@ -117,9 +239,6 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  // SizedBox(
-                  //   height: 15,
-                  // ),
                   Container(
                     alignment: Alignment.center,
                     child: Text("Kcal",
@@ -144,7 +263,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // Alttaki kutu (renk geçişsiz)
             Container(
               padding: const EdgeInsets.all(16),
               color: Colors.white,
@@ -188,14 +306,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   if (selectedMeal == "Meals")
                     Container(
-                      child: Column(
-                        children: [
-                          // her bir
-                          meals(),
-                          meals(),
-                          meals(),
-                        ],
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : Column(
+                              children: dietProgram
+                                  .map((meal) => meals(meal))
+                                  .toList(),
+                            ),
                     )
                   else if (selectedMeal == "Activity")
                     Container(
@@ -214,7 +331,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column meals() {
+  Column meals(Map<dynamic, dynamic> meal) {
     return Column(
       children: [
         Container(
@@ -243,11 +360,11 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Breakfast",
+                        "${meal['diet']}",
                         style: fontStyle(15, Colors.black, FontWeight.bold),
                       ),
                       Text(
-                        "421 kcal",
+                        "${meal['calories']} kcal",
                         style: fontStyle(15, Colors.grey, FontWeight.normal),
                       ),
                     ],
@@ -279,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                                     10, Colors.grey, FontWeight.normal),
                               ),
                               Text(
-                                "84%",
+                                "${meal['protein']}%",
                                 style: fontStyle(
                                     10, Colors.black, FontWeight.bold),
                               ),
@@ -301,7 +418,7 @@ class _HomePageState extends State<HomePage> {
                                     10, Colors.grey, FontWeight.normal),
                               ),
                               Text(
-                                "42%",
+                                "${meal['carbs']}%",
                                 style: fontStyle(
                                     10, Colors.black, FontWeight.bold),
                               ),
@@ -323,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                                     10, Colors.grey, FontWeight.normal),
                               ),
                               Text(
-                                "10%",
+                                "${meal['fat']}%",
                                 style: fontStyle(
                                     10, Colors.black, FontWeight.bold),
                               ),
@@ -379,7 +496,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Container proteinCarbsFat(String x, String y) {
-    // Calculate the maximum width based on the longest label ("Protein", "Carbs", "Fat")
     double maxWidth =
         MediaQuery.of(context).size.width / 3 - 32; // Adjust padding as needed
 
@@ -425,7 +541,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: const Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3),
                   ),
                 ],
                 color: Colors.transparent),

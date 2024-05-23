@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 
+// class DieticianHomeScreen extends StatelessWidget {
 class DieticianHomeScreen extends StatelessWidget {
   const DieticianHomeScreen({Key? key});
 
@@ -186,7 +187,7 @@ class RequestedUsers extends StatelessWidget {
         }
 
         var dieticianData = snapshot.data!.data() as Map<String, dynamic>?;
-        print(dieticianData);
+
         if (dieticianData == null ||
             !dieticianData.containsKey('danisanlar-istek')) {
           return Center(child: Text('No requested users available'));
@@ -223,6 +224,16 @@ class RequestedUsers extends StatelessWidget {
 
                 String userName = userData['name'] ?? 'Unknown User';
 
+                // Check if the user is already a client of the dietitian
+                if (dieticianData.containsKey('dietician-danisanlar-uid')) {
+                  List<String> clientUids = List<String>.from(
+                      dieticianData['dietician-danisanlar-uid']);
+                  if (clientUids.contains(requestId)) {
+                    // If the user is already a client, don't show in requests
+                    return SizedBox.shrink();
+                  }
+                }
+
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Card(
@@ -251,8 +262,15 @@ class RequestedUsers extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        // Buraya istek atan kullanıcı ile ilgili bir işlem ekleyebilirsiniz.
-                        // Örneğin, onaylama veya reddetme işlemi gibi.
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MessagingScreen(receiverId: requestId),
+                          ),
+                        );
+                        // Implement your action here (e.g., accept or reject the request)
+                        // For now, it navigates to the messaging screen with the requestId
                       },
                     ),
                   ),
