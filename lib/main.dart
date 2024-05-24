@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/widget/not_found_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

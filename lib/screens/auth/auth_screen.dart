@@ -1,5 +1,8 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
+import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
+import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:flutter/cupertino.dart';
@@ -90,6 +93,40 @@ class _AuthScreenState extends State<AuthScreen> {
       if (userCredential != null && mounted) {
         // Check if the state is still mounted
         print("Kayıt başarılı: ${userCredential.user?.email}");
+        int profileType = await FirebaseOperations().getProfileType();
+
+        // Profil tipine göre yönlendirme yap
+        switch (profileType) {
+          case 0:
+            print("Navigating to HomeScreen for profile type 0");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: new UserInformationScreen()),
+            );
+            break;
+          case 1:
+            print("Navigating to DieticianHomeScreen for profile type 1");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade,
+                  child: new DieticianHomeScreen()),
+            );
+            break;
+          case 2:
+            print("Navigating to AdminHomeScreen for profile type 2");
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
+            );
+            break;
+          default:
+            print("Unknown profile type: $profileType");
+            showErrorSnackBar(context, "Tanımsız kullanıcı tipi: $profileType");
+            break;
+        }
       } else {
         // Show error message
         if (mounted) {
@@ -120,8 +157,46 @@ class _AuthScreenState extends State<AuthScreen> {
           password: password,
         );
 
+
         // Giriş başarılı, kullanıcıyı yönlendir veya gerekli işlemleri yap
         print("Giriş başarılı: ${userCredential.user?.email}");
+     
+        int profileType = await FirebaseOperations().getProfileType();
+
+      // Profil tipine göre yönlendirme yap
+        print("SİGN İN GELİYOR : $profileType");
+        switch (profileType) {
+          case 0:
+            print("Navigating to HomeScreen for profile type 0");
+            Navigator.push(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: new HomeScreen()),
+            );
+            break;
+          case 1:
+            print("Navigating to DieticianHomeScreen for profile type 1");
+            Navigator.push(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade,
+                  child: new DieticianHomeScreen()),
+            );
+            break;
+          case 2:
+            print("Navigating to AdminHomeScreen for profile type 2");
+            Navigator.push(
+              context,
+              PageTransition(
+                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
+            );
+            break;
+          default:
+            print("Unknown profile type: $profileType");
+            showErrorSnackBar(context, "Tanımsız kullanıcı tipi: $profileType");
+            break;
+        }     
+
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
         print("Giriş başarısız: $e");

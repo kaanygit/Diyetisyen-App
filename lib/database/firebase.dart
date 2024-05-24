@@ -1,4 +1,5 @@
 import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
+import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -122,7 +123,7 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new HomeScreen()),
+                  type: PageTransitionType.fade, child: new UserInformationScreen()),
             );
             break;
           case 1:

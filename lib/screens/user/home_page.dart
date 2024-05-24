@@ -16,6 +16,8 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> dietProgram = [];
   bool isLoading = true;
   int currentDayIndex = 0; // Günlük veriler için indeks
+  bool hasDietProgram = true;
+
 
   int totalCalories = 0;
   int totalProtein = 0;
@@ -128,18 +130,20 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           dietProgram = weeklyProgram;
           updateDailyValues();
-
+          print(dietProgram);
           isLoading = false;
         });
       } else {
         setState(() {
           isLoading = false;
+          hasDietProgram = false;
         });
       }
     } catch (e) {
       print("Error fetching diet program: $e");
       setState(() {
         isLoading = false;
+        hasDietProgram = false;
       });
     }
   }
@@ -216,7 +220,7 @@ class _HomePageState extends State<HomePage> {
       };
 
       await dietProgramRef.update(updateData);
-
+      
       print('Eat alanı başarıyla güncellendi.');
     } catch (e) {
       print('Hata oluştu: $e');
@@ -285,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                 radius: 20,
                 backgroundImage: AssetImage("assets/images/avatar.jpg")),
             Container(
-              child: const Text("Home"),
+              child: const Text("Anasayfa"),
             ),
             const Icon(
               Icons.calendar_month,
@@ -295,7 +299,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      body:!isLoading?!dietProgram.isEmpty || hasDietProgram? SingleChildScrollView(
         child: Column(
           children: [
             // Üstteki kutu (renk geçişli)
@@ -490,8 +494,38 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
+      ):notDietScreen():const Center(child: CircularProgressIndicator()),
     );
+  }
+
+  Container notDietScreen() {
+    return Container(
+      decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    mainColor,
+                    Colors.white,
+                  ],
+                  stops: const [
+                    0.1,
+                    0.75,
+                  ],
+                ),
+              ),
+      child: Container(
+      alignment: Alignment.center,
+      child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset("assets/images/avatar.jpg",width: 100,height: 100,),
+        Container(
+          alignment: Alignment.center,
+          child: Text("Diyet listeniz bulunmamaktadır :(",style: fontStyle(18, mainColor, FontWeight.normal),),
+        )
+      ],
+    )));
   }
 
   Column meals(Map<dynamic, dynamic> meal, String mealType, dynamic dietProgram,
