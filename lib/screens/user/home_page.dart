@@ -463,7 +463,12 @@ class _HomePageState extends State<HomePage> {
                     )
                   else if (selectedMeal == "Activity")
                     Container(
-                      child: const Text("Activity"),
+                      child: Column(
+                        children: [
+                          const Text("Activity"),
+                          
+                        ],
+                      ),
                     )
                   else
                     Container(
@@ -493,145 +498,146 @@ class _HomePageState extends State<HomePage> {
       int dayss) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => showMealDetails(meal, mealType),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white70,
-                    mainColor2,
-                  ],
-                  stops: const [
-                    0.0,
-                    2.0,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          mealType,
-                          style: fontStyle(15, Colors.black, FontWeight.bold),
-                        ),
-                        Text(
-                          "${meal['calories']} kcal",
-                          style: fontStyle(15, Colors.grey, FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                    Container(
-                        alignment: Alignment.topRight,
-                        child: const Icon(Icons.more_horiz_outlined))
-                  ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                        child: Row(
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Protein :",
-                                  style: fontStyle(
-                                      10, Colors.grey, FontWeight.normal),
-                                ),
-                                Text(
-                                  "${meal['protein']}%",
-                                  style: fontStyle(
-                                      10, Colors.black, FontWeight.bold),
-                                ),
-                              ],
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Carbs :",
-                                  style: fontStyle(
-                                      10, Colors.grey, FontWeight.normal),
-                                ),
-                                Text(
-                                  "${meal['carbs']}%",
-                                  style: fontStyle(
-                                      10, Colors.black, FontWeight.bold),
-                                ),
-                              ],
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Fat :",
-                                  style: fontStyle(
-                                      10, Colors.grey, FontWeight.normal),
-                                ),
-                                Text(
-                                  "${meal['fat']}%",
-                                  style: fontStyle(
-                                      10, Colors.black, FontWeight.bold),
-                                ),
-                              ],
-                            )),
-                      ],
-                    )),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Colors.white,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.add_rounded),
-                          onPressed: () async {
-                            print("Ekle");
-                            print(mealType);
-                            await updateEatField(
-                                mealType.toLowerCase(), dietProgram, 1, dayss);
-                          },
-                        )),
-                  ],
-                ),
-              ],
+        if(meal['eat'] == false)
+          GestureDetector(
+            onTap: () => showMealDetails(meal, mealType),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white70,
+                      mainColor2,
+                    ],
+                    stops: const [
+                      0.0,
+                      2.0,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16)),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            mealType,
+                            style: fontStyle(15, Colors.black, FontWeight.bold),
+                          ),
+                          Text(
+                            "${meal['calories']} kcal",
+                            style: fontStyle(15, Colors.grey, FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                      Container(
+                          alignment: Alignment.topRight,
+                          child: const Icon(Icons.more_horiz_outlined))
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                          child: Row(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Protein :",
+                                    style: fontStyle(
+                                        10, Colors.grey, FontWeight.normal),
+                                  ),
+                                  Text(
+                                    "${meal['protein']}%",
+                                    style: fontStyle(
+                                        10, Colors.black, FontWeight.bold),
+                                  ),
+                                ],
+                              )),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Carbs :",
+                                    style: fontStyle(
+                                        10, Colors.grey, FontWeight.normal),
+                                  ),
+                                  Text(
+                                    "${meal['carbs']}%",
+                                    style: fontStyle(
+                                        10, Colors.black, FontWeight.bold),
+                                  ),
+                                ],
+                              )),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Fat :",
+                                    style: fontStyle(
+                                        10, Colors.grey, FontWeight.normal),
+                                  ),
+                                  Text(
+                                    "${meal['fat']}%",
+                                    style: fontStyle(
+                                        10, Colors.black, FontWeight.bold),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      )),
+                      Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.white,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.add_rounded),
+                            onPressed: () async {
+                              print("Ekle");
+                              print(mealType);
+                              await updateEatField(
+                                  mealType.toLowerCase(), dietProgram, 1, dayss);
+                            },
+                          )),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(
-          height: 15,
-        )
+          const SizedBox(
+            height: 15,
+          )
       ],
     );
   }

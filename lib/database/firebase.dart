@@ -30,7 +30,7 @@ class FirebaseOperations {
       switch (profileType) {
         case 0:
           print("Navigating to HomeScreen for profile type 0");
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             PageTransition(
                 type: PageTransitionType.fade, child: new HomeScreen()),
@@ -38,7 +38,7 @@ class FirebaseOperations {
           break;
         case 1:
           print("Navigating to DieticianHomeScreen for profile type 1");
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             PageTransition(
                 type: PageTransitionType.fade,
@@ -47,7 +47,7 @@ class FirebaseOperations {
           break;
         case 2:
           print("Navigating to AdminHomeScreen for profile type 2");
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             PageTransition(
                 type: PageTransitionType.fade, child: new AdminHomeScreen()),
