@@ -1,5 +1,6 @@
 import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
 import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
+import 'package:diyetisyenapp/screens/auth/dietcian_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -103,6 +104,9 @@ class FirebaseOperations {
           "dietician-person-uid": [],
           "dietician-danisanlar-uid": [],
           "danisanlar-istek": [],
+          "new_user": true,
+          "new_dietcian": true,
+
           'userType': methodsType == 0
               ? 'kullanici'
               : methodsType == 1
@@ -123,7 +127,8 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new UserInformationScreen()),
+                  type: PageTransitionType.fade,
+                  child: new UserInformationScreen()),
             );
             break;
           case 1:
@@ -132,7 +137,7 @@ class FirebaseOperations {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new DieticianHomeScreen()),
+                  child: new DietcianInformationScreen()),
             );
             break;
           case 2:
@@ -189,6 +194,8 @@ class FirebaseOperations {
             "dietician-danisanlar-uid": [],
             "danisanlar-istek": [],
             'userType': 'kullanici',
+            "new_user": true,
+            "new_dietcian": true,
             'updatedUser': DateTime.now(),
             'createdAt': DateTime.now(),
           });
@@ -233,6 +240,56 @@ class FirebaseOperations {
     } catch (e) {
       print("Profil verisi getirilirken hata oluştu: $e");
       return 4;
+    }
+  }
+
+  Future<bool> getNewUser() async {
+    try {
+      String uid = _auth.currentUser?.uid ?? '';
+      if (uid.isEmpty) {
+        print("Kullanıcı oturum açmamış.");
+        return false;
+      }
+
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('users').doc(uid).get();
+
+      if (snapshot.exists) {
+        // Kullanıcı verisinin içindeki 'new_user' ögesinin değerini kontrol ediyoruz.
+        bool isNewUser = snapshot.data()?['new_user'] ?? false;
+        return isNewUser;
+      } else {
+        print("Kullanıcı verisi bulunamadı.");
+        return false;
+      }
+    } catch (e) {
+      print("Yeni kullanıcı olma verisi getirilemedi: $e");
+      return false;
+    }
+  }
+
+  Future<bool> getNewDietcian() async {
+    try {
+      String uid = _auth.currentUser?.uid ?? '';
+      if (uid.isEmpty) {
+        print("Kullanıcı oturum açmamış.");
+        return false;
+      }
+
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('users').doc(uid).get();
+
+      if (snapshot.exists) {
+        // Kullanıcı verisinin içindeki 'new_user' ögesinin değerini kontrol ediyoruz.
+        bool isNewDietcian = snapshot.data()?['new_dietcian'] ?? false;
+        return isNewDietcian;
+      } else {
+        print("Kullanıcı verisi bulunamadı.");
+        return false;
+      }
+    } catch (e) {
+      print("Yeni kullanıcı olma verisi getirilemedi: $e");
+      return false;
     }
   }
 

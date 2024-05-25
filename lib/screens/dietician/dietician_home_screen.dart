@@ -1,3 +1,4 @@
+import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
@@ -5,72 +6,130 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
-// class DieticianHomeScreen extends StatelessWidget {
 class DieticianHomeScreen extends StatelessWidget {
-  const DieticianHomeScreen({Key? key});
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  DieticianHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final String uid = _auth.currentUser?.uid ?? '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diyetisyen Sayfası"),
+        title: Text("Diyetisyen App - Diyetisyen",
+            style: fontStyle(20, mainColor, FontWeight.bold)),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Sohbetler",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: FutureBuilder<DocumentSnapshot>(
+        future: _firestore.collection('users').doc(uid).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          var userData = snapshot.data!.data() as Map<String, dynamic>?;
+
+          if (userData != null && userData['dietcian_confirm'] == true) {
+            return DieticianMainContent(currentUserUid: uid);
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 20),
                   Text(
-                    "Sohbet Kutuları",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                    "Admin tarafından onay bekleniyor.Beklediğiniz için teşekkür ederiz.:)",
+                    style: fontStyle(25, mainColor, FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: ClientChats(currentUserUid: _auth.currentUser!.uid),
+                  SizedBox(
+                    height: 20,
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    "İstek Atan Kullanıcılar",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child:
-                        RequestedUsers(currentUserUid: _auth.currentUser!.uid),
-                  ),
+                  MyButton(
+                      text: "Sign Out",
+                      buttonColor: mainColor,
+                      buttonTextColor: Colors.white,
+                      buttonTextSize: 25,
+                      buttonTextWeight: FontWeight.normal,
+                      onPressed: () {
+                        FirebaseOperations().signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AuthScreen()),
+                        );
+                      })
                 ],
-              ),
-            ),
-            MyButton(
-              onPressed: () {
-                FirebaseOperations().signOut();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AuthScreen()),
-                );
-              },
-              text: "Sign Out",
-              buttonColor: Colors.black,
-              buttonTextColor: Colors.blue,
-              buttonTextSize: 15,
-              buttonTextWeight: FontWeight.bold,
-            ),
-          ],
-        ),
+              )),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class DieticianMainContent extends StatefulWidget {
+  final String currentUserUid;
+
+  DieticianMainContent({required this.currentUserUid});
+
+  @override
+  _DieticianMainContentState createState() => _DieticianMainContentState();
+}
+
+class _DieticianMainContentState extends State<DieticianMainContent> {
+  int _selectedIndex = 0;
+
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      ClientChats(currentUserUid: widget.currentUserUid),
+      RequestedUsers(currentUserUid: widget.currentUserUid),
+      ProfileScreen(currentUserUid: widget.currentUserUid),
+    ];
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: SalomonBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: [
+          SalomonBottomBarItem(
+              icon: Icon(Icons.chat),
+              title: Text("Sohbet Kutuları"),
+              selectedColor: mainColor,
+              unselectedColor: Colors.grey),
+          SalomonBottomBarItem(
+              icon: Icon(Icons.person_add),
+              title: Text("İstekler"),
+              selectedColor: mainColor,
+              unselectedColor: Colors.grey),
+          SalomonBottomBarItem(
+              icon: Icon(Icons.account_circle),
+              title: Text("Profil"),
+              selectedColor: mainColor,
+              unselectedColor: Colors.grey),
+        ],
       ),
     );
   }
@@ -130,43 +189,66 @@ class ClientChats extends StatelessWidget {
                   return ListTile(title: Text('No user data'));
                 }
 
-                String clientName = userData['name'] ?? 'Unknown User';
+                String clientName = userData['displayName'] ?? 'Unknown User';
+                String userPhoto = userData['profilePhoto'] ?? "null";
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                    title: Text(
-                      clientName,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text(
-                      clientId,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      child: Text(
-                        clientName[0].toUpperCase(),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MessagingScreen(receiverId: clientId),
+                return Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MessagingScreen(receiverId: clientId),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: mainColor2,
+                            borderRadius: BorderRadius.circular(16)),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: userPhoto == "" ||
+                                          userPhoto == "null"
+                                      ? AssetImage("assets/images/gemini.jpg")
+                                      : NetworkImage(userPhoto)
+                                          as ImageProvider,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("$clientName",
+                                        style: fontStyle(
+                                            15, Colors.black, FontWeight.bold)),
+                                    Text(
+                                      "$clientId",
+                                      style: fontStyle(
+                                          15, Colors.grey, FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                          ],
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
                 );
               },
             );
@@ -231,7 +313,8 @@ class RequestedUsers extends StatelessWidget {
                   return ListTile(title: Text('No user data'));
                 }
 
-                String userName = userData['name'] ?? 'Unknown User';
+                String userName = userData['displayName'] ?? 'Unknown User';
+                String userPhoto = userData['profilePhoto'] ?? "null";
 
                 // Check if the user is already a client of the dietitian
                 if (dieticianData.containsKey('dietician-danisanlar-uid')) {
@@ -243,33 +326,9 @@ class RequestedUsers extends StatelessWidget {
                   }
                 }
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: Card(
-                    elevation: 3,
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                      title: Text(
-                        userName,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        requestId,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.orange,
-                        child: Text(
-                          userName[0].toUpperCase(),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                return Column(
+                  children: [
+                    InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -278,17 +337,236 @@ class RequestedUsers extends StatelessWidget {
                                 MessagingScreen(receiverId: requestId),
                           ),
                         );
-                        // Implement your action here (e.g., accept or reject the request)
-                        // For now, it navigates to the messaging screen with the requestId
                       },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: mainColor2,
+                            borderRadius: BorderRadius.circular(16)),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: userPhoto == "" ||
+                                          userPhoto == "null"
+                                      ? AssetImage("assets/images/avatar.jpg")
+                                      : NetworkImage(userPhoto)
+                                          as ImageProvider,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("$userName",
+                                        style: fontStyle(
+                                            15, Colors.black, FontWeight.bold)),
+                                    Text(
+                                      "$requestId",
+                                      style: fontStyle(
+                                          15, Colors.grey, FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
                 );
               },
             );
           },
         );
       },
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  final String currentUserUid;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  ProfileScreen({required this.currentUserUid});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder<DocumentSnapshot>(
+        future: _firestore.collection('users').doc(currentUserUid).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Hata: ${snapshot.error}'));
+          }
+
+          var userData = snapshot.data!.data() as Map<String, dynamic>?;
+
+          if (userData == null) {
+            return Center(child: Text('Kullanıcı bilgileri bulunamadı.'));
+          }
+
+          String userName = userData['displayName'] ?? 'Kullanıcı Adı Yok';
+          String userEmail = userData['email'] ?? 'E-posta Yok';
+          String userAge = userData['age'] ?? 'Yaş Bilgisi Yok';
+          String userPhoto = userData['profilePhoto'] ?? "ProfilFoto";
+
+          return _buildProfileContent(
+              userName, userEmail, userAge, userPhoto, context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileContent(
+    String userName,
+    String userEmail,
+    String userAge,
+    String userPhoto,
+    BuildContext context,
+  ) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundImage: userPhoto == "" || userPhoto == "ProfilFoto"
+                  ? AssetImage("assets/images/avatar.jpg")
+                  : NetworkImage(userPhoto) as ImageProvider,
+            ),
+            SizedBox(height: 15),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: mainColor2,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildProfileInfoRow(context, "Email", userEmail),
+                  _buildProfileInfoRow(context, "Full Name", userName),
+                  _buildProfileInfoRow(context, "Age", userAge),
+                ],
+              ),
+            ),
+            SizedBox(height: 15),
+            Container(
+              decoration: BoxDecoration(
+                color: mainColor2,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildProfileButton(context, "Notification"),
+                  _buildProfileButton(context, "Apply promo code"),
+                  _buildProfileButton(context, "Join to the community"),
+                  _buildProfileButton(context, "Share with friends"),
+                  _buildProfileButton(context, "Contact support"),
+                  _buildProfileButton(context, "Privacy policy"),
+                  _buildProfileButton(context, "Terms & Conditions"),
+                  _buildProfileButton(context, "Language"),
+                ],
+              ),
+            ),
+            SizedBox(height: 15),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  MyButton(
+                    onPressed: () {
+                      FirebaseOperations().signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AuthScreen(),
+                        ),
+                      );
+                    },
+                    text: "Çıkış Yap",
+                    buttonColor: mainColor,
+                    buttonTextColor: Colors.white,
+                    buttonTextSize: 15,
+                    buttonTextWeight: FontWeight.bold,
+                  ),
+                  SizedBox(height: 5),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileInfoRow(
+    BuildContext context,
+    String title,
+    String value,
+  ) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.85,
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title + ":",
+              style: fontStyle(15, Colors.black, FontWeight.bold)),
+          Text(
+            value,
+            style: fontStyle(15, Colors.black, FontWeight.normal),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileButton(
+    BuildContext context,
+    String text,
+  ) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+      ),
+      child: InkWell(
+        onTap: () {
+          print("Tapped on $text");
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              text,
+              style: fontStyle(15, Colors.black, FontWeight.bold),
+            ),
+            Icon(Icons.arrow_right),
+          ],
+        ),
+      ),
     );
   }
 }

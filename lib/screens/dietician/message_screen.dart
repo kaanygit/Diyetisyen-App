@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/screens/dietician/dietcian_profile_screen.dart';
 import 'package:diyetisyenapp/screens/user/client_profile_screen.dart';
+import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:diyetisyenapp/database/messaging.dart';
@@ -26,6 +28,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
   late StreamController<List<Message>> _streamController;
   bool disableInput = false;
   bool initialMessageSent = false;
+  bool textFieldDisable = false;
 
   @override
   void initState() {
@@ -128,6 +131,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                setState(() {
+                  textFieldDisable = true;
+                });
               },
               child: Text('No'),
             ),
@@ -264,8 +270,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                           margin:
                               EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           decoration: BoxDecoration(
-                            color:
-                                isMyMessage ? Colors.purple : Colors.grey[300],
+                            color: isMyMessage ? mainColor : Colors.grey[300],
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -287,22 +292,36 @@ class _MessagingScreenState extends State<MessagingScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: MyTextField(
                     controller: _messageController,
-                    decoration: InputDecoration(labelText: 'Send a message'),
-                    enabled:
-                        !disableInput, // Enable TextField based on condition
+                    hintText: "Mesajınızı Giriniz",
+                    obscureText: false,
+                    keyboardType: TextInputType.multiline,
+                    enabled: !disableInput,
+                    onTap: () {
+                      print("CHANGE");
+                    },
                   ),
                 ),
+                // TextField(
+                //   controller: _messageController,
+                //   decoration: InputDecoration(labelText: 'Send a message'),
+                //   enabled:
+                //       !disableInput, // Enable TextField based on condition
+                // ),
+                // ),
                 IconButton(
                   icon: Icon(Icons.send),
+                  color: mainColor,
                   onPressed: disableInput
                       ? null // Disable IconButton based on condition
-                      : () async {
-                          if (_messageController.text.isNotEmpty) {
-                            _handleSendMessage();
-                          }
-                        },
+                      : !textFieldDisable
+                          ? () async {
+                              if (_messageController.text.isNotEmpty) {
+                                _handleSendMessage();
+                              }
+                            }
+                          : null,
                 ),
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
 import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
+import 'package:diyetisyenapp/screens/auth/dietcian_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -103,7 +104,8 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new UserInformationScreen()),
+                  type: PageTransitionType.fade,
+                  child: new UserInformationScreen()),
             );
             break;
           case 1:
@@ -112,7 +114,7 @@ class _AuthScreenState extends State<AuthScreen> {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new DieticianHomeScreen()),
+                  child: new DietcianInformationScreen()),
             );
             break;
           case 2:
@@ -158,13 +160,12 @@ class _AuthScreenState extends State<AuthScreen> {
           password: password,
         );
 
-
         // Giriş başarılı, kullanıcıyı yönlendir veya gerekli işlemleri yap
         print("Giriş başarılı: ${userCredential.user?.email}");
-     
+
         int profileType = await FirebaseOperations().getProfileType();
 
-      // Profil tipine göre yönlendirme yap
+        // Profil tipine göre yönlendirme yap
         print("SİGN İN GELİYOR : $profileType");
         switch (profileType) {
           case 0:
@@ -196,8 +197,7 @@ class _AuthScreenState extends State<AuthScreen> {
             print("Unknown profile type: $profileType");
             showErrorSnackBar(context, "Tanımsız kullanıcı tipi: $profileType");
             break;
-        }     
-
+        }
       } catch (e) {
         // Giriş başarısız, hata mesajını göster
         print("Giriş başarısız: $e");
@@ -215,7 +215,8 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        PageTransition(type: PageTransitionType.fade, child: UserInformationScreen()),
+        PageTransition(
+            type: PageTransitionType.fade, child: UserInformationScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -283,7 +284,7 @@ class _AuthScreenState extends State<AuthScreen> {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor:  mainColor,
+          backgroundColor: mainColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -325,8 +326,9 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child: Text("DiyetisyenApp",
-              style:fontStyle(25,mainColor,FontWeight.bold))
+              Container(
+                  child: Text("DiyetisyenApp",
+                      style: fontStyle(25, mainColor, FontWeight.bold))
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,
@@ -380,32 +382,34 @@ class _AuthScreenState extends State<AuthScreen> {
               const SizedBox(
                 height: 24,
               ),
-              const Row(
-                children: [
-                  Expanded(
-                    child: Divider(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("veya"),
-                  ),
-                  Expanded(
-                    child: Divider(),
-                  ),
-                ],
-              ),
+              if (_loginPageSelectionType != 2)
+                const Row(
+                  children: [
+                    Expanded(
+                      child: Divider(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text("veya"),
+                    ),
+                    Expanded(
+                      child: Divider(),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                      child: SignInButton(
-                    buttonType: ButtonType.google,
-                    buttonSize: ButtonSize.medium,
-                    onPressed: _signInWithGoogle,
-                    btnText: "Google ile Giriş Yap",
-                  )),
-                ],
-              ),
+              if (_loginPageSelectionType != 1 && _loginPageSelectionType != 2)
+                Row(
+                  children: [
+                    Expanded(
+                        child: SignInButton(
+                      buttonType: ButtonType.google,
+                      buttonSize: ButtonSize.medium,
+                      onPressed: _signInWithGoogle,
+                      btnText: "Google ile Giriş Yap",
+                    )),
+                  ],
+                ),
               const SizedBox(height: 16),
               if (_loginPageSelectionType != 2)
                 Row(
@@ -442,8 +446,9 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child:  Text("DiyetisyenApp",
-              style:fontStyle(25,mainColor,FontWeight.bold))
+              Container(
+                  child: Text("DiyetisyenApp",
+                      style: fontStyle(25, mainColor, FontWeight.bold))
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,
@@ -549,17 +554,18 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                      child: SignInButton(
-                    buttonType: ButtonType.google,
-                    buttonSize: ButtonSize.medium,
-                    onPressed: _signInWithGoogle,
-                    btnText: "Google ile Giriş Yap",
-                  )),
-                ],
-              ),
+              if (_loginPageSelectionType != 1)
+                Row(
+                  children: [
+                    Expanded(
+                        child: SignInButton(
+                      buttonType: ButtonType.google,
+                      buttonSize: ButtonSize.medium,
+                      onPressed: _signInWithGoogle,
+                      btnText: "Google ile Giriş Yap",
+                    )),
+                  ],
+                ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

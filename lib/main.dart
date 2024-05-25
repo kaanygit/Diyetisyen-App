@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
+import 'package:diyetisyenapp/screens/auth/dietcian_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/widget/not_found_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -162,15 +163,48 @@ class MyApp extends StatelessWidget {
                       print("Fetched profile type: $profileType");
                       switch (profileType) {
                         case 0:
-                        
                           print("Navigating to HomeScreen for profile type 0");
-                          return HomeScreen();
+                          return FutureBuilder<bool>(
+                            future: FirebaseOperations().getNewUser(),
+                            builder:
+                                (context, AsyncSnapshot<bool> newUserSnapshot) {
+                              if (newUserSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                EasyLoading.show(status: 'Loading...');
+                                return Container();
+                              } else {
+                                EasyLoading.dismiss();
+                                if (newUserSnapshot.hasData &&
+                                    newUserSnapshot.data == true) {
+                                  return UserInformationScreen();
+                                } else {
+                                  return HomeScreen();
+                                }
+                              }
+                            },
+                          );
                         case 1:
                           print(
-                              "Navigating to MessagingScreen for profile type 1");
-
-                          return DieticianHomeScreen();
-                        
+                              "Navigating to DieticianHomeScreen for profile type 1");
+                          return FutureBuilder<bool>(
+                            future: FirebaseOperations().getNewDietcian(),
+                            builder: (context,
+                                AsyncSnapshot<bool> newDieticianSnapshot) {
+                              if (newDieticianSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                EasyLoading.show(status: 'Loading...');
+                                return Container();
+                              } else {
+                                EasyLoading.dismiss();
+                                if (newDieticianSnapshot.hasData &&
+                                    newDieticianSnapshot.data == true) {
+                                  return DietcianInformationScreen();
+                                } else {
+                                  return DieticianHomeScreen();
+                                }
+                              }
+                            },
+                          );
                         case 2:
                           print(
                               "Navigating to AdminHomeScreen for profile type 2");

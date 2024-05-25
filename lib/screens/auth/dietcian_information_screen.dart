@@ -1,46 +1,52 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
-import 'package:diyetisyenapp/screens/user/home.dart';
+import 'package:diyetisyenapp/screens/dietician/dietcian_profile_screen.dart';
+import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-
 import 'package:page_transition/page_transition.dart';
-import 'dart:async';
 
-class UserInformationScreen extends StatelessWidget {
+class DietcianInformationScreen extends StatelessWidget {
+  const DietcianInformationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserInformationForm(),
+      home: DietcianInformationForm(),
     );
   }
 }
 
-class UserInformationForm extends StatefulWidget {
+class DietcianInformationForm extends StatefulWidget {
+  const DietcianInformationForm({super.key});
+
   @override
-  _UserInformationFormState createState() => _UserInformationFormState();
+  State<DietcianInformationForm> createState() =>
+      _DietcianInformationFormState();
 }
 
-class _UserInformationFormState extends State<UserInformationForm> {
+class _DietcianInformationFormState extends State<DietcianInformationForm> {
   final PageController _pageController = PageController();
-  final Map<String, dynamic> _userData = {
+  final Map<String, dynamic> _dietcianData = {
+    'gender': null,
     'profilePhoto': null,
     'age': null,
-    'weight': null,
-    'height': null,
-    'targetWeight': null,
-    'alergy_food': null,
-    'unliked_food': null,
-    'diet_program_choise': null,
-    'gender': null,
-    'new_user': false
+    'title': null,
+    'expertise': null,
+    'experience': null,
+    'welcome_message': null,
+    'why_dietcian': null,
+    'new_dietcian': false,
+    'dietcian_confirm': false
   };
 
   File? _image;
@@ -93,7 +99,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
         uploadTask.then((res) {
           res.ref.getDownloadURL().then((url) {
             setState(() {
-              _userData['profilePhoto'] =
+              _dietcianData['profilePhoto'] =
                   url; // Resmin download URL'sini kullan
               _checkButtonStatus();
             });
@@ -108,31 +114,28 @@ class _UserInformationFormState extends State<UserInformationForm> {
 
     switch (_currentPage) {
       case 1:
-        isCurrentPageValid = _userData['gender'] != null;
+        isCurrentPageValid = _dietcianData['gender'] != null;
         break;
       case 2:
-        isCurrentPageValid = _userData['profilePhoto'] != null;
+        isCurrentPageValid = _dietcianData['profilePhoto'] != null;
         break;
       case 3:
-        isCurrentPageValid = _userData['age'] != null;
+        isCurrentPageValid = _dietcianData['age'] != null;
         break;
       case 4:
-        isCurrentPageValid = _userData['weight'] != null;
+        isCurrentPageValid = _dietcianData['title'] != null;
         break;
       case 5:
-        isCurrentPageValid = _userData['height'] != null;
+        isCurrentPageValid = _dietcianData['expertise'] != null;
         break;
       case 6:
-        isCurrentPageValid = _userData['targetWeight'] != null;
+        isCurrentPageValid = _dietcianData['experience'] != null;
         break;
       case 7:
-        isCurrentPageValid = _userData['alergy_food'] != null;
+        isCurrentPageValid = _dietcianData['welcome_message'] != null;
         break;
       case 8:
-        isCurrentPageValid = _userData['unliked_food'] != null;
-        break;
-      case 9:
-        isCurrentPageValid = _userData['diet_program_choise'] != null;
+        isCurrentPageValid = _dietcianData['why_dietcian'] != null;
         break;
       default:
         isCurrentPageValid = true;
@@ -147,10 +150,11 @@ class _UserInformationFormState extends State<UserInformationForm> {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser?.uid)
-        .update(_userData);
+        .update(_dietcianData);
     Navigator.pushReplacement(
       context,
-      PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+      PageTransition(
+          type: PageTransitionType.fade, child: DieticianHomeScreen()),
     );
     showSuccessSnackBar(context,
         "Verileriniz başarılı bir şekilde kaydedildi. Aramıza hoşgeldiniz :)");
@@ -167,7 +171,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           });
           _checkButtonStatus();
         },
-        itemCount: 10, // Total number of pages is 10
+        itemCount: 9, // Total number of pages is 10
         itemBuilder: (context, index) {
           switch (index) {
             case 0:
@@ -179,17 +183,16 @@ class _UserInformationFormState extends State<UserInformationForm> {
             case 3:
               return _buildAgePage();
             case 4:
-              return _buildWeightPage();
+              return _buildTitlePage();
             case 5:
-              return _buildHeightPage();
+              return _buildExpertisePage();
             case 6:
-              return _buildTargetWeightPage();
+              return _buildExperiencePage();
             case 7:
-              return _buildAlergyFoodsPage();
+              return _buildWelcomeMessagePage();
             case 8:
-              return _buildDislikedFoodsPage();
-            case 9:
-              return _buildDietPlanPreferencePage();
+              return _buildWhyDietcianPage();
+
             default:
               return Container();
           }
@@ -202,7 +205,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           stream: _isButtonEnabledStreamController.stream,
           builder: (context, snapshot) {
             bool isButtonEnabled = snapshot.data ?? false;
-            return _currentPage == 9
+            return _currentPage == 8
                 ? MyButton(
                     onPressed: isButtonEnabled ? _saveUserData : () {},
                     buttonTextColor: Colors.white,
@@ -292,10 +295,10 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     child: RadioListTile(
                       title: Text("Kadın"),
                       value: "kadın",
-                      groupValue: _userData['gender'],
+                      groupValue: _dietcianData['gender'],
                       onChanged: (value) {
                         setState(() {
-                          _userData['gender'] = value;
+                          _dietcianData['gender'] = value;
                           _checkButtonStatus();
                         });
                       },
@@ -337,10 +340,10 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     child: RadioListTile(
                       title: Text("Erkek"),
                       value: "erkek",
-                      groupValue: _userData['gender'],
+                      groupValue: _dietcianData['gender'],
                       onChanged: (value) {
                         setState(() {
-                          _userData['gender'] = value;
+                          _dietcianData['gender'] = value;
                           _checkButtonStatus();
                         });
                       },
@@ -422,7 +425,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               enabled: true,
               onChanged: (value) {
                 setState(() {
-                  _userData['age'] = int.parse(value);
+                  _dietcianData['age'] = int.parse(value);
                   print("Yaş $value");
                   _checkButtonStatus();
                 });
@@ -434,7 +437,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
     );
   }
 
-  Widget _buildWeightPage() {
+  Widget _buildTitlePage() {
     return Center(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -442,7 +445,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Kaç Kilosunuz?",
+              "Lütfen Ünvanınızı Giriniz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             SizedBox(
@@ -450,13 +453,13 @@ class _UserInformationFormState extends State<UserInformationForm> {
             ),
             MyTextField(
               controller: weightController,
-              hintText: "Kilonuzu Giriniz",
+              hintText: "Ünvanınız ile Birlikte Tam Adınızı Giriniz",
               obscureText: false,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.multiline,
               enabled: true,
               onChanged: (value) {
                 setState(() {
-                  _userData['weight'] = int.parse(value);
+                  _dietcianData['title'] = value;
                   print("Kilo $value");
                   _checkButtonStatus();
                 });
@@ -468,7 +471,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
     );
   }
 
-  Widget _buildHeightPage() {
+  Widget _buildExpertisePage() {
     return Center(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -476,7 +479,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Boyunuz Kaç cm?",
+              "Uzmanlık Alanınız?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             SizedBox(
@@ -484,13 +487,13 @@ class _UserInformationFormState extends State<UserInformationForm> {
             ),
             MyTextField(
               controller: heightController,
-              hintText: "Boyunuzu Giriniz",
+              hintText: "Uzmanlık Alanınızı Giriniz",
               obscureText: false,
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.multiline,
               enabled: true,
               onChanged: (value) {
                 setState(() {
-                  _userData['height'] = int.parse(value);
+                  _dietcianData['expertise'] = value;
                   print("Kilo $value");
                   _checkButtonStatus();
                 });
@@ -502,7 +505,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
     );
   }
 
-  Widget _buildTargetWeightPage() {
+  Widget _buildExperiencePage() {
     return Center(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -510,7 +513,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Hedef Kilonuz Kaç kg?",
+              "Kaç yıllık deneyiminiz vardır?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             SizedBox(
@@ -518,13 +521,13 @@ class _UserInformationFormState extends State<UserInformationForm> {
             ),
             MyTextField(
               controller: targetWeightController,
-              hintText: "Hedef Kilonuzu Giriniz",
+              hintText: "Deneyiminizi Giriniz",
               obscureText: false,
               keyboardType: TextInputType.number,
               enabled: true,
               onChanged: (value) {
                 setState(() {
-                  _userData['targetWeight'] = int.parse(value);
+                  _dietcianData['experience'] = int.parse(value);
                   print("Kilo $value");
                   _checkButtonStatus();
                 });
@@ -536,7 +539,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
     );
   }
 
-  Widget _buildAlergyFoodsPage() {
+  Widget _buildWelcomeMessagePage() {
     return Center(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -544,7 +547,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Herhangi bir yiyeceğe alerjiniz varmı?",
+              "Kendinizi Tanıtınız",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             SizedBox(
@@ -552,13 +555,14 @@ class _UserInformationFormState extends State<UserInformationForm> {
             ),
             MyTextField(
               controller: alergyFoodController,
-              hintText: "Alerjiniz Olan Yiyecekleri  Giriniz",
+              hintText: "Kendinizi Tanıtınız",
               obscureText: false,
               keyboardType: TextInputType.multiline,
               enabled: true,
+              maxLines: 10,
               onChanged: (value) {
                 setState(() {
-                  _userData['alergy_food'] = value;
+                  _dietcianData['welcome_message'] = value;
                   print("Kilo $value");
                   _checkButtonStatus();
                 });
@@ -570,7 +574,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
     );
   }
 
-  Widget _buildDislikedFoodsPage() {
+  Widget _buildWhyDietcianPage() {
     return Center(
       child: Container(
         padding: EdgeInsets.all(16),
@@ -578,7 +582,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Hangi yemekleri sevmiyorsunuz?",
+              "Neden Bizimle Birlikte Çalışmak İstiyorsunuz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             SizedBox(
@@ -586,57 +590,19 @@ class _UserInformationFormState extends State<UserInformationForm> {
             ),
             MyTextField(
               controller: unlikedFoodController,
-              hintText: "Beğenmediğiniz yiyecekleri giriniz",
+              hintText: "Sebebinizi Giriniz",
               obscureText: false,
               keyboardType: TextInputType.multiline,
               enabled: true,
+              maxLines: 10,
               onChanged: (value) {
                 setState(() {
-                  _userData['unliked_food'] = value;
+                  _dietcianData['why_dietcian'] = value;
                   print("Kilo $value");
                   _checkButtonStatus();
                 });
               },
             )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDietPlanPreferencePage() {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Diyet planınızı nasıl ayarlamak istersiniz?",
-              style: fontStyle(20, mainColor, FontWeight.bold),
-            ),
-            RadioListTile(
-              title: Text("Otomatik önerilen"),
-              value: "otomatik",
-              groupValue: _userData['diet_program_choise'],
-              onChanged: (value) {
-                setState(() {
-                  _userData['diet_program_choise'] = value;
-                  _checkButtonStatus();
-                });
-              },
-            ),
-            RadioListTile(
-              title: Text("Diyetisyenin önerisi"),
-              value: "diyetisyen",
-              groupValue: _userData['diet_program_choise'],
-              onChanged: (value) {
-                setState(() {
-                  _userData['diet_program_choise'] = value;
-                  _checkButtonStatus();
-                });
-              },
-            ),
           ],
         ),
       ),

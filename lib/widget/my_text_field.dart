@@ -13,6 +13,7 @@ class MyTextField extends StatelessWidget {
   final String? errorMsg;
   final ValueChanged<String>? onChanged; // onChanged eklendi
   final bool enabled;
+  final int? maxLines;
 
   const MyTextField({
     Key? key, // key parametresi ekledim
@@ -28,6 +29,7 @@ class MyTextField extends StatelessWidget {
     this.errorMsg,
     this.onChanged,
     required this.enabled,
+    this.maxLines,
   }) : super(key: key); // key parametresi super'a iletiliyor
 
   @override
@@ -39,6 +41,7 @@ class MyTextField extends StatelessWidget {
       keyboardType: keyboardType,
       focusNode: focusNode,
       onTap: onTap,
+      maxLines: maxLines,
       textInputAction: TextInputAction.next,
       onChanged: onChanged, // onChanged burada doğrudan atanıyor
       enabled: enabled,
