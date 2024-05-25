@@ -162,6 +162,7 @@ class MyApp extends StatelessWidget {
                       print("Fetched profile type: $profileType");
                       switch (profileType) {
                         case 0:
+                        
                           print("Navigating to HomeScreen for profile type 0");
                           return HomeScreen();
                         case 1:
@@ -169,9 +170,7 @@ class MyApp extends StatelessWidget {
                               "Navigating to MessagingScreen for profile type 1");
 
                           return DieticianHomeScreen();
-                        // return MessagingScreen(
-                        //   receiverId: '2AoUwMmf3qMbUDUfMHQI5fyc8013',
-                        // );
+                        
                         case 2:
                           print(
                               "Navigating to AdminHomeScreen for profile type 2");

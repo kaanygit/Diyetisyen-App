@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sign_button/sign_button.dart';
+import 'package:diyetisyenapp/constants/fonts.dart';
 
 class AuthScreenState extends StatelessWidget {
   const AuthScreenState({
@@ -214,7 +215,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (result) {
       Navigator.push(
         context,
-        PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+        PageTransition(type: PageTransitionType.fade, child: UserInformationScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -238,7 +239,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/avatar.jpg"),
+          image: AssetImage("assets/images/food_background.jpg"),
           fit: BoxFit.cover,
         ),
       ),
@@ -254,7 +255,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 const Spacer(),
                 Text(
                   "DiyetisyenApp",
-                  style: fontStyle(50, mainColor, FontWeight.bold),
+                  style: fontStyle(50, Colors.white, FontWeight.bold),
                 ),
                 const Spacer(),
               ],
@@ -282,7 +283,7 @@ class _AuthScreenState extends State<AuthScreen> {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF007AFF),
+          backgroundColor:  mainColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -324,7 +325,8 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child: const Text("Resim")
+              Container(child: Text("DiyetisyenApp",
+              style:fontStyle(25,mainColor,FontWeight.bold))
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,
@@ -440,7 +442,8 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(child: const Text("resim")
+              Container(child:  Text("DiyetisyenApp",
+              style:fontStyle(25,mainColor,FontWeight.bold))
                   //  Image.asset(
                   //   "assets/images/icon.png",
                   //   width: 250,

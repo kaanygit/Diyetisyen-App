@@ -3,12 +3,9 @@
 ### Kullanici
 - water tasarımına su bardağı ekle güzel olsun
 - kullanıcı giriş yaptığında sol üstte geri gelme simgesini kaldır
-- kullanıcının resim yükleyip yüklemeyeceğini sor
-- yaşını
-- kaç kilo olduğunu boyu kaç olduğunu
-- ne kadar kilo vermek istediğini hedef kilosunu sor
-- hangi yemekleri sevdiğini
-- hangi yemekleri sevmediğini
+- kullanıcı information doldururken butona basmasa dahi sağa sola kaydırıp geçebiliyor ben bunu istemiyorum bunun önüne geç
+- kullanıcı ilk kez üye olduğunda information ekranına yönlendir yani maindart düzenle
+- kullanıcıdan aldığın bilgileri sayfaya yerleştir profil fotosu falan profil client profil görüntülemeyi yap
 
 ### Diyetisyen
 
@@ -17,7 +14,7 @@
 - diyetisyen olmak isteyen kişi bilgilerini girme ekranını ayarla
 - diyetisyene admine mesaj atma ekle
 - diyetisyenin yemekleri görürken ki ekranını güncelle
-
+- diyetisyen bilgilendirme ilk kez üye olduğunda ona geçsin ki oda bilgilerini doldursun istek atsın admine 
 
 ### Admin
 - adminin diyet listelerini görmeyi ekle düzenleme ekle
