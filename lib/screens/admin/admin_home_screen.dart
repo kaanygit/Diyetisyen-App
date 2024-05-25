@@ -1,3 +1,5 @@
+import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +8,7 @@ class AdminHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: Center(
           child: Column(
@@ -14,6 +16,13 @@ class AdminHomeScreen extends StatelessWidget {
             children: [
               Text("Admin Sayfası"),
               MyButton(
+                onPressed: () {
+                  FirebaseOperations().signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AuthScreen()),
+                  );
+                },
                 text: "Sign Out",
                 buttonColor: Colors.black,
                 buttonTextColor: Colors.blue,

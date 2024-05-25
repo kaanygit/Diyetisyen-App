@@ -1,3 +1,5 @@
+import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,6 +56,13 @@ class DieticianHomeScreen extends StatelessWidget {
               ),
             ),
             MyButton(
+              onPressed: () {
+                FirebaseOperations().signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AuthScreen()),
+                );
+              },
               text: "Sign Out",
               buttonColor: Colors.black,
               buttonTextColor: Colors.blue,

@@ -1,7 +1,5 @@
-import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
-import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 
 class MyButton extends StatelessWidget {
   final String text;
@@ -9,28 +7,24 @@ class MyButton extends StatelessWidget {
   final Color buttonTextColor;
   final double buttonTextSize;
   final FontWeight buttonTextWeight;
+  final VoidCallback onPressed; // onPressed parametresini ekledik
 
   const MyButton({
-    super.key,
+    Key? key,
     required this.text,
     required this.buttonColor,
     required this.buttonTextColor,
     required this.buttonTextSize,
     required this.buttonTextWeight,
-  });
+    required this.onPressed, // onPressed'i constructor'a ekledik
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
-          FirebaseOperations().signOut();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AuthScreen()),
-          );
-        },
+        onPressed: onPressed, // onPressed'i burada kullanıyoruz
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           padding: const EdgeInsets.symmetric(vertical: 16.0),

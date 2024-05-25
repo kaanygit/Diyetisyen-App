@@ -11,23 +11,24 @@ class MyTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final FocusNode? focusNode;
   final String? errorMsg;
-  final String? Function(String?)? onChanged;
+  final ValueChanged<String>? onChanged; // onChanged eklendi
   final bool enabled;
 
-  const MyTextField(
-      {super.key,
-      required this.controller,
-      required this.hintText,
-      required this.obscureText,
-      required this.keyboardType,
-      this.suffixIcon,
-      this.onTap,
-      this.prefixIcon,
-      this.validator,
-      this.focusNode,
-      this.errorMsg,
-      this.onChanged,
-      required this.enabled});
+  const MyTextField({
+    Key? key, // key parametresi ekledim
+    required this.controller,
+    required this.hintText,
+    required this.obscureText,
+    required this.keyboardType,
+    this.suffixIcon,
+    this.onTap,
+    this.prefixIcon,
+    this.validator,
+    this.focusNode,
+    this.errorMsg,
+    this.onChanged,
+    required this.enabled,
+  }) : super(key: key); // key parametresi super'a iletiliyor
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class MyTextField extends StatelessWidget {
       focusNode: focusNode,
       onTap: onTap,
       textInputAction: TextInputAction.next,
-      onChanged: onChanged,
+      onChanged: onChanged, // onChanged burada doğrudan atanıyor
       enabled: enabled,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
