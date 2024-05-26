@@ -420,7 +420,7 @@ class ProfileScreen extends StatelessWidget {
 
           String userName = userData['displayName'] ?? 'Kullanıcı Adı Yok';
           String userEmail = userData['email'] ?? 'E-posta Yok';
-          String userAge = userData['age'] ?? 'Yaş Bilgisi Yok';
+          int userAge = userData['age'] ?? 0;
           String userPhoto = userData['profilePhoto'] ?? "ProfilFoto";
 
           return _buildProfileContent(
@@ -433,7 +433,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileContent(
     String userName,
     String userEmail,
-    String userAge,
+    int userAge,
     String userPhoto,
     BuildContext context,
   ) {
@@ -524,7 +524,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileInfoRow(
     BuildContext context,
     String title,
-    String value,
+    dynamic value,
   ) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
@@ -535,7 +535,7 @@ class ProfileScreen extends StatelessWidget {
           Text(title + ":",
               style: fontStyle(15, Colors.black, FontWeight.bold)),
           Text(
-            value,
+            value.toString(),
             style: fontStyle(15, Colors.black, FontWeight.normal),
           ),
         ],

@@ -90,22 +90,45 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        // Resmi Firestore'a yükle ve download URL'sini al
-        Reference ref = FirebaseStorage.instance
-            .ref()
-            .child("profile_photos")
-            .child(_auth.currentUser!.uid);
-        UploadTask uploadTask = ref.putFile(File(pickedFile.path));
-        uploadTask.then((res) {
-          res.ref.getDownloadURL().then((url) {
-            setState(() {
-              _dietcianData['profilePhoto'] =
-                  url; // Resmin download URL'sini kullan
-              _checkButtonStatus();
-            });
-          });
-        });
       });
+
+      try {
+        // Resmi Firestore'a yükle ve download URL'sini al
+        // Reference ref = FirebaseStorage.instance
+        //     .ref()
+        //     .child("profile_photos")
+        //     .child(_auth.currentUser!.uid);
+
+        // UploadTask uploadTask = ref.putFile(File(pickedFile.path));
+        // TaskSnapshot snapshot = await uploadTask;
+        // print(snapshot);
+        // if (snapshot.state == TaskState.success) {
+        //   final url = await snapshot.ref.getDownloadURL();
+        //   setState(() {
+        //     _dietcianData['profilePhoto'] = url;
+        //     print("Resim yüklendi: $url");
+        //     _checkButtonStatus();
+        //   });
+        // } else {
+        //   print("Resim yükleme başarısız oldu");
+        // }
+
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        Reference storageReference =
+            FirebaseStorage.instance.ref().child('images/$fileName');
+        UploadTask uploadTask = storageReference.putFile(File(pickedFile.path));
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+        String imageUrl = await taskSnapshot.ref.getDownloadURL();
+
+        print('Image uploaded successfully!');
+        setState(() {
+          _dietcianData['profilePhoto'] = imageUrl;
+          print("Resim yüklendi: $imageUrl");
+          _checkButtonStatus();
+        });
+      } catch (e) {
+        print("Resim yükleme hatası: $e");
+      }
     }
   }
 
