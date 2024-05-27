@@ -1,8 +1,9 @@
+import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ClientProfileScreen extends StatefulWidget {
-  final dynamic uid;
+  final String uid;
   const ClientProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
@@ -12,8 +13,9 @@ class ClientProfileScreen extends StatefulWidget {
 class _ClientProfileScreenState extends State<ClientProfileScreen> {
   String name = "Bilgi Bulunamadı";
   int age = 0;
-  double height = 0.0;
-  double weight = 0.0;
+  int height = 0;
+  int weight = 0;
+  String profilePhoto = "";
   List<String> likedFoods = [];
   List<String> dislikedFoods = [];
   List<Map<String, dynamic>> dietOptions = [];
@@ -22,23 +24,28 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch user data using widget.uid and update state variables
     fetchData(widget.uid);
-    // Fetch diet plans from Firestore
     fetchDietPlans();
   }
 
-  void fetchData(dynamic uid) {
-    // Simulated fetch data function (replace with actual fetching logic)
-    // For now, setting example values
-    setState(() {
-      name = "John Doe";
-      age = 35;
-      height = 180.0;
-      weight = 75.0;
-      likedFoods = ["Salmon", "Avocado"];
-      dislikedFoods = ["Ice cream", "Burger"];
-    });
+  Future<void> fetchData(String uid) async {
+    try {
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        setState(() {
+          name = userDoc['displayName'] ?? 'Bilgi Bulunamadı';
+          age = userDoc['age'] ?? 0;
+          height = userDoc['height'] ?? 0.0;
+          weight = userDoc['weight'] ?? 0.0;
+          profilePhoto = userDoc['profilePhoto'] ?? '';
+          likedFoods = List<String>.from(userDoc['likedFoods'] ?? []);
+          dislikedFoods = List<String>.from(userDoc['dislikedFoods'] ?? []);
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   Future<void> fetchDietPlans() async {
@@ -57,10 +64,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
 
   Future<void> addToDietProgram() async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      CollectionReference users = firestore.collection('users');
-
-      await users
+      await FirebaseFirestore.instance
+          .collection('users')
           .doc(widget.uid)
           .collection('dietProgram')
           .doc('weeklyProgram')
@@ -77,6 +82,42 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Diyet programı kaydedilirken hata oluştu."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> removeClient() async {
+    try {
+      String dieticianId =
+          'dietician_id_placeholder'; // Replace with actual dietician ID
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Remove client UID from dietician-danisanlar collection
+      await firestore
+          .collection('dietician-danisanlar')
+          .doc(dieticianId)
+          .collection('clients')
+          .doc(widget.uid)
+          .delete();
+
+      // Remove dietician UID from dietician-person collection
+      await firestore.collection('dietician-person').doc(widget.uid).delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Kullanıcı başarıyla çıkarıldı."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.of(context).pop(); // Navigate back to the previous screen
+    } catch (e) {
+      print("Error removing client: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Kullanıcı çıkarılırken hata oluştu."),
           duration: Duration(seconds: 2),
         ),
       );
@@ -184,34 +225,48 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     );
   }
 
+  void showRemoveClientDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Kullanıcıyı Çıkarma Onayı"),
+          content: Text("Bu kullanıcıyı çıkarmak istediğinize emin misiniz?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Vazgeç"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Evet, Çıkar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                removeClient();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage("assets/images/avatar.jpg"),
-            ),
-            Container(
-              child: Text(
-                "Profil", // Assuming this is the client's name or a chat identifier
-                style: TextStyle(fontSize: 25, color: Colors.black),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.chat,
-                  color:
-                      Colors.blue), // Assuming mainColor is defined somewhere
-              onPressed: () {
-                // Chat icon pressed action
-              },
-            ),
-          ],
-        ),
+        title:
+            Text("Profil", style: TextStyle(fontSize: 25, color: Colors.black)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.chat, color: Colors.blue),
+            onPressed: () {
+              // Chat icon pressed action
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -219,6 +274,15 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: profilePhoto.isEmpty
+                    ? AssetImage('assets/images/default_avatar.jpg')
+                    : NetworkImage(profilePhoto) as ImageProvider,
+              ),
+            ),
+            SizedBox(height: 20),
             Text(
               "Profil Bilgileri",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -273,6 +337,13 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                   },
                 );
               }),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => print("hello"),
+              // showRemoveClientDialog,
+              child: Text("Kullanıcıyı Çıkar"),
+              style: ElevatedButton.styleFrom(backgroundColor: mainColor),
             ),
           ],
         ),

@@ -111,13 +111,13 @@ class _DietitiansRequestScreenState extends State<DietitiansRequestScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            diyetisyen['name'] ?? "Diyetisyen Adı",
+                            diyetisyen['displayName'] ?? "Diyetisyen Adı",
                             style: fontStyle(15, Colors.black, FontWeight.bold),
                           ),
                           Text(
-                            diyetisyen['bio'] ?? "Biyografi yok",
+                            diyetisyen['uid'] ?? "Biyografi yok",
                             style:
-                                fontStyle(15, Colors.grey, FontWeight.normal),
+                                fontStyle(12, Colors.grey, FontWeight.normal),
                           ),
                         ],
                       ),

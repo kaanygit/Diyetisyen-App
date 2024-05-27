@@ -1,6 +1,9 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
+import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
+import 'package:diyetisyenapp/widget/flash_message.dart';
+import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -58,13 +61,9 @@ class DieticianHomeScreen extends StatelessWidget {
                       buttonTextColor: Colors.white,
                       buttonTextSize: 25,
                       buttonTextWeight: FontWeight.normal,
-                      onPressed: () {
-                        FirebaseOperations().signOut();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AuthScreen()),
-                        );
+                      onPressed: () async {
+                        await Future.delayed(Duration(seconds: 2));
+                        FirebaseOperations().signOut(context);
                       })
                 ],
               )),
@@ -217,8 +216,7 @@ class ClientChats extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 20,
-                                  backgroundImage: userPhoto == "" ||
-                                          userPhoto == "null"
+                                  backgroundImage: userPhoto.isEmpty
                                       ? AssetImage("assets/images/gemini.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,
@@ -424,7 +422,7 @@ class ProfileScreen extends StatelessWidget {
           String userPhoto = userData['profilePhoto'] ?? "ProfilFoto";
 
           return _buildProfileContent(
-              userName, userEmail, userAge, userPhoto, context);
+              userName, userEmail, userAge, userPhoto, context, currentUserUid);
         },
       ),
     );
@@ -436,6 +434,7 @@ class ProfileScreen extends StatelessWidget {
     int userAge,
     String userPhoto,
     BuildContext context,
+    String userUid,
   ) {
     return SingleChildScrollView(
       child: Padding(
@@ -460,8 +459,8 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildProfileInfoRow(context, "Email", userEmail),
-                  _buildProfileInfoRow(context, "Full Name", userName),
-                  _buildProfileInfoRow(context, "Age", userAge),
+                  _buildProfileInfoRow(context, "Adınız", userName),
+                  _buildProfileInfoRow(context, "Yaş", userAge),
                 ],
               ),
             ),
@@ -476,11 +475,8 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildProfileButton(context, "Notification"),
-                  _buildProfileButton(context, "Apply promo code"),
-                  _buildProfileButton(context, "Join to the community"),
+                  _buildProfileButton(context, "Profil Düzenle"),
                   _buildProfileButton(context, "Share with friends"),
-                  _buildProfileButton(context, "Contact support"),
                   _buildProfileButton(context, "Privacy policy"),
                   _buildProfileButton(context, "Terms & Conditions"),
                   _buildProfileButton(context, "Language"),
@@ -496,14 +492,9 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   MyButton(
-                    onPressed: () {
-                      FirebaseOperations().signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AuthScreen(),
-                        ),
-                      );
+                    onPressed: () async {
+                      await Future.delayed(Duration(seconds: 2));
+                      FirebaseOperations().signOut(context);
                     },
                     text: "Çıkış Yap",
                     buttonColor: mainColor,
@@ -543,18 +534,28 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileButton(
-    BuildContext context,
-    String text,
-  ) {
+  Widget _buildProfileButton(BuildContext context, String text) {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
       ),
       child: InkWell(
-        onTap: () {
-          print("Tapped on $text");
+        onTap: () async {
+          if (text == 'Çıkış Yap') {
+            await Future.delayed(Duration(seconds: 2));
+            FirebaseOperations().signOut(context);
+          } else if (text == 'Profil Düzenle') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ProfileEditScreen(currentUserUid: currentUserUid),
+              ),
+            );
+          } else {
+            print("Tapped on $text");
+          }
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -564,6 +565,163 @@ class ProfileScreen extends StatelessWidget {
               style: fontStyle(15, Colors.black, FontWeight.bold),
             ),
             Icon(Icons.arrow_right),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileEditScreen extends StatefulWidget {
+  final String currentUserUid;
+
+  const ProfileEditScreen({Key? key, required this.currentUserUid})
+      : super(key: key);
+
+  @override
+  _ProfileEditScreenState createState() => _ProfileEditScreenState();
+}
+
+class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  TextEditingController _displayNameController = TextEditingController();
+  TextEditingController _ageController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _profilePhotoController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _welcomeMessageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(widget.currentUserUid).get();
+      if (userDoc.exists) {
+        var userData = userDoc.data() as Map<String, dynamic>?;
+
+        if (userData != null) {
+          setState(() {
+            _displayNameController.text = userData['displayName'] ?? '';
+            _ageController.text = userData['age']?.toString() ?? '';
+            _titleController.text = userData['title'] ?? '';
+            _profilePhotoController.text = userData['profilePhoto'] ?? '';
+            _phoneNumberController.text = userData['phoneNumber'] ?? '';
+            _addressController.text = userData['address'] ?? '';
+            _welcomeMessageController.text = userData['welcomeMessage'] ?? '';
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      // Handle error
+    }
+  }
+
+  Future<void> updateProfile() async {
+    try {
+      await _firestore.collection('users').doc(widget.currentUserUid).update({
+        'displayName': _displayNameController.text,
+        'age': int.tryParse(_ageController.text) ?? 0,
+        'title': _titleController.text,
+        'profilePhoto': _profilePhotoController.text,
+        'phoneNumber': _phoneNumberController.text,
+        'address': _addressController.text,
+        'welcomeMessage': _welcomeMessageController.text,
+      });
+
+      showSuccessSnackBar(context, "Profil başarıyla güncellendi.");
+
+      // Optionally navigate back to the previous screen
+      Navigator.of(context).pop();
+    } catch (e) {
+      print('Error updating profile: $e');
+      showErrorSnackBar(
+          context, "Profil güncelleme sırasında bir hata oluştu.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profil Düzenle'),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MyTextField(
+              controller: _displayNameController,
+              hintText: 'Adınız',
+              obscureText: false,
+              keyboardType: TextInputType.text,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _ageController,
+              hintText: 'Yaşınız',
+              obscureText: false,
+              keyboardType: TextInputType.number,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _titleController,
+              hintText: 'Ünvanınız',
+              obscureText: false,
+              keyboardType: TextInputType.text,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _profilePhotoController,
+              hintText: 'Profil Fotoğrafı URL',
+              obscureText: false,
+              keyboardType: TextInputType.text,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _phoneNumberController,
+              hintText: 'Telefon Numaranız',
+              obscureText: false,
+              keyboardType: TextInputType.phone,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _addressController,
+              hintText: 'Adresiniz',
+              obscureText: false,
+              keyboardType: TextInputType.multiline,
+              maxLines: 3,
+              enabled: true,
+            ),
+            SizedBox(height: 10),
+            MyTextField(
+              controller: _welcomeMessageController,
+              hintText: 'Hoş Geldiniz Mesajı',
+              obscureText: false,
+              keyboardType: TextInputType.multiline,
+              maxLines: 8,
+              enabled: true,
+            ),
+            SizedBox(height: 20),
+            MyButton(
+                text: "Kaydet",
+                buttonColor: mainColor,
+                buttonTextColor: Colors.white,
+                buttonTextSize: 18,
+                buttonTextWeight: FontWeight.bold,
+                onPressed: updateProfile),
           ],
         ),
       ),

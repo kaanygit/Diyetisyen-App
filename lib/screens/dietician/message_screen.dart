@@ -29,6 +29,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
   bool disableInput = false;
   bool initialMessageSent = false;
   bool textFieldDisable = false;
+  late String userName = "Loading ... ";
 
   @override
   void initState() {
@@ -43,9 +44,19 @@ class _MessagingScreenState extends State<MessagingScreen> {
       print('Message received: ${message.notification?.body}');
       _handleMessage(message);
     });
-
+    fetchUserName();
     // Load messages when the screen initializes
     _loadMessages();
+  }
+
+  Future<void> fetchUserName() async {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.receiverId)
+        .get();
+    setState(() {
+      userName = userDoc['displayName'];
+    });
   }
 
   void _handleMessage(RemoteMessage message) {
@@ -215,12 +226,14 @@ class _MessagingScreenState extends State<MessagingScreen> {
                 .doc(_messagingService.auth.currentUser!.uid)
                 .get();
             String userType = userDoc['userType'];
-
             if (userType == "kullanici") {
+              String dieticianIds = _messagingService.auth.currentUser!.uid;
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DietcianProfileScreen()),
+                    builder: (context) =>
+                        DieticianProfileScreen(uid: dieticianIds)),
               );
             } else {
               Navigator.push(
@@ -231,7 +244,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
               );
             }
           },
-          child: Text('Kullanici Profil Tıkla'),
+          child: Text('${userName}'),
         ),
       ),
       body: Column(

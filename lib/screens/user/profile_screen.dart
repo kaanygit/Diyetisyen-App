@@ -1,18 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
+import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  User? currentUser;
+  DocumentSnapshot<Map<String, dynamic>>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot<Map<String, dynamic>> data = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        currentUser = user;
+        userData = data;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,9 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage("assets/images/avatar.jpg")),
             Container(
               child: const Text("Profil"),
             ),
@@ -35,161 +59,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Container(
-                child: const CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage("assets/images/avatar.jpg"),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.amberAccent,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                width: MediaQuery.of(context).size.width,
+      body: userData == null
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: const CircleAvatar(
+                        radius: 60,
+                        backgroundImage: AssetImage("assets/images/avatar.jpg"),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: mainColor3,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      width: MediaQuery.of(context).size.width,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("Email:"),
-                          // BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                          //   builder: (context, state) {
-                          //     return Text('${state.user?.email ?? 'N/A'}');
-                          //   },
-                          // ),
+                          buildProfileInfo(
+                              "Email", userData?.get('email') ?? 'N/A'),
+                          buildProfileInfo(
+                              "Ad", userData?.get('displayName') ?? 'N/A'),
+                          buildProfileInfo(
+                              "Yaş", userData?.get('age').toString() ?? 'N/A'),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 15),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: mainColor3,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(16),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Full Name:"),
-                          // BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                          //   builder: (context, state) {
-                          //     return Text('${'KAAN' ?? 'N/A'}');
-                          //   },
-                          // ),
+                          profileButtonsColumn("Share with friends"),
+                          profileButtonsColumn("Contact support"),
+                          profileButtonsColumn("Privacy policy"),
+                          profileButtonsColumn("Terms & Conditions"),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 15),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      width: MediaQuery.of(context).size.width,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Age:"),
-                          // BlocBuilder<AuthenticationBloc,
-                          //     AuthenticationState>(
-                          //   builder: (context, state) {
-                          //     return Text('${"5375019024" ?? 'N/A'}');
-                          //   },
-                          // ),
+                          MyButton(
+                            onPressed: () async {
+                              await Future.delayed(Duration(seconds: 2));
+                              FirebaseOperations().signOut(context);
+                            },
+                            text: "Çıkış Yap",
+                            buttonColor: mainColor,
+                            buttonTextColor: Colors.white,
+                            buttonTextSize: 15,
+                            buttonTextWeight: FontWeight.bold,
+                          ),
+                          SizedBox(height: 5),
+                          MyButton(
+                            text: "Profili Düzenle",
+                            buttonColor: Colors.yellow,
+                            buttonTextColor: Colors.black,
+                            buttonTextSize: 15,
+                            buttonTextWeight: FontWeight.bold,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfileScreen(
+                                      currentUserUid: currentUser?.uid ?? ''),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.amberAccent,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    profileButtonsColumn("Notification"),
-                    profileButtonsColumn("Apply promo ode"),
-                    profileButtonsColumn("Join to the community"),
-                    profileButtonsColumn("Share with friends"),
-                    profileButtonsColumn("Contact support"),
-                    profileButtonsColumn("Privacy policy"),
-                    profileButtonsColumn("Terms & Conditions"),
-                    profileButtonsColumn("Language"),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.amberAccent,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  children: [
-                    MyButton(
-                      onPressed: () {
-                        FirebaseOperations().signOut();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AuthScreen()),
-                        );
-                      },
-                      text: "Sign Out",
-                      buttonColor: Colors.black,
-                      buttonTextColor: Colors.blue,
-                      buttonTextSize: 15,
-                      buttonTextWeight: FontWeight.bold,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    MyButton(
-                      text: "Dark Mode",
-                      buttonColor: Colors.black,
-                      buttonTextColor: Colors.white,
-                      buttonTextSize: 15,
-                      buttonTextWeight: FontWeight.bold,
-                      onPressed: () {
-                        // Dark mode logic
-                        print("dark mode");
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+    );
+  }
+
+  Widget buildProfileInfo(String label, String value) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.85,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label),
+          Text(value),
+        ],
       ),
     );
   }
 
-  Container profileButtonsColumn(final String text) {
+  Container profileButtonsColumn(String text) {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))),
+        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+      ),
       child: InkWell(
         onTap: () {
           print("bastın");
@@ -201,12 +188,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(text),
-                const Icon(CupertinoIcons.arrow_right_square_fill)
+                const Icon(CupertinoIcons.arrow_right_square_fill),
               ],
             ),
-            const SizedBox(
-              height: 5,
-            )
+            const SizedBox(height: 5),
           ],
         ),
       ),

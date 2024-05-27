@@ -11,12 +11,13 @@ class MyTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final FocusNode? focusNode;
   final String? errorMsg;
-  final ValueChanged<String>? onChanged; // onChanged eklendi
+  final ValueChanged<String>? onChanged; // onChanged added
   final bool enabled;
   final int? maxLines;
 
+  // Constructor with named parameters and required annotation where necessary
   const MyTextField({
-    Key? key, // key parametresi ekledim
+    Key? key, // key parameter added
     required this.controller,
     required this.hintText,
     required this.obscureText,
@@ -30,7 +31,7 @@ class MyTextField extends StatelessWidget {
     this.onChanged,
     required this.enabled,
     this.maxLines,
-  }) : super(key: key); // key parametresi super'a iletiliyor
+  }) : super(key: key); // key parameter passed to super constructor
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class MyTextField extends StatelessWidget {
       onTap: onTap,
       maxLines: maxLines,
       textInputAction: TextInputAction.next,
-      onChanged: onChanged, // onChanged burada doğrudan atanıyor
+      onChanged: onChanged, // onChanged directly assigned here
       enabled: enabled,
       decoration: InputDecoration(
         suffixIcon: suffixIcon,

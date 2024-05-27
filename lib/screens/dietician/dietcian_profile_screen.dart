@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:diyetisyenapp/constants/fonts.dart'; // Assuming you have a fonts file for styling
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DietcianProfileScreen extends StatefulWidget {
-  const DietcianProfileScreen({Key? key}) : super(key: key);
+class DieticianProfileScreen extends StatefulWidget {
+  final String uid;
+  const DieticianProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
-  State<DietcianProfileScreen> createState() => _DietcianProfileScreenState();
+  State<DieticianProfileScreen> createState() => _DieticianProfileScreenState();
 }
 
-class _DietcianProfileScreenState extends State<DietcianProfileScreen> {
-  // Example dietician data (replace with actual data)
-  String name = "Dr. Ayşe Özdemir";
-  String specialization = "Klinik Diyetisyen";
-  String experience = "7 yıllık deneyim";
-  String welcomeMessage =
-      "Merhaba! Ben Dr. Ayşe Özdemir. Sağlıklı beslenme ve diyet konularında size yardımcı olmaktan mutluluk duyarım.";
+class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
+  String name = "Bilgi Bulunamadı";
+  String profilePhoto = "";
+  String experience = "Bilgi Bulunamadı";
+  String expertise = "Bilgi Bulunamadı";
+  int age = 0;
+  String educationLevel = "Bilgi Bulunamadı";
+  String title = "Bilgi Bulunamadı";
+  String welcomeMessage = "Bilgi Bulunamadı";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(widget.uid);
+  }
+
+  Future<void> fetchData(String uid) async {
+    try {
+      DocumentSnapshot dieticianDoc = await FirebaseFirestore.instance
+          .collection('dieticians')
+          .doc(uid)
+          .get();
+      if (dieticianDoc.exists) {
+        setState(() {
+          name = dieticianDoc['displayName'] ?? 'Bilgi Bulunamadı';
+          profilePhoto = dieticianDoc['profilePhoto'] ?? '';
+          experience = dieticianDoc['experience'] ?? 'Bilgi Bulunamadı';
+          expertise = dieticianDoc['expertise'] ?? 'Bilgi Bulunamadı';
+          age = dieticianDoc['age'] ?? 0;
+          educationLevel = dieticianDoc['educationLevel'] ?? 'Bilgi Bulunamadı';
+          title = dieticianDoc['title'] ?? 'Bilgi Bulunamadı';
+          welcomeMessage =
+              dieticianDoc['welcome_message'] ?? 'Bilgi Bulunamadı';
+        });
+      }
+    } catch (e) {
+      print('Error fetching dietician data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +57,24 @@ class _DietcianProfileScreenState extends State<DietcianProfileScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 20,
-              backgroundImage: AssetImage("assets/images/avatar.jpg"),
+              backgroundImage: profilePhoto.isEmpty
+                  ? AssetImage("assets/images/avatar.jpg")
+                  : NetworkImage(profilePhoto) as ImageProvider,
             ),
-            Container(
-              child: Text(
-                "Sohbet",
-                style: fontStyle(25, Colors.black, FontWeight.normal),
-              ),
+            Text(
+              "Sohbet",
+              style: TextStyle(fontSize: 25, color: Colors.black),
             ),
             Icon(
               Icons.chat,
-              color: mainColor,
-            )
+              color: Colors.blue, // Assuming mainColor is defined somewhere
+            ),
           ],
         ),
       ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -57,11 +91,23 @@ class _DietcianProfileScreenState extends State<DietcianProfileScreen> {
             ),
             ListTile(
               leading: Icon(Icons.badge),
-              title: Text("Uzmanlık Alanı: $specialization"),
+              title: Text("Uzmanlık Alanı: $expertise"),
+            ),
+            ListTile(
+              leading: Icon(Icons.school),
+              title: Text("Eğitim Seviyesi: $educationLevel"),
             ),
             ListTile(
               leading: Icon(Icons.work),
               title: Text("Deneyim: $experience"),
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text("Yaş: $age"),
+            ),
+            ListTile(
+              leading: Icon(Icons.title),
+              title: Text("Ünvan: $title"),
             ),
             SizedBox(height: 20),
             Text(

@@ -23,7 +23,12 @@ class _NotFoundState extends State<NotFound> {
   @override
   void initState() {
     // TODO: implement initState
-    FirebaseOperations().signOut();
+    signOut();
+  }
+
+  Future<void> signOut() async {
+    await Future.delayed(Duration(seconds: 2));
+    FirebaseOperations().signOut(context);
   }
 
   @override

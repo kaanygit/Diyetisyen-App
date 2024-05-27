@@ -1,4 +1,5 @@
 import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
+import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
 import 'package:diyetisyenapp/screens/auth/dietcian_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
@@ -68,9 +69,13 @@ class FirebaseOperations {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     try {
-      _auth.signOut();
+      await _auth.signOut();
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+        (Route<dynamic> route) => false,
+      );
     } catch (e) {
       print('Can not SignOut as :$e');
     }
@@ -353,6 +358,25 @@ class FirebaseOperations {
           "Profil Verisi Güncellendi"); //buradaki bilgileri güncelliycem sistemdekiyle
     } catch (e) {
       print("Profil Verisi Eklenirken bir hata oluştu : $e");
+    }
+  }
+
+  Future<DocumentSnapshot?> fetchUser(String uid) async {
+    try {
+      return await _firestore.collection('users').doc(uid).get();
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      throw e; // Throw an error or handle it as per your application's error handling strategy
+    }
+  }
+
+  Future<void> updateUserProfile(
+      String uid, Map<String, dynamic> updatedData) async {
+    try {
+      await _firestore.collection('users').doc(uid).update(updatedData);
+    } catch (e) {
+      print('Error updating user profile: $e');
+      throw e; // Throw an error or handle it as per your application's error handling strategy
     }
   }
 

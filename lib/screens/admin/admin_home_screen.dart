@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/screens/admin/dietcian_detail_confirm_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
@@ -112,7 +114,7 @@ class DieticiansScreen extends StatelessWidget {
             itemCount: dieticians.length,
             itemBuilder: (context, index) {
               var dietician = dieticians[index].data() as Map<String, dynamic>;
-              return _buildDieticianCard(dietician);
+              return _buildDieticianCard(dietician, context);
             },
           );
         },
@@ -120,52 +122,64 @@ class DieticiansScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDieticianCard(Map<String, dynamic> dietician) {
+  Widget _buildDieticianCard(
+      Map<String, dynamic> dietician, BuildContext context) {
     String dieticianName = dietician['displayName'] ?? 'Bilinmeyen';
     String dieticianEmail = dietician['email'] ?? 'E-posta yok';
     String dieticianPhoto = dietician['profilePhoto'] ?? '';
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: DieticianDetailScreen(request: dietician),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage: dieticianPhoto.isEmpty
-                ? AssetImage('assets/images/default_avatar.jpg')
-                : NetworkImage(dieticianPhoto) as ImageProvider,
-          ),
-          SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  dieticianName,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  dieticianEmail,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-              ],
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: dieticianPhoto.isEmpty
+                  ? AssetImage('assets/images/default_avatar.jpg')
+                  : NetworkImage(dieticianPhoto) as ImageProvider,
+            ),
+            SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dieticianName,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    dieticianEmail,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -218,7 +232,12 @@ class DieticianRequestsScreen extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        print("diyetisyen olmak istiyor");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DieticianDetailScreen(request: request),
+          ),
+        );
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -473,11 +492,8 @@ class ProfileScreen extends StatelessWidget {
           MyButton(
             onPressed: () async {
               try {
-                await _auth.signOut();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => AuthScreen()),
-                );
+                await Future.delayed(Duration(seconds: 2));
+                FirebaseOperations().signOut(context);
               } catch (e) {
                 print("Çıkış yaparken hata oluştu: $e");
               }
