@@ -218,6 +218,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: GestureDetector(
           onTap: () async {
             // Navigate to different screens based on user type
@@ -233,7 +234,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        DieticianProfileScreen(uid: dieticianIds)),
+                        DieticianProfileScreen(uid: widget.receiverId)),
               );
             } else {
               Navigator.push(
@@ -247,6 +248,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
           child: Text('${userName}'),
         ),
       ),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(

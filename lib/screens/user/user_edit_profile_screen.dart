@@ -140,21 +140,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildEditableTextField("Full Name", _displayNameController),
-                  _buildEditableTextField("Age", _ageController),
-                  _buildEditableTextField("Address", _addressController),
+                  _buildEditableTextField("Ad", _displayNameController),
+                  _buildEditableTextField("Yaş", _ageController),
+                  _buildEditableTextField("Adres", _addressController),
                   _buildEditableTextField(
-                      "Allergy Food", _allergyFoodController),
+                      "Alerji Yiyecekler", _allergyFoodController),
                   _buildEditableTextField(
-                      "Education Level", _educationLevelController),
-                  _buildEditableTextField("Height", _heightController),
+                      "Eğitim Seviyesi", _educationLevelController),
+                  _buildEditableTextField("Boy", _heightController),
                   _buildEditableTextField(
-                      "Phone Number", _phoneNumberController),
+                      "Telefon Numarası", _phoneNumberController),
                   _buildEditableTextField(
-                      "Profile Photo", _profilePhotoController),
+                      "Profil Fotoğrafı", _profilePhotoController),
                   _buildEditableTextField(
-                      "Target Weight", _targetWeightController),
-                  _buildEditableTextField("Weight", _weightController),
+                      "Hedef Kilo", _targetWeightController),
+                  _buildEditableTextField("Kilo", _weightController),
                   SizedBox(
                     height: 15,
                   ),

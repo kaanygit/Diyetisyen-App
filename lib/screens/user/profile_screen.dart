@@ -67,13 +67,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     Container(
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 60,
-                        backgroundImage: AssetImage("assets/images/avatar.jpg"),
+                        backgroundImage: userData?.get('profilePhoto') == "" ||
+                                userData?.get('profilePhoto') == null
+                            ? AssetImage("assets/images/avatar.jpg")
+                            : NetworkImage(userData?.get('profilePhoto'))
+                                as ImageProvider,
                       ),
                     ),
                     const SizedBox(height: 15),
                     Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         color: mainColor3,
                         borderRadius: BorderRadius.circular(15),
@@ -159,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget buildProfileInfo(String label, String value) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      // padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

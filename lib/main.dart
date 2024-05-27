@@ -140,7 +140,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: EasyLoading.init(), // Initialize EasyLoading
       debugShowCheckedModeBanner: false,
-      home: const HomeScreenWrapper(),
+      home: HomeScreenWrapper(),
     );
   }
 }
@@ -240,9 +240,9 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                                       EasyLoading.dismiss();
                                       if (newUserSnapshot.hasData &&
                                           newUserSnapshot.data == true) {
-                                        return UserInformationScreen();
+                                        return new UserInformationScreen();
                                       } else {
-                                        return HomeScreen();
+                                        return new HomeScreen();
                                       }
                                     }
                                   },
@@ -263,9 +263,9 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                                       EasyLoading.dismiss();
                                       if (newDieticianSnapshot.hasData &&
                                           newDieticianSnapshot.data == true) {
-                                        return DietcianInformationScreen();
+                                        return new DietcianInformationScreen();
                                       } else {
-                                        return DieticianHomeScreen();
+                                        return new DieticianHomeScreen();
                                       }
                                     }
                                   },
@@ -273,7 +273,7 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                               case 2:
                                 print(
                                     "Navigating to AdminHomeScreen for profile type 2");
-                                return AdminHomeScreen();
+                                return new AdminHomeScreen();
                               default:
                                 print("Unknown profile type: $profileType");
                                 return NotFoundScreen();

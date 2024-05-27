@@ -1,4 +1,5 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -13,11 +14,10 @@ class ClientProfileScreen extends StatefulWidget {
 class _ClientProfileScreenState extends State<ClientProfileScreen> {
   String name = "Bilgi Bulunamadı";
   int age = 0;
-  int height = 0;
-  int weight = 0;
+  double height = 0;
+  double weight = 0;
   String profilePhoto = "";
-  List<String> likedFoods = [];
-  List<String> dislikedFoods = [];
+  String unliked_food = "";
   List<Map<String, dynamic>> dietOptions = [];
   Map<String, dynamic> selectedDiet = {};
 
@@ -36,11 +36,10 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
         setState(() {
           name = userDoc['displayName'] ?? 'Bilgi Bulunamadı';
           age = userDoc['age'] ?? 0;
-          height = userDoc['height'] ?? 0.0;
-          weight = userDoc['weight'] ?? 0.0;
+          height = (userDoc['height'] ?? 0).toDouble(); // Boy
+          weight = (userDoc['weight'] ?? 0).toDouble();
           profilePhoto = userDoc['profilePhoto'] ?? '';
-          likedFoods = List<String>.from(userDoc['likedFoods'] ?? []);
-          dislikedFoods = List<String>.from(userDoc['dislikedFoods'] ?? []);
+          unliked_food = userDoc['unliked_food'] ?? "";
         });
       }
     } catch (e) {
@@ -288,42 +287,33 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            Text("Adı: $name", style: TextStyle(fontSize: 16)),
-            Text("Yaş: $age", style: TextStyle(fontSize: 16)),
-            Text("Boy: ${height.toStringAsFixed(1)} cm",
-                style: TextStyle(fontSize: 16)),
-            Text("Kilo: ${weight.toStringAsFixed(1)} kg",
-                style: TextStyle(fontSize: 16)),
-            SizedBox(height: 20),
             Text(
-              "Beğendiği Yiyecekler:",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              "Adı: $name",
+              style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: likedFoods.isEmpty
-                  ? [Text("Veri Bulunamadı")]
-                  : likedFoods
-                      .map((food) => Text(food, style: TextStyle(fontSize: 16)))
-                      .toList(),
+            Text(
+              "Yaş: $age",
+              style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
+            Text(
+              "Boy: ${height.toStringAsFixed(1)} cm",
+              style: fontStyle(16, Colors.black, FontWeight.normal),
+            ),
+            Text("Kilo: ${weight.toStringAsFixed(1)} kg",
+                style: fontStyle(16, Colors.black, FontWeight.normal)),
             SizedBox(height: 10),
             Text(
               "Beğenmediği Yiyecekler:",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: fontStyle(20, Colors.black, FontWeight.bold),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: dislikedFoods.isEmpty
-                  ? [Text("Veri Bulunamadı")]
-                  : dislikedFoods
-                      .map((food) => Text(food, style: TextStyle(fontSize: 16)))
-                      .toList(),
+            Text(
+              unliked_food == "" ? "Veri Bulunamadı" : unliked_food,
+              style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
             SizedBox(height: 20),
             Text(
               "Örnek Diyet Listeleri:",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: fontStyle(20, Colors.black, FontWeight.bold),
             ),
             Column(
               children: List.generate(dietOptions.length, (index) {
@@ -339,11 +329,12 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               }),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
+            MyButton(
               onPressed: () => print("hello"),
               // showRemoveClientDialog,
-              child: Text("Kullanıcıyı Çıkar"),
-              style: ElevatedButton.styleFrom(backgroundColor: mainColor),
+              text: "Kullanıcıyı Çıkar",
+              buttonColor: mainColor, buttonTextSize: 16,
+              buttonTextColor: Colors.white, buttonTextWeight: FontWeight.bold,
             ),
           ],
         ),

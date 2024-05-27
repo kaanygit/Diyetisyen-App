@@ -12,7 +12,7 @@ class DieticianProfileScreen extends StatefulWidget {
 class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
   String name = "Bilgi Bulunamadı";
   String profilePhoto = "";
-  String experience = "Bilgi Bulunamadı";
+  int experience = 0;
   String expertise = "Bilgi Bulunamadı";
   int age = 0;
   String educationLevel = "Bilgi Bulunamadı";
@@ -27,15 +27,15 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
 
   Future<void> fetchData(String uid) async {
     try {
-      DocumentSnapshot dieticianDoc = await FirebaseFirestore.instance
-          .collection('dieticians')
-          .doc(uid)
-          .get();
+      DocumentSnapshot dieticianDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
       if (dieticianDoc.exists) {
         setState(() {
           name = dieticianDoc['displayName'] ?? 'Bilgi Bulunamadı';
           profilePhoto = dieticianDoc['profilePhoto'] ?? '';
-          experience = dieticianDoc['experience'] ?? 'Bilgi Bulunamadı';
+          experience = dieticianDoc['experience'] != null
+              ? dieticianDoc['experience']
+              : 0;
           expertise = dieticianDoc['expertise'] ?? 'Bilgi Bulunamadı';
           age = dieticianDoc['age'] ?? 0;
           educationLevel = dieticianDoc['educationLevel'] ?? 'Bilgi Bulunamadı';
@@ -99,7 +99,7 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
             ),
             ListTile(
               leading: Icon(Icons.work),
-              title: Text("Deneyim: $experience"),
+              title: Text("Deneyim: ${experience.toString()}"),
             ),
             ListTile(
               leading: Icon(Icons.calendar_today),

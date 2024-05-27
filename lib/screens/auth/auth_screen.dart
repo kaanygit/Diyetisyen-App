@@ -170,7 +170,7 @@ class _AuthScreenState extends State<AuthScreen> {
         switch (profileType) {
           case 0:
             print("Navigating to HomeScreen for profile type 0");
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               PageTransition(
                   type: PageTransitionType.fade, child: new HomeScreen()),
@@ -178,7 +178,7 @@ class _AuthScreenState extends State<AuthScreen> {
             break;
           case 1:
             print("Navigating to DieticianHomeScreen for profile type 1");
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               PageTransition(
                   type: PageTransitionType.fade,
@@ -187,7 +187,7 @@ class _AuthScreenState extends State<AuthScreen> {
             break;
           case 2:
             print("Navigating to AdminHomeScreen for profile type 2");
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               PageTransition(
                   type: PageTransitionType.fade, child: new AdminHomeScreen()),
@@ -213,7 +213,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _signInWithGoogle() async {
     bool result = await _firebaseOperations.signInWithGoogle();
     if (result) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         PageTransition(
             type: PageTransitionType.fade, child: UserInformationScreen()),
