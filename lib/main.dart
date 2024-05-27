@@ -145,17 +145,20 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreenWrapper extends StatelessWidget {
+class HomeScreenWrapper extends StatefulWidget {
   const HomeScreenWrapper({Key? key}) : super(key: key);
 
-  Future<void> _checkInternetConnection(BuildContext context) async {
+  @override
+  _HomeScreenWrapperState createState() => _HomeScreenWrapperState();
+}
+
+class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
+  Future<bool> _checkInternetConnection() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      _showNoInternetDialog(context);
-    }
+    return connectivityResult != ConnectivityResult.none;
   }
 
-  void _showNoInternetDialog(BuildContext context) {
+  void _showNoInternetDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -167,12 +170,17 @@ class HomeScreenWrapper extends StatelessWidget {
               style: fontStyle(20, mainColor, FontWeight.bold)),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: const Text('Retry'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Future.delayed(Duration.zero, () {
-                  SystemNavigator.pop(); // Close the app
-                });
+                setState(() {}); // Retry checking internet connection
+              },
+            ),
+            TextButton(
+              child: const Text('Exit'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                SystemNavigator.pop(); // Close the app
               },
             ),
           ],
@@ -183,115 +191,132 @@ class HomeScreenWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _checkInternetConnection(context);
-
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, AsyncSnapshot<User?> snapshot) {
+    return FutureBuilder<bool>(
+      future: _checkInternetConnection(),
+      builder: (context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          EasyLoading.show(status: 'Loading...'); // Show loading screen
-          return Container(); // Empty container while loading
+          EasyLoading.show(status: 'Checking internet connection...');
+          return Container(); // Empty container while checking connection
         } else {
           EasyLoading.dismiss(); // Dismiss loading screen
-          if (snapshot.hasData) {
-            return FutureBuilder<int>(
-              future: FirebaseOperations().getProfileType(),
-              builder: (context, AsyncSnapshot<int> profileTypeSnapshot) {
-                if (profileTypeSnapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  EasyLoading.show(
-                      status:
-                          'Loading...'); // Show loading screen while fetching profile type
+          if (snapshot.hasData && snapshot.data == true) {
+            return StreamBuilder(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, AsyncSnapshot<User?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  EasyLoading.show(status: 'Loading...'); // Show loading screen
                   return Container(); // Empty container while loading
                 } else {
                   EasyLoading.dismiss(); // Dismiss loading screen
-                  if (profileTypeSnapshot.hasData) {
-                    int? profileType = profileTypeSnapshot.data;
-                    print("Fetched profile type: $profileType");
-                    switch (profileType) {
-                      case 0:
-                        print("Navigating to HomeScreen for profile type 0");
-                        return FutureBuilder<bool>(
-                          future: FirebaseOperations().getNewUser(),
-                          builder:
-                              (context, AsyncSnapshot<bool> newUserSnapshot) {
-                            if (newUserSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              EasyLoading.show(status: 'Loading...');
-                              return Container();
-                            } else {
-                              EasyLoading.dismiss();
-                              if (newUserSnapshot.hasData &&
-                                  newUserSnapshot.data == true) {
-                                return UserInformationScreen();
-                              } else {
-                                return HomeScreen();
-                              }
+                  if (snapshot.hasData) {
+                    return FutureBuilder<int>(
+                      future: FirebaseOperations().getProfileType(),
+                      builder:
+                          (context, AsyncSnapshot<int> profileTypeSnapshot) {
+                        if (profileTypeSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          EasyLoading.show(
+                              status:
+                                  'Loading...'); // Show loading screen while fetching profile type
+                          return Container(); // Empty container while loading
+                        } else {
+                          EasyLoading.dismiss(); // Dismiss loading screen
+                          if (profileTypeSnapshot.hasData) {
+                            int? profileType = profileTypeSnapshot.data;
+                            print("Fetched profile type: $profileType");
+                            switch (profileType) {
+                              case 0:
+                                print(
+                                    "Navigating to HomeScreen for profile type 0");
+                                return FutureBuilder<bool>(
+                                  future: FirebaseOperations().getNewUser(),
+                                  builder: (context,
+                                      AsyncSnapshot<bool> newUserSnapshot) {
+                                    if (newUserSnapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      EasyLoading.show(status: 'Loading...');
+                                      return Container();
+                                    } else {
+                                      EasyLoading.dismiss();
+                                      if (newUserSnapshot.hasData &&
+                                          newUserSnapshot.data == true) {
+                                        return UserInformationScreen();
+                                      } else {
+                                        return HomeScreen();
+                                      }
+                                    }
+                                  },
+                                );
+                              case 1:
+                                print(
+                                    "Navigating to DieticianHomeScreen for profile type 1");
+                                return FutureBuilder<bool>(
+                                  future: FirebaseOperations().getNewDietcian(),
+                                  builder: (context,
+                                      AsyncSnapshot<bool>
+                                          newDieticianSnapshot) {
+                                    if (newDieticianSnapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      EasyLoading.show(status: 'Loading...');
+                                      return Container();
+                                    } else {
+                                      EasyLoading.dismiss();
+                                      if (newDieticianSnapshot.hasData &&
+                                          newDieticianSnapshot.data == true) {
+                                        return DietcianInformationScreen();
+                                      } else {
+                                        return DieticianHomeScreen();
+                                      }
+                                    }
+                                  },
+                                );
+                              case 2:
+                                print(
+                                    "Navigating to AdminHomeScreen for profile type 2");
+                                return AdminHomeScreen();
+                              default:
+                                print("Unknown profile type: $profileType");
+                                return NotFoundScreen();
                             }
-                          },
-                        );
-                      case 1:
-                        print(
-                            "Navigating to DieticianHomeScreen for profile type 1");
-                        return FutureBuilder<bool>(
-                          future: FirebaseOperations().getNewDietcian(),
-                          builder: (context,
-                              AsyncSnapshot<bool> newDieticianSnapshot) {
-                            if (newDieticianSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              EasyLoading.show(status: 'Loading...');
-                              return Container();
-                            } else {
-                              EasyLoading.dismiss();
-                              if (newDieticianSnapshot.hasData &&
-                                  newDieticianSnapshot.data == true) {
-                                return DietcianInformationScreen();
-                              } else {
-                                return DieticianHomeScreen();
-                              }
-                            }
-                          },
-                        );
-                      case 2:
-                        print(
-                            "Navigating to AdminHomeScreen for profile type 2");
-                        return AdminHomeScreen();
-                      default:
-                        print("Unknown profile type: $profileType");
-                        return NotFoundScreen();
-                    }
-                  } else if (profileTypeSnapshot.hasError) {
-                    print(
-                        "Error fetching profile type: ${profileTypeSnapshot.error}");
-                    return Scaffold(
+                          } else if (profileTypeSnapshot.hasError) {
+                            print(
+                                "Error fetching profile type: ${profileTypeSnapshot.error}");
+                            return Scaffold(
+                              body: Center(
+                                child: Text(
+                                    "Profil tipi alınırken bir hata oluştu: ${profileTypeSnapshot.error}"),
+                              ),
+                            );
+                          } else {
+                            print("Profile type not found");
+                            return const Scaffold(
+                              body: Center(
+                                child: Text("Profil tipi bulunamadı"),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    EasyLoading.dismiss(); // Dismiss loading screen
+                    print("Authentication error: ${snapshot.error}");
+                    return const Scaffold(
                       body: Center(
                         child: Text(
-                            "Profil tipi alınırken bir hata oluştu: ${profileTypeSnapshot.error}"),
+                            "Bir hata oluştu. Detaylar için debug console'u kontrol edin."),
                       ),
                     );
                   } else {
-                    print("Profile type not found");
-                    return const Scaffold(
-                      body: Center(
-                        child: Text("Profil tipi bulunamadı"),
-                      ),
-                    );
+                    EasyLoading.dismiss(); // Dismiss loading screen
+                    return const AuthScreen();
                   }
                 }
               },
             );
-          } else if (snapshot.hasError) {
-            EasyLoading.dismiss(); // Dismiss loading screen
-            print("Authentication error: ${snapshot.error}");
-            return const Scaffold(
-              body: Center(
-                child: Text(
-                    "Bir hata oluştu. Detaylar için debug console'u kontrol edin."),
-              ),
-            );
           } else {
-            EasyLoading.dismiss(); // Dismiss loading screen
-            return const AuthScreen();
+            _showNoInternetDialog();
+            return Container(); // Show an empty container if no internet
           }
         }
       },
