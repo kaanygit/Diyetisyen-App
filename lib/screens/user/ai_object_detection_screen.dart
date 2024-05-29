@@ -58,7 +58,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                         SizedBox(height: 16),
                         Center(
                           child: Text(
-                            'Algılanan Yiyecek: ${detectedFood.toString().trim() != "Hayır" ? "Bulunamadı" : ""}',
+                            'Algılanan Yiyecek: ${detectedFood ?? "Bulunamadı"}',
                             style: fontStyle(24, Colors.black, FontWeight.bold),
                           ),
                         ),
