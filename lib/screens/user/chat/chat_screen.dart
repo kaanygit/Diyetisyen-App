@@ -17,11 +17,30 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool hasDietician = false;
   String dieticianId = '';
-
+  late String profilePhoto = "";
   @override
   void initState() {
     super.initState();
     _checkDieticianStatus();
+    fetchProfilePhotos();
+  }
+
+  Future<void> fetchProfilePhotos() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? uid = user?.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      DocumentSnapshot snapshot =
+          await firestore.collection('users').doc(uid).get();
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          profilePhoto = data['profilePhoto'] ?? "";
+        });
+      }
+    } catch (e) {
+      print("Error fetching diet program: $e");
+    }
   }
 
   Future<void> _checkDieticianStatus() async {
@@ -49,9 +68,11 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage("assets/images/avatar.jpg")),
+                backgroundImage: profilePhoto == "" || profilePhoto == null
+                    ? AssetImage("assets/images/avatar.jpg")
+                    : NetworkImage(profilePhoto) as ImageProvider),
             Container(
               child: Text("Sohbet",
                   style: fontStyle(25, Colors.black, FontWeight.normal)),

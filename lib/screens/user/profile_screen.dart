@@ -108,10 +108,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          profileButtonsColumn("Share with friends"),
-                          profileButtonsColumn("Contact support"),
-                          profileButtonsColumn("Privacy policy"),
-                          profileButtonsColumn("Terms & Conditions"),
+                          profileButtonsColumn("Arkadaşlarınla Paylaş"),
+                          profileButtonsColumn("Gizlilik Politikası"),
+                          profileButtonsColumn("Kullanım Koşulları"),
                         ],
                       ),
                     ),
@@ -169,8 +168,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label),
-          Text(value),
+          Text(
+            "$label:",
+            style: fontStyle(15, Colors.black, FontWeight.bold),
+          ),
+          Text(
+            value,
+            style: fontStyle(15, Colors.black, FontWeight.normal),
+          ),
         ],
       ),
     );

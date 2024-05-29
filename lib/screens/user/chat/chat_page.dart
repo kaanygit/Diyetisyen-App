@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
@@ -16,11 +18,13 @@ class _ChatPageState extends State<ChatPage> {
   bool questionAnswer = false;
   int dotCount = 1;
   Timer? _timer;
+  late String profilePhoto = "";
 
   @override
   void initState() {
     super.initState();
     _startDotAnimation();
+    fetchProfilePhotos();
   }
 
   void _startDotAnimation() {
@@ -29,6 +33,24 @@ class _ChatPageState extends State<ChatPage> {
         dotCount = (dotCount % 3) + 1; // Döngüsel olarak 1, 2, 3 arası değişir
       });
     });
+  }
+
+  Future<void> fetchProfilePhotos() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? uid = user?.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      DocumentSnapshot snapshot =
+          await firestore.collection('users').doc(uid).get();
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          profilePhoto = data['profilePhoto'] ?? "";
+        });
+      }
+    } catch (e) {
+      print("Error fetching diet program: $e");
+    }
   }
 
   @override
@@ -55,9 +77,11 @@ class _ChatPageState extends State<ChatPage> {
         ),
         title: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 20,
-              backgroundImage: AssetImage("assets/images/avatar.jpg"),
+              backgroundImage: profilePhoto == "" || profilePhoto == null
+                  ? AssetImage("assets/images/avatar.jpg")
+                  : NetworkImage(profilePhoto) as ImageProvider,
             ),
             const SizedBox(width: 10),
             Text(

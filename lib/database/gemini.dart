@@ -43,9 +43,32 @@ class Gemini {
     try {
       await initializeGemini();
       final model = GenerativeModel(
-          model: 'gemini-1.0-pro',
+          model: 'gemini-1.5-flash',
           apiKey: "AIzaSyCmd9Vek7eccUNUJmHJrCa7jWzmBlBrNOo");
       final prompt = TextPart(userPrompt);
+      final image = await File(imagePath).readAsBytes();
+
+      final imageParts = [DataPart('image/jpeg', image)];
+      final response = await model.generateContent([
+        Content.multi([prompt, ...imageParts])
+      ]);
+      print("Gemini Image And Text Prompt");
+      print(response.text);
+      return response.text;
+    } catch (e) {
+      print("Error generating content: $e");
+      return null;
+    }
+  }
+
+  Future<String?> geminImageLabelingPrompt(String imagePath) async {
+    try {
+      await initializeGemini();
+      final model = GenerativeModel(
+          model: 'gemini-1.5-flash',
+          apiKey: "AIzaSyCmd9Vek7eccUNUJmHJrCa7jWzmBlBrNOo");
+      final prompt = TextPart(
+          "Resmi analiz et hangi yiyecek ise bu yiyeceğin sadece cevap olarak söyle.Eğer yiyecek değil ise hayır cevabını yolla.");
       final image = await File(imagePath).readAsBytes();
 
       final imageParts = [DataPart('image/jpeg', image)];

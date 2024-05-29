@@ -1,5 +1,6 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:diyetisyenapp/widget/not_diet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   int currentDayIndex = 0; // Günlük veriler için indeks
   bool hasDietProgram = true;
+  late String profilePhoto = "";
 
   int totalCalories = 0;
   int totalProtein = 0;
@@ -35,7 +37,26 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    fetchProfilePhotos();
     fetchDietProgram();
+  }
+
+  Future<void> fetchProfilePhotos() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? uid = user?.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      DocumentSnapshot snapshot =
+          await firestore.collection('users').doc(uid).get();
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        setState(() {
+          profilePhoto = data['profilePhoto'];
+        });
+      }
+    } catch (e) {
+      print("Error fetching diet program: $e");
+    }
   }
 
   Future<void> fetchDietProgram() async {
@@ -49,6 +70,7 @@ class _HomePageState extends State<HomePage> {
           .collection('dietProgram')
           .doc('weeklyProgram')
           .get();
+
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
         List<Map<String, dynamic>> weeklyProgram = [];
@@ -391,9 +413,12 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage("assets/images/avatar.jpg")),
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: profilePhoto == null || profilePhoto == ""
+                  ? AssetImage("assets/images/avatar.jpg")
+                  : NetworkImage(profilePhoto) as ImageProvider,
+            ),
             Container(
               child: const Text("Anasayfa"),
             ),
@@ -648,46 +673,9 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 )
-              : notDietScreen()
+              : NotDiet()
           : const Center(child: CircularProgressIndicator()),
     );
-  }
-
-  Container notDietScreen() {
-    return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              mainColor,
-              Colors.white,
-            ],
-            stops: const [
-              0.1,
-              0.75,
-            ],
-          ),
-        ),
-        child: Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/images/avatar.jpg",
-                  width: 100,
-                  height: 100,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Diyet listeniz bulunmamaktadır :(",
-                    style: fontStyle(18, mainColor, FontWeight.normal),
-                  ),
-                )
-              ],
-            )));
   }
 
   Column meals(Map<dynamic, dynamic> meal, String mealType, dynamic dietProgram,
