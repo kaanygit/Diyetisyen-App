@@ -75,51 +75,53 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Diyetisyen Profili",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Adı: $name"),
-            ),
-            ListTile(
-              leading: Icon(Icons.badge),
-              title: Text("Uzmanlık Alanı: $expertise"),
-            ),
-            ListTile(
-              leading: Icon(Icons.school),
-              title: Text("Eğitim Seviyesi: $educationLevel"),
-            ),
-            ListTile(
-              leading: Icon(Icons.work),
-              title: Text("Deneyim: ${experience.toString()}"),
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text("Yaş: $age"),
-            ),
-            ListTile(
-              leading: Icon(Icons.title),
-              title: Text("Ünvan: $title"),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Hoş Geldiniz Mesajı:",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              welcomeMessage,
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Diyetisyen Profili",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("Adı: $name"),
+              ),
+              ListTile(
+                leading: Icon(Icons.badge),
+                title: Text("Uzmanlık Alanı: $expertise"),
+              ),
+              ListTile(
+                leading: Icon(Icons.school),
+                title: Text("Eğitim Seviyesi: $educationLevel"),
+              ),
+              ListTile(
+                leading: Icon(Icons.work),
+                title: Text("Deneyim: ${experience.toString()}"),
+              ),
+              ListTile(
+                leading: Icon(Icons.calendar_today),
+                title: Text("Yaş: $age"),
+              ),
+              ListTile(
+                leading: Icon(Icons.title),
+                title: Text("Ünvan: $title"),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Hoş Geldiniz Mesajı:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                welcomeMessage,
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );

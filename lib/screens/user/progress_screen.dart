@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
+import 'package:diyetisyenapp/widget/flash_message.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProgressScreenPage extends StatefulWidget {
@@ -10,30 +14,241 @@ class ProgressScreenPage extends StatefulWidget {
 }
 
 class _ProgressScreenPageState extends State<ProgressScreenPage> {
+  int selectedWeek = 1;
+  List<int> weeks = [1, 2, 3, 4];
+  bool loadingValue = true;
+
+  late Map<String, dynamic> dietData = {};
+  late Map<String, dynamic> profileData = {};
+
+  int totalCalories = 0;
+  int totalFat = 0;
+  int totalProtein = 0;
+  int totalCarbs = 0;
+
+  int totalDailyCalories = 0;
+  int totalDailyeatCalories = 0;
+  String dailyEatingRatio = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getProfile();
+  }
+
+  Future<void> getProfile() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      DocumentSnapshot<Object?> snapshot = await firestore
+          .collection('users')
+          .doc(user!.uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram')
+          .get();
+      DocumentSnapshot<Object?> snapshotProfile =
+          await firestore.collection('users').doc(user?.uid).get();
+
+      if (snapshot.exists && snapshotProfile.exists) {
+        dynamic data = snapshot.data();
+        dynamic profileDatas = snapshotProfile.data();
+        setState(() {
+          dietData = data;
+          profileData = profileDatas;
+        });
+        dietDataIfStatement();
+      } else {
+        showErrorSnackBar(context, "Profil verileri getirilirken hata oluştu");
+      }
+    } catch (e) {
+      print("Profil verileri getirilirken hata oluştu : $e");
+      showErrorSnackBar(context, "Profil verileri getirilirken hata oluştu");
+    }
+  }
+
+  Future<void> dietDataIfStatement() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final List<String> days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ];
+
+    DateTime? startDate = dietData['startDate']?.toDate();
+    DateTime now = DateTime.now();
+    int daysSinceStart = now.difference(startDate!).inDays;
+
+//
+    DocumentSnapshot<Map<String, dynamic>> snapshotEating = await firestore
+        .collection('users')
+        .doc(user!.uid)
+        .collection('dietProgram')
+        .doc('weeklyProgram')
+        .collection('meals')
+        .doc('day_$daysSinceStart')
+        .get();
+    print(snapshotEating.data());
+
+    Map<String, dynamic>? ekstraYemeler = snapshotEating.data();
+    List<dynamic> mealss = ekstraYemeler!['meals'];
+    mealss.forEach((meal) {
+      setState(() {
+        totalDailyeatCalories += meal['calories'] as int;
+        totalCalories += meal['calories'] as int;
+        totalCarbs += meal['carbs'] as int;
+        totalFat += meal['fat'] as int;
+        totalProtein += meal['protein'] as int;
+      });
+    });
+
+    ////
+    int week = (daysSinceStart ~/ 7) % 4 +
+        1; // 4 haftalık döngü olduğu için mod 4 aldık
+    int dayIndex = daysSinceStart % 7;
+    String day = days[dayIndex];
+
+    if (dietData['week$selectedWeek'][day]['breakfast']['eat'] == true) {
+      setState(() {
+        totalDailyeatCalories +=
+            dietData['week$week'][day]['breakfast']['calories'] as int;
+      });
+    }
+    if (dietData['week$selectedWeek'][day]['lunch']['eat'] == true) {
+      setState(() {
+        totalDailyeatCalories +=
+            dietData['week$week'][day]['lunch']['calories'] as int;
+      });
+    }
+    if (dietData['week$selectedWeek'][day]['dinner']['eat'] == true) {
+      setState(() {
+        totalDailyeatCalories +=
+            dietData['week$week'][day]['dinner']['calories'] as int;
+      });
+    }
+    setState(() {
+      totalDailyCalories +=
+          dietData['week$week'][day]['dinner']['calories'] as int;
+      totalDailyCalories +=
+          dietData['week$week'][day]['breakfast']['calories'] as int;
+      totalDailyCalories +=
+          dietData['week$week'][day]['lunch']['calories'] as int;
+    });
+
+//ekstralar
+
+    double percentageCompleted =
+        (totalDailyeatCalories / totalDailyCalories) * 100;
+    String formattedPercentage = percentageCompleted.toStringAsFixed(1);
+    setState(() {
+      dailyEatingRatio = formattedPercentage;
+    });
+    print("testt $percentageCompleted");
+
+    ////
+    Map<String, dynamic> data = dietData['week$selectedWeek'];
+
+    late int dailyCalories = 0;
+    late int dailyFat = 0;
+    late int dailyProtein = 0;
+    late int dailyCarbs = 0;
+    for (var day in days) {
+      if (data[day]['breakfast']['eat'] == true) {
+        dailyCalories += data[day]['breakfast']['calories'] as int;
+        dailyFat += data[day]['breakfast']['fat'] as int;
+        dailyProtein += data[day]['breakfast']['protein'] as int;
+        dailyCarbs += data[day]['breakfast']['carbs'] as int;
+      }
+      if (data[day]['lunch']['eat'] == true) {
+        dailyCalories += data[day]['lunch']['calories'] as int;
+        dailyFat += data[day]['lunch']['fat'] as int;
+        dailyProtein += data[day]['lunch']['protein'] as int;
+        dailyCarbs += data[day]['lunch']['carbs'] as int;
+      }
+      if (data[day]['dinner']['eat'] == true) {
+        dailyCalories += data[day]['lunch']['calories'] as int;
+        dailyFat += data[day]['lunch']['fat'] as int;
+        dailyProtein += data[day]['lunch']['protein'] as int;
+        dailyCarbs += data[day]['lunch']['carbs'] as int;
+      }
+    }
+    setState(() {
+      totalCalories = dailyCalories;
+      totalCarbs = dailyCarbs;
+      totalFat = dailyFat;
+      totalProtein = dailyProtein;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gelişim'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildWeeklyProgressCard(),
-            SizedBox(height: 16.0),
-            Text(
-              'Son Değerleriniz',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            Text('Gelişim'),
+            DropdownButton<int>(
+              value: selectedWeek,
+              dropdownColor: Colors.white,
+              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+              underline: SizedBox(),
+              items: weeks.map((int week) {
+                return DropdownMenuItem<int>(
+                  value: week,
+                  child:
+                      Text('Week $week', style: TextStyle(color: Colors.black)),
+                );
+              }).toList(),
+              onChanged: (int? newValue) {
+                setState(() {
+                  selectedWeek = newValue!;
+                  totalCalories = 0;
+                  totalFat = 0;
+                  totalProtein = 0;
+                  totalCarbs = 0;
+
+                  totalDailyCalories = 0;
+                  totalDailyeatCalories = 0;
+                  dailyEatingRatio = "";
+                  getProfile();
+                });
+              },
             ),
-            SizedBox(height: 16.0),
-            _buildWeightCard(),
-            SizedBox(height: 16.0),
-            _buildCaloriesCard(),
           ],
         ),
       ),
+      body: loadingValue
+          ? SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWeeklyProgressCard(),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'Son Değerleriniz',
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16.0),
+                  _buildWeightCard(),
+                  SizedBox(height: 16.0),
+                  _buildCaloriesCard(),
+                ],
+              ),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 
@@ -66,7 +281,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                           Icon(Icons.whatshot, color: Colors.red),
                           SizedBox(width: 4.0),
                           Text(
-                            '1,284',
+                            '$totalCalories',
                             style:
                                 fontStyle(24.0, Colors.black, FontWeight.bold),
                           ),
@@ -77,11 +292,11 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 ),
                 Row(
                   children: [
-                    _buildProgressCircle(29, 'Fat'),
+                    _buildProgressCircle(totalFat, 'Fat'),
                     SizedBox(width: 10.0),
-                    _buildProgressCircle(65, 'Pro'),
+                    _buildProgressCircle(totalProtein, 'Pro'),
                     SizedBox(width: 10.0),
-                    _buildProgressCircle(85, 'Carb'),
+                    _buildProgressCircle(totalCarbs, 'Carb'),
                   ],
                 ),
               ],
@@ -109,11 +324,11 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    '72.4 Kg',
+                    '${profileData['weight'] ?? "0.0"} Kg',
                     style: fontStyle(24.0, Colors.black, FontWeight.bold),
                   ),
                   Text(
-                    'Hedef kilonuz : 70 Kg',
+                    'Hedef kilonuz : ${profileData['targetWeight'] ?? "0.0"} Kg',
                     style: fontStyle(16.0, Colors.grey, FontWeight.normal),
                   ),
                   SizedBox(height: 20.0),
@@ -123,7 +338,15 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                     buttonTextColor: Colors.white,
                     buttonTextSize: 15,
                     buttonTextWeight: FontWeight.bold,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfileScreen(
+                              currentUserUid: profileData['uid'] ?? ''),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -134,7 +357,8 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               height: 80.0,
               child: CustomPaint(
                 painter: _WeightGraphPainter(
-                    currentWeight: 72.4, targetWeight: 70.0),
+                    currentWeight: (profileData['weight'] ?? 0.0),
+                    targetWeight: (profileData['targetWeight'] ?? 0.0)),
               ),
             ),
           ],
@@ -161,12 +385,12 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                   ),
                   SizedBox(height: 8.0),
                   Text(
-                    '1,548 Kcal',
+                    '${totalDailyeatCalories} Kcal',
                     style:
                         TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '89% Tamamlandı',
+                    '${dailyEatingRatio}% Tamamlandı',
                     style: TextStyle(color: Colors.green, fontSize: 16.0),
                   ),
                 ],
@@ -177,7 +401,9 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               width: 80.0,
               height: 80.0,
               child: CustomPaint(
-                painter: _CaloriesGraphPainter(),
+                painter: CaloriesGraphPainter(
+                    percentage:
+                        ((totalDailyeatCalories / totalDailyCalories) * 100)),
               ),
             ),
           ],
@@ -223,11 +449,15 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
   }
 }
 
-class _CaloriesGraphPainter extends CustomPainter {
+class CaloriesGraphPainter extends CustomPainter {
+  final double percentage;
+
+  CaloriesGraphPainter({required this.percentage});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.green
+      ..color = mainColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
@@ -236,14 +466,14 @@ class _CaloriesGraphPainter extends CustomPainter {
 
     final rect = Rect.fromCircle(center: center, radius: radius);
     final startAngle = -3.14 / 2;
-    final sweepAngle = 2 * 3.14 * 0.89; // 89% completed
+    final sweepAngle = 2 * 3.14 * (percentage / 100);
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }
 
@@ -251,24 +481,29 @@ class _WeightGraphPainter extends CustomPainter {
   final double currentWeight;
   final double targetWeight;
 
-  _WeightGraphPainter(
-      {required this.currentWeight, required this.targetWeight});
+  _WeightGraphPainter({
+    required this.currentWeight,
+    required this.targetWeight,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue
+      ..color = Colors.blue // mainColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    final percentage = (currentWeight / targetWeight).clamp(0.0, 1.0);
+    final difference = targetWeight - currentWeight;
+    final percentage = (difference / targetWeight).clamp(-1.0, 1.0);
+    print(
+        'Percentage: $percentage'); // Hata ayıklama için yüzdelik değeri yazdır
 
     final rect = Rect.fromCircle(center: center, radius: radius);
     final startAngle = -3.14 / 2;
-    final sweepAngle = 2 * 3.14 * percentage; // current progress
+    final sweepAngle = -2 * 3.14 * percentage; // current progress
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
   }

@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/user/ai_object_detection_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -199,6 +202,15 @@ class _AddMealsState extends State<AddMeals> {
   }
 }
 
+Map<String, dynamic> meals = {
+  'name': 'Akşam Yemeği',
+  'foodName': 'Pilav',
+  'calories': 450,
+  'protein': 25,
+  'fat': 12,
+  'carbs': 55,
+};
+
 class MealDetailScreen extends StatelessWidget {
   final Map<String, dynamic> meal;
 
@@ -250,7 +262,9 @@ class MealDetailScreen extends StatelessWidget {
                 buttonTextColor: Colors.white,
                 buttonTextSize: 16,
                 buttonTextWeight: FontWeight.bold,
-                onPressed: () {})
+                onPressed: () async {
+                  await FirebaseOperations().addMealsFirebase(context, meals);
+                })
           ],
         ),
       ),

@@ -323,6 +323,84 @@ class FirebaseOperations {
     }
   }
 
+  Future<void> addMealsFirebase(
+      BuildContext context, Map<String, dynamic> meals) async {
+    try {
+      String uid = _auth.currentUser?.uid ?? '';
+      if (uid.isEmpty) {
+        print("Kullanıcı oturum açmamış.");
+        return;
+      }
+
+      DocumentSnapshot<Object?> snapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram')
+          .get();
+
+      if (snapshot.exists) {
+        // Başlangıç tarihini kontrol et
+        DateTime? startDate =
+            (snapshot.data() as Map<String, dynamic>)['startDate']?.toDate();
+        if (startDate == null) {
+          print("Başlangıç tarihi bulunamadı.");
+          return;
+        }
+
+        // Güncel tarihi al
+        DateTime now = DateTime.now();
+
+        // Başlangıç tarihinden bugüne kadar geçen gün sayısı
+        int daysSinceStart = now.difference(startDate).inDays;
+
+        // Firebase'e eklenecek yemek verileri
+        Map<String, dynamic> mealData = {
+          'name': meals['name'],
+          'foodName': meals['foodName'],
+          'calories': meals['calories'],
+          'protein': meals['protein'],
+          'fat': meals['fat'],
+          'carbs': meals['carbs'],
+        };
+
+        // O güne ait mevcut yemek bilgilerini al
+        DocumentReference dayDocRef = _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('dietProgram')
+            .doc('weeklyProgram')
+            .collection('meals')
+            .doc('day_$daysSinceStart');
+
+        DocumentSnapshot<Object?> daySnapshot = await dayDocRef.get();
+
+        List<dynamic> updatedMeals = [];
+
+        if (daySnapshot.exists && daySnapshot.data() != null) {
+          // Mevcut yemek verilerini alın
+          updatedMeals = List.from(
+              (daySnapshot.data() as Map<String, dynamic>)['meals'] ?? []);
+        }
+
+        // Yeni yemek verisini ekleyin
+        updatedMeals.add(mealData);
+
+        // Güncellenmiş yemek listesini Firebase'e kaydedin
+        await dayDocRef.set({'meals': updatedMeals}, SetOptions(merge: true));
+
+        showSuccessSnackBar(context, "Yemeğiniz başarılı bir şekilde eklendi!");
+      } else {
+        print("Kullanıcı verisi bulunamadı.");
+        showErrorSnackBar(
+            context, "Kullanici verisi bulunamadı Lütfen tekrar deneyiniz");
+      }
+    } catch (e) {
+      print("Veriler yüklenirken hata oluştu : $e");
+      showErrorSnackBar(context, "Yemek eklenirken hata oluştu");
+    }
+  }
+
   Future<Map<String, dynamic>> getProfileBio() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore

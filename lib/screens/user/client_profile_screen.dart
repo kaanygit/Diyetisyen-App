@@ -63,6 +63,10 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
 
   Future<void> addToDietProgram() async {
     try {
+      // Diyet programının başladığı günü ekleyin
+      selectedDiet['startDate'] = DateTime.now();
+      selectedDiet['startDate'] = DateTime.now();
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.uid)

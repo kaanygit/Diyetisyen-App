@@ -228,14 +228,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     const CircleAvatar(
                         radius: 20,
                         backgroundImage:
-                            AssetImage("assets/images/gemini.jpg")),
+                            AssetImage("assets/images/dietbot.png")),
                     const SizedBox(
                       width: 5,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Gemini AI",
+                        Text("DietBot",
                             style:
                                 fontStyle(15, Colors.black, FontWeight.bold)),
                         Text(

@@ -1,5 +1,6 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
+import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/not_diet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String selectedMeal = "Meals"; // Seçilen butonu takip etmek için değişken
   List<Map<String, dynamic>> dietProgram = [];
+  List<dynamic> activityAddingMeal = [];
   bool isLoading = true;
   int currentDayIndex = 0; // Günlük veriler için indeks
   bool hasDietProgram = true;
@@ -39,6 +41,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchProfilePhotos();
     fetchDietProgram();
+    getEatingFood();
+    // eatingFoodCalculate();
   }
 
   Future<void> fetchProfilePhotos() async {
@@ -74,7 +78,6 @@ class _HomePageState extends State<HomePage> {
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
         List<Map<String, dynamic>> weeklyProgram = [];
-
         // Haftalık programı düzenle
         for (int i = 1; i <= 4; i++) {
           for (int j = 1; j <= 7; j++) {
@@ -241,7 +244,7 @@ class _HomePageState extends State<HomePage> {
       };
 
       await dietProgramRef.update(updateData);
-      dailyCalories = 1000;
+
       print('Eat alanı başarıyla güncellendi.');
       fetchDietProgram();
     } catch (e) {
@@ -363,6 +366,8 @@ class _HomePageState extends State<HomePage> {
         dailyFat += dayData['meals']['dinner']['fat'] ?? 0;
         dailyWater += dayData['meals']['dinner']['water'] ?? 0;
       }
+
+      eatingFoodCalculate();
     }
   }
 
@@ -371,6 +376,7 @@ class _HomePageState extends State<HomePage> {
       if (currentDayIndex < dietProgram.length - 1) {
         currentDayIndex++;
         updateDailyValues();
+        getEatingFood();
       }
     });
   }
@@ -380,6 +386,7 @@ class _HomePageState extends State<HomePage> {
       if (currentDayIndex > 0) {
         currentDayIndex--;
         updateDailyValues();
+        getEatingFood();
       }
     });
   }
@@ -403,6 +410,89 @@ class _HomePageState extends State<HomePage> {
       default:
         return '';
     }
+  }
+
+  Future<void> getEatingFood() async {
+    try {
+      print("GÜNCEL DEGER : $currentDayIndex");
+      User? user = FirebaseAuth.instance.currentUser;
+      String? uid = user?.uid;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      if (uid == null) {
+        print("Kullanıcı oturum açmamış.");
+        return;
+      }
+
+      DocumentReference dietProgramRef = firestore
+          .collection('users')
+          .doc(uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram')
+          .collection('meals')
+          .doc('day_$currentDayIndex');
+
+      DocumentSnapshot snapshot = await dietProgramRef.get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey('meals')) {
+          List<dynamic> meals = data['meals'];
+          print("Gelen yemek listesi: $meals");
+
+          // Her bir yemek verisini konsola yazdır
+          for (var meal in meals) {
+            print(meal);
+          }
+          print(meals.length);
+
+          setState(() {
+            activityAddingMeal = meals;
+            eatingFoodCalculate(); // Burada yemek verilerini hesaplayın ve güncelleyin
+          });
+        } else {
+          print('Belirtilen gün için yemek verisi bulunamadı.');
+          setState(() {
+            activityAddingMeal = [];
+            eatingFoodCalculate();
+          });
+        }
+      } else {
+        print('Belirtilen gün için veri bulunamadı.');
+        setState(() {
+          activityAddingMeal = [];
+          eatingFoodCalculate();
+        });
+      }
+    } catch (e) {
+      print("Veri getirilirken hata oluştu: $e");
+      setState(() {
+        activityAddingMeal = [];
+        eatingFoodCalculate();
+      });
+    }
+  }
+
+  void eatingFoodCalculate() {
+    int mealTotalEatingCalories = 0;
+    int mealTotalEatingProtein = 0;
+    int mealTotalEatingCarbs = 0;
+    int mealTotalEatingFat =
+        0; // 'Yag' yerine 'Fat' kullanmak daha tutarlı olabilir
+
+    for (var meal in activityAddingMeal) {
+      mealTotalEatingCalories += (meal['calories'] ?? 0) as int;
+      mealTotalEatingProtein += (meal['protein'] ?? 0) as int;
+      mealTotalEatingCarbs += (meal['carbs'] ?? 0) as int;
+      mealTotalEatingFat += (meal['fat'] ?? 0) as int;
+    }
+
+    setState(() {
+      dailyCalories -= mealTotalEatingCalories;
+      dailyCarbs += mealTotalEatingCarbs;
+      dailyProtein += mealTotalEatingProtein;
+      dailyFat += mealTotalEatingFat;
+    });
   }
 
   @override
@@ -642,6 +732,31 @@ class _HomePageState extends State<HomePage> {
                                             ['dinner'],
                                         'Akşam Yemeği',
                                         currentDayIndex),
+                                    /////////////////////
+                                    // if (activityAddingMeal.isNotEmpty)
+                                    //   ListView.builder(
+                                    //     itemCount: activityAddingMeal.length,
+                                    //     itemBuilder: (context, index) {
+                                    //       return addingMealsActivity(
+                                    //           activityAddingMeal[index]);
+                                    //     },
+                                    //   )
+                                    Column(
+                                      children: [
+                                        Column(
+                                          children: activityAddingMeal
+                                              .map((meal) =>
+                                                  addingMealsActivity(meal))
+                                              .toList(),
+                                        ),
+                                      ],
+                                    )
+                                    // addingMealsActivity(
+                                    //     dietProgram[currentDayIndex]['meals']
+                                    //         ['breakfast'],
+                                    //     'Kahvaltı',
+                                    //     dietProgram,
+                                    //     currentDayIndex),
                                   ],
                                 ),
                               )
@@ -749,7 +864,7 @@ class _HomePageState extends State<HomePage> {
                                             10, Colors.grey, FontWeight.normal),
                                       ),
                                       Text(
-                                        "${meal['protein']} Gram",
+                                        "${meal['protein']} %",
                                         style: fontStyle(
                                             10, Colors.black, FontWeight.bold),
                                       ),
@@ -771,7 +886,7 @@ class _HomePageState extends State<HomePage> {
                                             10, Colors.grey, FontWeight.normal),
                                       ),
                                       Text(
-                                        "${meal['carbs']} Gram",
+                                        "${meal['carbs']} %",
                                         style: fontStyle(
                                             10, Colors.black, FontWeight.bold),
                                       ),
@@ -793,7 +908,7 @@ class _HomePageState extends State<HomePage> {
                                             10, Colors.grey, FontWeight.normal),
                                       ),
                                       Text(
-                                        "${meal['fat']} Gram",
+                                        "${meal['fat']} %",
                                         style: fontStyle(
                                             10, Colors.black, FontWeight.bold),
                                       ),
@@ -899,7 +1014,7 @@ class _HomePageState extends State<HomePage> {
                                         10, Colors.grey, FontWeight.normal),
                                   ),
                                   Text(
-                                    "${meal['protein']} Gram",
+                                    "${meal['protein']} %",
                                     style: fontStyle(
                                         10, Colors.black, FontWeight.bold),
                                   ),
@@ -921,7 +1036,7 @@ class _HomePageState extends State<HomePage> {
                                         10, Colors.grey, FontWeight.normal),
                                   ),
                                   Text(
-                                    "${meal['carbs']} Gram",
+                                    "${meal['carbs']} %",
                                     style: fontStyle(
                                         10, Colors.black, FontWeight.bold),
                                   ),
@@ -943,7 +1058,7 @@ class _HomePageState extends State<HomePage> {
                                         10, Colors.grey, FontWeight.normal),
                                   ),
                                   Text(
-                                    "${meal['fat']} Gram",
+                                    "${meal['fat']} %",
                                     style: fontStyle(
                                         10, Colors.black, FontWeight.bold),
                                   ),
@@ -975,9 +1090,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-        const SizedBox(
-          height: 15,
-        ),
+        if ((meal['eat'] == true))
+          const SizedBox(
+            height: 15,
+          ),
       ],
     );
   }
@@ -1059,7 +1175,7 @@ class _HomePageState extends State<HomePage> {
           GestureDetector(
             onTap: () => print("Su"),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -1094,28 +1210,275 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      InkWell(
-                        onTap: () async {
-                          print("su zaten içildi");
-                        },
-                        child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: Colors.white),
-                            alignment: Alignment.topRight,
-                            child: const Icon(Icons.add_outlined)),
-                      )
+                      // InkWell(
+                      //   onTap: () async {
+                      //     print("su zaten içildi");
+                      //   },
+                      //   child: Container(
+                      //       padding: EdgeInsets.all(8),
+                      //       decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(16),
+                      //           color: Colors.white),
+                      //       alignment: Alignment.topRight,
+                      //       child: const Icon(Icons.add_outlined)),
+                      // )
                     ],
                   ),
                 ],
               ),
             ),
           ),
-        const SizedBox(
+        if (meal['drinkWater'] == true)
+          const SizedBox(
+            height: 15,
+          )
+      ],
+    );
+  }
+
+  // Column addingMealsActivity(List<dynamic> meal) {
+  //   return activityAddingMeal.isNotEmpty
+  //       ? Column(
+  //           children: [
+  //             GestureDetector(
+  //               // onTap: () => showMealDetails(meal, mealType),
+  //               onTap: () => print("hello"),
+  //               child: Container(
+  //                 padding: const EdgeInsets.all(8),
+  //                 decoration: BoxDecoration(
+  //                     gradient: LinearGradient(
+  //                       begin: Alignment.topCenter,
+  //                       end: Alignment.bottomCenter,
+  //                       colors: [
+  //                         Colors.white70,
+  //                         mainColor2,
+  //                       ],
+  //                       stops: const [
+  //                         0.0,
+  //                         2.0,
+  //                       ],
+  //                     ),
+  //                     borderRadius: BorderRadius.circular(16)),
+  //                 child: Column(
+  //                   children: [
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Column(
+  //                           mainAxisAlignment: MainAxisAlignment.start,
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             Text(
+  //                               "elma",
+  //                               style: fontStyle(
+  //                                   15, Colors.black, FontWeight.bold),
+  //                             ),
+  //                             Text(
+  //                               "10 kcal",
+  //                               style: fontStyle(
+  //                                   15, Colors.grey, FontWeight.normal),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         Container(
+  //                             alignment: Alignment.topRight,
+  //                             child: const Icon(Icons.more_horiz_outlined))
+  //                       ],
+  //                     ),
+  //                     const SizedBox(
+  //                       height: 15,
+  //                     ),
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Container(
+  //                             child: Row(
+  //                           children: [
+  //                             Container(
+  //                                 padding: const EdgeInsets.all(5),
+  //                                 decoration: BoxDecoration(
+  //                                     color: Colors.white,
+  //                                     borderRadius: BorderRadius.circular(10)),
+  //                                 child: Row(
+  //                                   children: [
+  //                                     Text(
+  //                                       "Protein :",
+  //                                       style: fontStyle(
+  //                                           10, Colors.grey, FontWeight.normal),
+  //                                     ),
+  //                                     Text(
+  //                                       "5 Gram",
+  //                                       style: fontStyle(
+  //                                           10, Colors.black, FontWeight.bold),
+  //                                     ),
+  //                                   ],
+  //                                 )),
+  //                             const SizedBox(
+  //                               width: 5,
+  //                             ),
+  //                             Container(
+  //                                 padding: const EdgeInsets.all(5),
+  //                                 decoration: BoxDecoration(
+  //                                     color: Colors.white,
+  //                                     borderRadius: BorderRadius.circular(10)),
+  //                                 child: Row(
+  //                                   children: [
+  //                                     Text(
+  //                                       "Karbonhidrat :",
+  //                                       style: fontStyle(
+  //                                           10, Colors.grey, FontWeight.normal),
+  //                                     ),
+  //                                     Text(
+  //                                       "5 Gram",
+  //                                       style: fontStyle(
+  //                                           10, Colors.black, FontWeight.bold),
+  //                                     ),
+  //                                   ],
+  //                                 )),
+  //                             const SizedBox(
+  //                               width: 5,
+  //                             ),
+  //                             Container(
+  //                                 padding: const EdgeInsets.all(5),
+  //                                 decoration: BoxDecoration(
+  //                                     color: Colors.white,
+  //                                     borderRadius: BorderRadius.circular(10)),
+  //                                 child: Row(
+  //                                   children: [
+  //                                     Text(
+  //                                       "Yağ :",
+  //                                       style: fontStyle(
+  //                                           10, Colors.grey, FontWeight.normal),
+  //                                     ),
+  //                                     Text(
+  //                                       "5 Gram",
+  //                                       style: fontStyle(
+  //                                           10, Colors.black, FontWeight.bold),
+  //                                     ),
+  //                                   ],
+  //                                 )),
+  //                           ],
+  //                         )),
+  //                         // Container(
+  //                         //     decoration: BoxDecoration(
+  //                         //       borderRadius: BorderRadius.circular(25),
+  //                         //       color: Colors.white,
+  //                         //     ),
+  //                         //     child: IconButton(
+  //                         //       icon: const Icon(Icons.add_rounded),
+  //                         //       onPressed: () async {
+  //                         //         print("Ekle");
+  //                         //         print(mealType);
+  //                         //         await updateEatField(mealType.toLowerCase(),
+  //                         //             dietProgram, 1, dayss);
+  //                         //       },
+  //                         //     )),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(
+  //               height: 15,
+  //             )
+  //           ],
+  //         )
+  //       : Column();
+  // }
+
+  Widget addingMealsActivity(Map<String, dynamic> meal) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => showMealDetails(meal, meal['foodName']),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white70,
+                  mainColor2, // mainColor2
+                ],
+                stops: const [
+                  0.0,
+                  2.0,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              meal['foodName'] ?? 'No food name',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "${meal['calories'] ?? 'No'} kcal",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        Container(
+                            alignment: Alignment.topRight,
+                            child: const Icon(Icons.more_horiz_outlined))
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        buildMealInfo("Protein", meal['protein']),
+                        buildMealInfo("Karbonhidrat", meal['carbs']),
+                        buildMealInfo("Yağ", meal['fat']),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
           height: 15,
         )
       ],
+    );
+  }
+
+  Widget buildMealInfo(String label, dynamic value) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      margin: EdgeInsets.only(right: 5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Text(
+            "$label :",
+            style: TextStyle(fontSize: 10, color: Colors.grey),
+          ),
+          Text(
+            "$value %",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1164,7 +1527,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 5),
           Text(
-            "$y Gram",
+            "$y %",
             style: fontStyle(12, Colors.grey.shade600, FontWeight.normal),
             textAlign: TextAlign.center,
           )
@@ -1232,9 +1595,9 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Kalori: ${meal['calories']} kcal'),
-              Text('Protein: ${meal['protein']} Gram'),
-              Text('Karbonhidrat: ${meal['carbs']} Gram'),
-              Text('Yağ: ${meal['fat']} Gram'),
+              Text('Protein: ${meal['protein']} %'),
+              Text('Karbonhidrat: ${meal['carbs']} %'),
+              Text('Yağ: ${meal['fat']} %'),
             ],
           ),
           actions: [
