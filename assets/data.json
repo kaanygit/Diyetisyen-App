@@ -1,0 +1,330 @@
+{
+    
+      "elma": {
+        "name":"elma",
+        "kalori": 52,
+        "protein": 0.3,
+        "yağ": 0.2,
+        "karbonhidrat": 14,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "armut": {
+        "name":"armut",
+
+        "kalori": 57,
+        "protein": 0.4,
+        "yağ": 0.3,
+        "karbonhidrat": 15,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "muz": {
+        "name":"muz",
+
+        "kalori": 89,
+        "protein": 1.1,
+        "yağ": 0.3,
+        "karbonhidrat": 23,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "çilek": {
+        "name":"çilek",
+
+        "kalori": 32,
+        "protein": 0.7,
+        "yağ": 0.3,
+        "karbonhidrat": 8,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "portakal": {
+        "name":"portakal",
+
+        "kalori": 43,
+        "protein": 0.9,
+        "yağ": 0.2,
+        "karbonhidrat": 9,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "kivi": {
+        "name":"kivi",
+
+        "kalori": 61,
+        "protein": 1.1,
+        "yağ": 0.6,
+        "karbonhidrat": 15,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "ananas": {
+        "name":"ananas",
+
+        "kalori": 50,
+        "protein": 0.5,
+        "yağ": 0.1,
+        "karbonhidrat": 13,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "üzüm": {
+        "name":"üzüm",
+
+        "kalori": 69,
+        "protein": 0.6,
+        "yağ": 0.2,
+        "karbonhidrat": 16,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      
+      "kiraz": {
+        "name":"kiraz",
+
+        "kalori": 50,
+        "protein": 1,
+        "yağ": 0.4,
+        "karbonhidrat": 12,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "kavun": {
+        "name":"kavun",
+
+        "kalori": 30,
+        "protein": 0.8,
+        "yağ": 0.2,
+        "karbonhidrat": 7,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "nar": {
+        "name":"nar",
+
+        "kalori": 83,
+        "protein": 1.7,
+        "yağ": 1.2,
+        "karbonhidrat": 18,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "domates": {
+        "name":"domates",
+
+        "kalori": 18,
+        "protein": 0.9,
+        "yağ": 0.2,
+        "karbonhidrat": 3.9,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "salatalık": {
+        "name":"salatalık",
+
+        "kalori": 15,
+        "protein": 0.7,
+        "yağ": 0.1,
+        "karbonhidrat": 3.6,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "havuç": {
+        "name":"havuç",
+
+        "kalori": 41,
+        "protein": 0.9,
+        "yağ": 0.2,
+        "karbonhidrat": 10,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "patates": {
+        "name":"patates",
+
+        "kalori": 77,
+        "protein": 2,
+        "yağ": 0.1,
+        "karbonhidrat": 17,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "ıspanak": {
+        "name":"ıspanak",
+
+        "kalori": 23,
+        "protein": 2.9,
+        "yağ": 0.4,
+        "karbonhidrat": 3.6,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "soğan": {
+        "name":"soğan",
+
+        "kalori": 40,
+        "protein": 1.1,
+        "yağ": 0.1,
+        "karbonhidrat": 9.3,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "brokoli": {
+        "name":"brokoli",
+
+        "kalori": 34,
+        "protein": 2.8,
+        "yağ": 0.4,
+        "karbonhidrat": 6.6,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "kabak": {
+        "name":"kabak",
+
+        "kalori": 17,
+        "protein": 1.2,
+        "yağ": 0.3,
+        "karbonhidrat": 3.4,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "patlıcan": {
+        "name":"patlıcan",
+
+        "kalori": 25,
+        "protein": 1,
+        "yağ": 0.2,
+        "karbonhidrat": 5.9,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "fasulye": {
+        "name":"fasulye",
+
+        "kalori": 31,
+        "protein": 1.8,
+        "yağ": 0.2,
+        "karbonhidrat": 6.9,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "karnabahar": {
+        "name":"karnabahar",
+
+        "kalori": 25,
+        "protein": 1.9,
+        "yağ": 0.3,
+        "karbonhidrat": 4.5,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "marul": {
+        "name":"marul",
+
+        "kalori": 15,
+        "protein": 1.2,
+        "yağ": 0.2,
+        "karbonhidrat": 2.3,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "mercimek çorbası": {
+        "name":"mercimek çorbası",
+
+        "kalori": 110,
+        "protein": 5,
+        "yağ": 2,
+        "karbonhidrat": 18,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "ızgara tavuk": {
+        "name":"ızgara tavuk",
+
+        "kalori": 200,
+        "protein": 25,
+        "yağ": 8,
+        "karbonhidrat": 3,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "kıymalı makarna": {
+        "name":"kıymalı makarna",
+
+        "kalori": 350,
+        "protein": 15,
+        "yağ": 12,
+        "karbonhidrat": 45,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "sebzeli omlet": {
+        "name":"sebzeli omlet",
+
+        "kalori": 180,
+        "protein": 10,
+        "yağ": 12,
+        "karbonhidrat": 8,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "ızgara somon": {
+        "name":"ızgara somon",
+
+        "kalori": 250,
+        "protein": 30,
+        "yağ": 15,
+        "karbonhidrat": 2,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "tavuk salatası": {
+        "name":"tavuk salatası",
+
+        "kalori": 180,
+        "protein": 20,
+        "yağ": 8,
+        "karbonhidrat": 10,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "mercimek pilavı": {
+        "name":"mercimek pilavı",
+
+        "kalori": 300,
+        "protein": 10,
+        "yağ": 6,
+        "karbonhidrat": 50,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "kıymalı börek": {
+        "name":"kıymalı börek",
+
+        "kalori": 220,
+        "protein": 12,
+        "yağ": 15,
+        "karbonhidrat": 10,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "yoğurtlu salata": {
+        "name":"yoğurtlu salata",
+
+        "kalori": 150,
+        "protein": 5,
+        "yağ": 8,
+        "karbonhidrat": 12,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "sebzeli kuskus": {
+        "name":"sebzeli kuskus",
+
+        "kalori": 280,
+        "protein": 8,
+        "yağ": 10,
+        "karbonhidrat": 40,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "ızgara sebzeler": {
+        "name":"ızgara sebzeler",
+
+        "kalori": 120,
+        "protein": 3,
+        "yağ": 6,
+        "karbonhidrat": 15,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "mercimek salatası": {
+        "name":"mercimek salatası",
+
+        "kalori": 200,
+        "protein": 7,
+        "yağ": 8,
+        "karbonhidrat": 25,
+        "photoUrl":"https://www.kayalarziraat.com/wp-content/uploads/2022/12/roseglow-elma.png"
+      },
+      "su": {
+        "name":"su",
+
+        "kalori": 100,
+        "protein": 10,
+        "yağ": 5,
+        "karbonhidrat": 25,
+        "photoUrl":"https://elmaciksu.com.tr/wp-content/uploads/2020/09/elmaciksu-cunku-dogal-mineralli.jpg" 
+      }
+    
+  }
+  
+  

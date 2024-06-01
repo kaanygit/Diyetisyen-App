@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
@@ -27,7 +29,22 @@ void main() async {
     androidProvider: AndroidProvider.debug,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // addDataToFirestore();
   runApp(const MyApp());
+}
+
+void addDataToFirestore() async {
+  // JSON dosyasını oku
+  String jsonString = await rootBundle.loadString('assets/data.json');
+  Map<String, dynamic> data = jsonDecode(jsonString);
+
+  // Firestore referansı al
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Firestore'a verileri ekle
+  data.forEach((key, value) {
+    firestore.collection('foods').doc(key).set(value);
+  });
 }
 
 Future<void> saveDietPlans() async {

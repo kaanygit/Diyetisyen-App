@@ -17,6 +17,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
   int selectedWeek = 1;
   List<int> weeks = [1, 2, 3, 4];
   bool loadingValue = true;
+  bool getDietcianPersonAvaliable = true;
 
   late Map<String, dynamic> dietData = {};
   late Map<String, dynamic> profileData = {};
@@ -32,7 +33,6 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getProfile();
   }
@@ -43,25 +43,27 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
 
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      DocumentSnapshot<Object?> snapshot = await firestore
+      DocumentSnapshot snapshot = await firestore
           .collection('users')
           .doc(user!.uid)
           .collection('dietProgram')
           .doc('weeklyProgram')
           .get();
-      DocumentSnapshot<Object?> snapshotProfile =
-          await firestore.collection('users').doc(user?.uid).get();
+      DocumentSnapshot snapshotProfile =
+          await firestore.collection('users').doc(user.uid).get();
 
       if (snapshot.exists && snapshotProfile.exists) {
         dynamic data = snapshot.data();
         dynamic profileDatas = snapshotProfile.data();
         setState(() {
-          dietData = data;
-          profileData = profileDatas;
+          dietData = data as Map<String, dynamic>;
+          profileData = profileDatas as Map<String, dynamic>;
+          getDietcianPersonAvaliable =
+              profileData['dietician-person-uid'].isNotEmpty;
         });
         dietDataIfStatement();
       } else {
-        showErrorSnackBar(context, "Profil verileri getirilirken hata oluştu");
+        showErrorSnackBar(context, "Hata1");
       }
     } catch (e) {
       print("Profil verileri getirilirken hata oluştu : $e");
@@ -87,7 +89,6 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     DateTime now = DateTime.now();
     int daysSinceStart = now.difference(startDate!).inDays;
 
-//
     DocumentSnapshot<Map<String, dynamic>> snapshotEating = await firestore
         .collection('users')
         .doc(user!.uid)
@@ -96,23 +97,22 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
         .collection('meals')
         .doc('day_$daysSinceStart')
         .get();
-    print(snapshotEating.data());
 
     Map<String, dynamic>? ekstraYemeler = snapshotEating.data();
-    List<dynamic> mealss = ekstraYemeler!['meals'];
-    mealss.forEach((meal) {
-      setState(() {
-        totalDailyeatCalories += meal['calories'] as int;
-        totalCalories += meal['calories'] as int;
-        totalCarbs += meal['carbs'] as int;
-        totalFat += meal['fat'] as int;
-        totalProtein += meal['protein'] as int;
+    if (ekstraYemeler != null) {
+      List<dynamic> meals = ekstraYemeler['meals'];
+      meals.forEach((meal) {
+        setState(() {
+          totalDailyeatCalories += meal['calories'] as int;
+          totalCalories += meal['calories'] as int;
+          totalCarbs += meal['carbs'] as int;
+          totalFat += meal['fat'] as int;
+          totalProtein += meal['protein'] as int;
+        });
       });
-    });
+    }
 
-    ////
-    int week = (daysSinceStart ~/ 7) % 4 +
-        1; // 4 haftalık döngü olduğu için mod 4 aldık
+    int week = (daysSinceStart ~/ 7) % 4 + 1;
     int dayIndex = daysSinceStart % 7;
     String day = days[dayIndex];
 
@@ -143,8 +143,6 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           dietData['week$week'][day]['lunch']['calories'] as int;
     });
 
-//ekstralar
-
     double percentageCompleted =
         (totalDailyeatCalories / totalDailyCalories) * 100;
     String formattedPercentage = percentageCompleted.toStringAsFixed(1);
@@ -153,13 +151,12 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     });
     print("testt $percentageCompleted");
 
-    ////
     Map<String, dynamic> data = dietData['week$selectedWeek'];
 
-    late int dailyCalories = 0;
-    late int dailyFat = 0;
-    late int dailyProtein = 0;
-    late int dailyCarbs = 0;
+    int dailyCalories = 0;
+    int dailyFat = 0;
+    int dailyProtein = 0;
+    int dailyCarbs = 0;
     for (var day in days) {
       if (data[day]['breakfast']['eat'] == true) {
         dailyCalories += data[day]['breakfast']['calories'] as int;
@@ -174,10 +171,10 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
         dailyCarbs += data[day]['lunch']['carbs'] as int;
       }
       if (data[day]['dinner']['eat'] == true) {
-        dailyCalories += data[day]['lunch']['calories'] as int;
-        dailyFat += data[day]['lunch']['fat'] as int;
-        dailyProtein += data[day]['lunch']['protein'] as int;
-        dailyCarbs += data[day]['lunch']['carbs'] as int;
+        dailyCalories += data[day]['dinner']['calories'] as int;
+        dailyFat += data[day]['dinner']['fat'] as int;
+        dailyProtein += data[day]['dinner']['protein'] as int;
+        dailyCarbs += data[day]['dinner']['carbs'] as int;
       }
     }
     setState(() {
@@ -190,66 +187,91 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Gelişim'),
-            DropdownButton<int>(
-              value: selectedWeek,
-              dropdownColor: Colors.white,
-              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-              underline: SizedBox(),
-              items: weeks.map((int week) {
-                return DropdownMenuItem<int>(
-                  value: week,
-                  child:
-                      Text('Week $week', style: TextStyle(color: Colors.black)),
-                );
-              }).toList(),
-              onChanged: (int? newValue) {
-                setState(() {
-                  selectedWeek = newValue!;
-                  totalCalories = 0;
-                  totalFat = 0;
-                  totalProtein = 0;
-                  totalCarbs = 0;
-
-                  totalDailyCalories = 0;
-                  totalDailyeatCalories = 0;
-                  dailyEatingRatio = "";
-                  getProfile();
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-      body: loadingValue
-          ? SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return getDietcianPersonAvaliable
+        ? Scaffold(
+            appBar: AppBar(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildWeeklyProgressCard(),
-                  SizedBox(height: 16.0),
                   Text(
-                    'Son Değerleriniz',
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    'Gelişim',
+                    style: fontStyle(18, Colors.black, FontWeight.normal),
                   ),
-                  SizedBox(height: 16.0),
-                  _buildWeightCard(),
-                  SizedBox(height: 16.0),
-                  _buildCaloriesCard(),
+                  DropdownButton<int>(
+                    value: selectedWeek,
+                    dropdownColor: Colors.white,
+                    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                    underline: SizedBox(),
+                    items: weeks.map((int week) {
+                      return DropdownMenuItem<int>(
+                        value: week,
+                        child: Text('Week $week',
+                            style: TextStyle(color: Colors.black)),
+                      );
+                    }).toList(),
+                    onChanged: (int? newValue) {
+                      setState(() {
+                        selectedWeek = newValue!;
+                        totalCalories = 0;
+                        totalFat = 0;
+                        totalProtein = 0;
+                        totalCarbs = 0;
+
+                        totalDailyCalories = 0;
+                        totalDailyeatCalories = 0;
+                        dailyEatingRatio = "";
+                        getProfile();
+                      });
+                    },
+                  ),
                 ],
               ),
-            )
-          : Center(
-              child: CircularProgressIndicator(),
             ),
-    );
+            body: loadingValue
+                ? SingleChildScrollView(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildWeeklyProgressCard(),
+                        SizedBox(height: 16.0),
+                        Text(
+                          'Son Değerleriniz',
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 16.0),
+                        _buildWeightCard(),
+                        SizedBox(height: 16.0),
+                        _buildCaloriesCard(),
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              title: Text(
+                "Gelişim",
+                style: fontStyle(18, Colors.black, FontWeight.normal),
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Lütfen Diyetisyeninizden Diyet Listenizi Alınız",
+                    textAlign: TextAlign.center, // Metni yatayda ortalamak için
+                    style: fontStyle(25, mainColor, FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 
   Widget _buildWeeklyProgressCard() {

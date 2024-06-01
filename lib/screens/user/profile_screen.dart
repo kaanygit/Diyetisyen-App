@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
+import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

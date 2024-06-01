@@ -109,11 +109,11 @@ class _GeminiChatPageState extends State<GeminiChatPage> {
           children: [
             const CircleAvatar(
               radius: 20,
-              backgroundImage: AssetImage("assets/images/gemini.jpg"),
+              backgroundImage: AssetImage("assets/images/dietbot.png"),
             ),
             const SizedBox(width: 10),
             Text(
-              "Gemini Chat",
+              "DietBot Sohbet",
               style: fontStyle(20, Colors.black, FontWeight.bold),
             ),
           ],
@@ -203,7 +203,7 @@ class _GeminiChatPageState extends State<GeminiChatPage> {
             children: [
               const CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage("assets/images/gemini.jpg"),
+                backgroundImage: AssetImage("assets/images/dietbot.png"),
               ),
               const SizedBox(
                 width: 5,
@@ -246,7 +246,7 @@ class _GeminiChatPageState extends State<GeminiChatPage> {
                 radius: 20,
                 backgroundImage: AssetImage(isUser
                     ? "assets/images/avatar.jpg"
-                    : "assets/images/gemini.jpg"),
+                    : "assets/images/dietbot.png"),
               ),
               const SizedBox(
                 width: 5,

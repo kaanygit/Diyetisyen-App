@@ -17,45 +17,53 @@ class AddMeals extends StatefulWidget {
 
 class _AddMealsState extends State<AddMeals> {
   final TextEditingController _searchController = TextEditingController();
-  final List<Map<String, dynamic>> _meals = [
-    {'name': 'Elma', 'image': 'assets/images/apple.jpg'},
-    {'name': 'Pilav', 'image': 'assets/images/rice.jpg'},
-    {'name': 'Makarna', 'image': 'assets/images/pasta.jpg'},
-    {'name': 'Tavuk', 'image': 'assets/images/chicken.jpg'},
-    {'name': 'Salata', 'image': 'assets/images/salad.jpg'},
-    {'name': 'Kek', 'image': 'assets/images/cake.jpg'},
-    {'name': 'Pizza', 'image': 'assets/images/pizza.jpg'},
-    {'name': 'Balık', 'image': 'assets/images/fish.jpg'},
-    {'name': 'Yoğurt', 'image': 'assets/images/yogurt.jpg'},
-    {'name': 'Karpuz', 'image': 'assets/images/watermelon.jpg'},
-  ];
+  List<Map<String, dynamic>> _meals = [];
   List<Map<String, dynamic>> _filteredMeals = [];
+  List<Map<String, dynamic>> _displayedMeals = [];
   bool _showAiBox = true;
+  bool _isLoading = false;
+  int _maxMealsToShow = 10;
+  final ScrollController _scrollController = ScrollController();
   late Future<void> _imageLoaderFuture;
 
   @override
   void initState() {
     super.initState();
-    _filteredMeals = _meals;
+    _getFoodsFromFirestore();
+    _scrollController.addListener(_scrollListener);
+    _imageLoaderFuture = _loadImages();
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _imageLoaderFuture = _loadImages();
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadImages() async {
     await Future.wait(_meals
-        .map((meal) => precacheImage(AssetImage(meal['image']), context))
+        .map((meal) =>
+            precacheImage(NetworkImage(meal['photoUrl'] ?? ''), context))
         .toList());
+  }
+
+  Future<void> _getFoodsFromFirestore() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('foods').get();
+
+    setState(() {
+      _meals = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+      _filteredMeals = _meals;
+      _displayedMeals = _filteredMeals.take(_maxMealsToShow).toList();
+    });
   }
 
   void _filterMeals(String query) {
     if (query.isEmpty) {
       setState(() {
         _filteredMeals = _meals;
-        _showAiBox = true;
       });
     } else {
       setState(() {
@@ -63,8 +71,28 @@ class _AddMealsState extends State<AddMeals> {
             .where((meal) =>
                 meal['name'].toLowerCase().contains(query.toLowerCase()))
             .toList();
-        _showAiBox = false;
       });
+    }
+    _updateDisplayedMeals();
+  }
+
+  void _updateDisplayedMeals() {
+    setState(() {
+      _displayedMeals = _filteredMeals.take(_maxMealsToShow).toList();
+    });
+  }
+
+  void _loadMoreMeals() {
+    setState(() {
+      _maxMealsToShow += 10;
+      _updateDisplayedMeals();
+    });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMoreMeals();
     }
   }
 
@@ -94,15 +122,16 @@ class _AddMealsState extends State<AddMeals> {
                   if (_showAiBox) _buildAiBox(),
                   Expanded(
                     child: GridView.builder(
+                      controller: _scrollController,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 3 / 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                       ),
-                      itemCount: _filteredMeals.length,
+                      itemCount: _displayedMeals.length,
                       itemBuilder: (context, index) {
-                        final meal = _filteredMeals[index];
+                        final meal = _displayedMeals[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -119,8 +148,8 @@ class _AddMealsState extends State<AddMeals> {
                                 Expanded(
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      meal['image'],
+                                    child: Image.network(
+                                      meal['photoUrl'] ?? '',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -128,7 +157,7 @@ class _AddMealsState extends State<AddMeals> {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    meal['name'],
+                                    meal['name'] ?? 'Unnamed',
                                     style: fontStyle(
                                       15,
                                       Colors.black,
@@ -202,15 +231,6 @@ class _AddMealsState extends State<AddMeals> {
   }
 }
 
-Map<String, dynamic> meals = {
-  'name': 'Akşam Yemeği',
-  'foodName': 'Pilav',
-  'calories': 450,
-  'protein': 25,
-  'fat': 12,
-  'carbs': 55,
-};
-
 class MealDetailScreen extends StatelessWidget {
   final Map<String, dynamic> meal;
 
@@ -220,52 +240,55 @@ class MealDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(meal['name']),
+        title: Text(meal['name'] ?? 'Unnamed'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  meal['image'],
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    meal['photoUrl'] ?? '',
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: Text(
-                "${meal['name']}",
-                style: fontStyle(25, mainColor, FontWeight.bold),
+              SizedBox(height: 16),
+              Center(
+                child: Text(
+                  meal['name'] ?? 'Unnamed',
+                  style: fontStyle(25, mainColor, FontWeight.bold),
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            Divider(color: Colors.grey[400]),
-            SizedBox(height: 16),
-            _buildNutrientRow('Kalori', '100 kcal'),
-            _buildNutrientRow('Yağ', '0.5 Gram'),
-            _buildNutrientRow('Karbonhidrat', '25 Gram'),
-            _buildNutrientRow('Protein', '0.5 Gram'),
-            SizedBox(height: 25),
-            MyButton(
-                text: "Yemeği Ekle",
-                buttonColor: mainColor,
-                buttonTextColor: Colors.white,
-                buttonTextSize: 16,
-                buttonTextWeight: FontWeight.bold,
-                onPressed: () async {
-                  await FirebaseOperations().addMealsFirebase(context, meals);
-                })
-          ],
+              SizedBox(height: 16),
+              Divider(color: Colors.grey[400]),
+              SizedBox(height: 16),
+              _buildNutrientRow('Kalori', '${meal['kalori'] ?? 0} kcal'),
+              _buildNutrientRow('Yağ', '${meal['yağ'] ?? 0} Gram'),
+              _buildNutrientRow(
+                  'Karbonhidrat', '${meal['karbonhidrat'] ?? 0} Gram'),
+              _buildNutrientRow('Protein', '${meal['protein'] ?? 0} Gram'),
+              SizedBox(height: 25),
+              MyButton(
+                  text: "Yemeği Ekle",
+                  buttonColor: mainColor,
+                  buttonTextColor: Colors.white,
+                  buttonTextSize: 16,
+                  buttonTextWeight: FontWeight.bold,
+                  onPressed: () async {
+                    await FirebaseOperations().addMealsFirebase(context, meal);
+                  })
+            ],
+          ),
         ),
       ),
     );

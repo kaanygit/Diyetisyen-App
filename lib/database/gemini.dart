@@ -25,8 +25,8 @@ class Gemini {
   Future<String?> geminiTextPrompt(String userPrompt) async {
     try {
       await initializeGemini(); // googleGeminiApiKey'yi başlatmak için
-      final model =
-          GenerativeModel(model: 'gemini-1.0-pro', apiKey: googleGeminiApiKey);
+      final model = GenerativeModel(
+          model: 'gemini-1.5-flash', apiKey: googleGeminiApiKey);
       final prompt = TextPart(userPrompt);
       final response = await model.generateContent([Content.text(prompt.text)]);
       print("Resimsiz geldi");

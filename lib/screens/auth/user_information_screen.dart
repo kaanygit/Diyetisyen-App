@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
@@ -141,13 +143,127 @@ class _UserInformationFormState extends State<UserInformationForm> {
     _isButtonEnabledStreamController.add(isCurrentPageValid);
   }
 
-  void _saveUserData() async {
+  // Future<void> _saveUserData() async {
+  //   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // await FirebaseFirestore.instance
+  //     .collection('users')
+  //     .doc(_auth.currentUser?.uid)
+  //     .update(_userData);
+  // DocumentReference<Map<String, dynamic>> snapshot =
+  //     await FirebaseFirestore.instance.collection('users').doc("diet_list");
+  // if (snapshot.exits && _userData['diet_program_choise'] == "otomatik") {
+  //   Map<String, dynamic> data = snapshot.data();
+  //     // bunların içinde birkaç tane farklı uid ye sahip ve içlerinde week1 week2 week3
+  //     // week4 şeklinde ögeler var onların altında da Monday den Sunday e kadar günler var onların içinde de breakfast dinner ve lunch var bunların içinde de diet diye içinde yemekler var bu yemekleri ekrana yaz
+  //   }
+
+  //   Navigator.pushReplacement(
+  //     context,
+  //     PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+  //   );
+  //   showSuccessSnackBar(context,
+  //       "Verileriniz başarılı bir şekilde kaydedildi. Aramıza hoşgeldiniz :)");
+  // }
+
+  List<Map<String, dynamic>> dietOptions = [];
+
+  Future<void> _saveUserData() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
+    final random = Random();
 
     await FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser?.uid)
         .update(_userData);
+
+    // Kullanıcının seçtiği diyet programı "otomatik" ise
+    if (_userData['diet_program_choise'].toString() == "otomatik") {
+      print("secenek otomatik geldi");
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('diet_list').get();
+
+      List<Map<String, dynamic>> dietOptions = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      // Bu kısımda diyet listesindeki verileri ekrana yazdıracağız
+      var weeks = ['week1', 'week2', 'week3', 'week4'];
+      var days = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+      ];
+      var mealTypes = ['breakfast', 'lunch', 'dinner'];
+
+      // İstenmeyen yiyecek bulunmayan diyet seçeneklerini depolamak için bir liste oluşturalım
+      List<Map<String, dynamic>> undesiredFoodsFreeOptions = [];
+
+      for (var dietOption in dietOptions) {
+        bool foundUndesiredFood = false;
+        for (var week in weeks) {
+          if (dietOption.containsKey(week)) {
+            for (var day in days) {
+              if (dietOption[week].containsKey(day)) {
+                for (var mealType in mealTypes) {
+                  if (dietOption[week][day].containsKey(mealType)) {
+                    var meals = dietOption[week][day][mealType]['diet'];
+                    var processedMeals = meals.trim().toLowerCase().split(' ');
+
+                    var allergyFoods = _userData['alergy_food']
+                        .trim()
+                        .toLowerCase()
+                        .split(
+                            ','); // Virgülle ayrılmış değerleri listeye dönüştür
+                    var unlikedFoods = _userData['unliked_food']
+                        .trim()
+                        .toLowerCase()
+                        .split(
+                            ','); // Virgülle ayrılmış değerleri listeye dönüştür
+
+                    // processedMeals içindeki her bir öğeyi döngüye alıp alerji ve hoşlanılmayan yiyeceklerle karşılaştıralım
+                    for (var meal in processedMeals) {
+                      if (allergyFoods.contains(meal) ||
+                          unlikedFoods.contains(meal)) {
+                        foundUndesiredFood = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (!foundUndesiredFood) {
+          undesiredFoodsFreeOptions.add(dietOption);
+        }
+      }
+
+      // İstenmeyen yiyecek bulunmayan diyet seçenekleri arasından rastgele birini seçelim
+      if (undesiredFoodsFreeOptions.isNotEmpty) {
+        var selectedOptionIndex =
+            random.nextInt(undesiredFoodsFreeOptions.length);
+        var selectedOption = undesiredFoodsFreeOptions[selectedOptionIndex];
+
+        // Seçilen diyet seçeneğine başlangıç tarihini ekleyelim
+        var startDate = DateTime.now(); // Şu anki tarih ve saat
+        selectedOption['startDate'] = startDate;
+
+        // Seçilen diyet seçeneğini Firebase'e kaydedelim
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_auth.currentUser?.uid)
+            .collection('dietProgram')
+            .doc('weeklyProgram')
+            .set(selectedOption);
+      }
+    }
+
     Navigator.pushReplacement(
       context,
       PageTransition(type: PageTransitionType.fade, child: HomeScreen()),

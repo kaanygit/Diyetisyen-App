@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/database/gemini.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class AiObjectDetectionScreen extends StatefulWidget {
 
 class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   String? detectedFood;
+  Map<String, dynamic>? foodData;
 
   @override
   void initState() {
@@ -28,6 +31,26 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
     setState(() {
       detectedFood = label ?? "Bir hata oluştu veya yiyecek algılanamadı.";
     });
+    if (label != null) {
+      await _fetchFoodData(label);
+    }
+  }
+
+  Future<void> _fetchFoodData(String label) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('foods')
+        .where('name', isEqualTo: label)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+      });
+    } else {
+      setState(() {
+        foodData = null;
+      });
+    }
   }
 
   @override
@@ -65,24 +88,42 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                         SizedBox(height: 8),
                         Divider(color: Colors.grey[400]),
                         SizedBox(height: 8),
-                        Text(
-                          'Besin Değerleri:',
-                          style: fontStyle(20, Colors.black, FontWeight.bold),
-                        ),
-                        SizedBox(height: 8),
-                        _buildNutrientRow('Kalori', '100 kcal'),
-                        _buildNutrientRow('Yağ', '0.5 g'),
-                        _buildNutrientRow('Karbonhidrat', '25 g'),
-                        _buildNutrientRow('Protein', '0.5 g'),
-                        SizedBox(height: 25),
-                        // MyButton widget'ı kullanmak yerine FloatingActionButton örneği:
-                        MyButton(
-                            text: "Yemeği Ekle",
-                            buttonColor: mainColor,
-                            buttonTextColor: Colors.white,
-                            buttonTextSize: 20,
-                            buttonTextWeight: FontWeight.normal,
-                            onPressed: () {})
+                        if (foodData != null)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Besin Değerleri:',
+                                style: fontStyle(
+                                    20, Colors.black, FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              _buildNutrientRow(
+                                  'Kalori', '${foodData!['kalori'] ?? 0} kcal'),
+                              _buildNutrientRow(
+                                  'Yağ', '${foodData!['yağ'] ?? 0} Gram'),
+                              _buildNutrientRow('Karbonhidrat',
+                                  '${foodData!['karbonhidrat'] ?? 0} Gram'),
+                              _buildNutrientRow('Protein',
+                                  '${foodData!['protein'] ?? 0} Gram'),
+                              SizedBox(height: 25),
+                              MyButton(
+                                  text: "Yemeği Ekle",
+                                  buttonColor: mainColor,
+                                  buttonTextColor: Colors.white,
+                                  buttonTextSize: 20,
+                                  buttonTextWeight: FontWeight.normal,
+                                  onPressed: () async {
+                                    await FirebaseOperations()
+                                        .addMealsFirebase(context, foodData!);
+                                  }),
+                            ],
+                          )
+                        else
+                          Text(
+                            "Besin bilgileri bulunamadı.",
+                            style: fontStyle(20, Colors.red, FontWeight.bold),
+                          ),
                       ],
                     ),
                   ),

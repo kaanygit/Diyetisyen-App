@@ -343,6 +343,7 @@ class FirebaseOperations {
         // Başlangıç tarihini kontrol et
         DateTime? startDate =
             (snapshot.data() as Map<String, dynamic>)['startDate']?.toDate();
+        print("burası çalısıyor");
         if (startDate == null) {
           print("Başlangıç tarihi bulunamadı.");
           return;
@@ -357,11 +358,11 @@ class FirebaseOperations {
         // Firebase'e eklenecek yemek verileri
         Map<String, dynamic> mealData = {
           'name': meals['name'],
-          'foodName': meals['foodName'],
-          'calories': meals['calories'],
+          'foodName': meals['name'],
+          'calories': meals['kalori'],
           'protein': meals['protein'],
-          'fat': meals['fat'],
-          'carbs': meals['carbs'],
+          'fat': meals['yağ'],
+          'carbs': meals['karbonhidrat'],
         };
 
         // O güne ait mevcut yemek bilgilerini al
@@ -393,7 +394,7 @@ class FirebaseOperations {
       } else {
         print("Kullanıcı verisi bulunamadı.");
         showErrorSnackBar(
-            context, "Kullanici verisi bulunamadı Lütfen tekrar deneyiniz");
+            context, "Kullanici verisi bulunamadı Lütfen tekrar deneyinizs");
       }
     } catch (e) {
       print("Veriler yüklenirken hata oluştu : $e");
