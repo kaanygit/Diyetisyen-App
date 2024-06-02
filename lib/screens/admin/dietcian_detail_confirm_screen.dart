@@ -1,4 +1,6 @@
+import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/screens/admin/admin_home_screen.dart';
+import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:page_transition/page_transition.dart';
@@ -57,12 +59,22 @@ class DieticianDetailScreen extends StatelessWidget {
             _buildInfoRow('Yaş', userAge.toString()),
             _buildInfoRow('Eğitim Seviyesi', userEducationLevel),
             SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => _showConfirmationDialog(context),
-              child: Text(isDieticianConfirmed
-                  ? "Diyetisyen Onayını Kaldır"
-                  : "Diyetisyen Olarak Onayla"),
-            ),
+            MyButton(
+                text: isDieticianConfirmed
+                    ? "Diyetisyen Onayını Kaldır"
+                    : "Diyetisyen Olarak Onayla",
+                buttonColor: mainColor,
+                buttonTextColor: Colors.white,
+                buttonTextSize: 20,
+                buttonTextWeight: FontWeight.normal,
+                onPressed: () => _showConfirmationDialog(context))
+            // ElevatedButton(
+            //   onPressed: () => _showConfirmationDialog(context),
+            //   child: Text(isDieticianConfirmed
+            //       ? "Diyetisyen Onayını Kaldır"
+            //       : "Diyetisyen Olarak Onayla"),
+
+            // ),
           ],
         ),
       ),

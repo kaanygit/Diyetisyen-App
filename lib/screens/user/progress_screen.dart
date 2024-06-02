@@ -58,12 +58,19 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
         setState(() {
           dietData = data as Map<String, dynamic>;
           profileData = profileDatas as Map<String, dynamic>;
-          getDietcianPersonAvaliable =
-              profileData['dietician-person-uid'].isNotEmpty;
         });
         dietDataIfStatement();
       } else {
         showErrorSnackBar(context, "Hata1");
+      }
+      if (snapshotProfile.exists) {
+        setState(() {
+          getDietcianPersonAvaliable = true;
+        });
+      } else {
+        setState(() {
+          getDietcianPersonAvaliable = false;
+        });
       }
     } catch (e) {
       print("Profil verileri getirilirken hata oluştu : $e");
@@ -102,14 +109,16 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     if (ekstraYemeler != null) {
       List<dynamic> meals = ekstraYemeler['meals'];
       meals.forEach((meal) {
+        print(meal);
         setState(() {
-          totalDailyeatCalories += meal['calories'] as int;
-          totalCalories += meal['calories'] as int;
-          totalCarbs += meal['carbs'] as int;
-          totalFat += meal['fat'] as int;
-          totalProtein += meal['protein'] as int;
+          totalDailyeatCalories += (meal['calories'] as num).toInt();
+          totalCalories += (meal['calories'] as num).toInt();
+          totalCarbs += (meal['carbs'] as num).toInt();
+          totalFat += (meal['fat'] as num).toInt();
+          totalProtein += (meal['protein'] as num).toInt();
         });
       });
+      print("TEST:$totalCalories");
     }
 
     int week = (daysSinceStart ~/ 7) % 4 + 1;
@@ -178,10 +187,10 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
       }
     }
     setState(() {
-      totalCalories = dailyCalories;
-      totalCarbs = dailyCarbs;
-      totalFat = dailyFat;
-      totalProtein = dailyProtein;
+      totalCalories += dailyCalories;
+      totalCarbs += dailyCarbs;
+      totalFat += dailyFat;
+      totalProtein += dailyProtein;
     });
   }
 
@@ -378,10 +387,12 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               width: 80.0,
               height: 80.0,
               child: CustomPaint(
-                painter: _WeightGraphPainter(
-                    currentWeight: (profileData['weight'] ?? 0.0),
-                    targetWeight: (profileData['targetWeight'] ?? 0.0)),
-              ),
+                  painter: _WeightGraphPainter(
+                currentWeight: (profileData['weight'] ?? 0.0).toDouble(),
+                targetWeight: (profileData['targetWeight'] ?? 0.0).toDouble(),
+              )
+                  // targetWeight: (profileData['targetWeight'] ?? 0.0)),
+                  ),
             ),
           ],
         ),

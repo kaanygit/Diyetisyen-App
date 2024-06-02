@@ -30,6 +30,7 @@ void main() async {
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   // addDataToFirestore();
+  // saveDietPlans();
   runApp(const MyApp());
 }
 

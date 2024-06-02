@@ -39,7 +39,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   Future<void> _fetchFoodData(String label) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('foods')
-        .where('name', isEqualTo: label)
+        .where('name', isEqualTo: label.trim().toLowerCase())
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {

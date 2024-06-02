@@ -365,6 +365,8 @@ class FirebaseOperations {
           'carbs': meals['karbonhidrat'],
         };
 
+        print("Meal Data : $mealData");
+
         // O güne ait mevcut yemek bilgilerini al
         DocumentReference dayDocRef = _firestore
             .collection('users')

@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String selectedMeal = "Meals"; // Seçilen butonu takip etmek için değişken
+  String selectedMeal = "Yemekler"; // Seçilen butonu takip etmek için değişken
   List<Map<String, dynamic>> dietProgram = [];
   List<dynamic> activityAddingMeal = [];
   bool isLoading = true;
@@ -52,10 +52,16 @@ class _HomePageState extends State<HomePage> {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       DocumentSnapshot snapshot =
           await firestore.collection('users').doc(uid).get();
+
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
         setState(() {
-          profilePhoto = data['profilePhoto'];
+          profilePhoto = data['profilePhoto'] ??
+              ""; // profilePhoto alanı yoksa boş string atanır
+        });
+      } else {
+        setState(() {
+          profilePhoto = ""; // Doküman yoksa da boş string atanır
         });
       }
     } catch (e) {
@@ -367,7 +373,7 @@ class _HomePageState extends State<HomePage> {
         dailyWater += dayData['meals']['dinner']['water'] ?? 0;
       }
 
-      eatingFoodCalculate();
+      getEatingFood();
     }
   }
 
@@ -375,8 +381,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (currentDayIndex < dietProgram.length - 1) {
         currentDayIndex++;
+        // getEatingFood();
         updateDailyValues();
-        getEatingFood();
       }
     });
   }
@@ -385,8 +391,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (currentDayIndex > 0) {
         currentDayIndex--;
+        // getEatingFood();
         updateDailyValues();
-        getEatingFood();
       }
     });
   }
@@ -413,63 +419,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getEatingFood() async {
-    try {
-      print("GÜNCEL DEGER : $currentDayIndex");
-      User? user = FirebaseAuth.instance.currentUser;
-      String? uid = user?.uid;
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+    String? uid = user?.uid;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      if (uid == null) {
-        print("Kullanıcı oturum açmamış.");
-        return;
-      }
+    // Doğru referansı kullanarak dökümanı al
+    DocumentReference dietProgramRef = firestore
+        .collection('users')
+        .doc(uid)
+        .collection('dietProgram')
+        .doc('weeklyProgram')
+        .collection('meals')
+        .doc('day_$currentDayIndex');
 
-      DocumentReference dietProgramRef = firestore
-          .collection('users')
-          .doc(uid)
-          .collection('dietProgram')
-          .doc('weeklyProgram')
-          .collection('meals')
-          .doc('day_$currentDayIndex');
-
-      DocumentSnapshot snapshot = await dietProgramRef.get();
-
-      if (snapshot.exists) {
-        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-        if (data != null && data.containsKey('meals')) {
-          List<dynamic> meals = data['meals'];
-          print("Gelen yemek listesi: $meals");
-
-          // Her bir yemek verisini konsola yazdır
-          for (var meal in meals) {
-            print(meal);
-          }
-          print(meals.length);
-
-          setState(() {
-            activityAddingMeal = meals;
-            eatingFoodCalculate(); // Burada yemek verilerini hesaplayın ve güncelleyin
-          });
-        } else {
-          print('Belirtilen gün için yemek verisi bulunamadı.');
-          setState(() {
-            activityAddingMeal = [];
-            eatingFoodCalculate();
-          });
-        }
-      } else {
-        print('Belirtilen gün için veri bulunamadı.');
+    DocumentSnapshot snapshot = await dietProgramRef.get();
+    if (snapshot.exists) {
+      var data = snapshot.data() as Map<String, dynamic>;
+      if (data.containsKey('meals')) {
+        List<dynamic> meals = data['meals'];
         setState(() {
-          activityAddingMeal = [];
+          activityAddingMeal = meals;
           eatingFoodCalculate();
         });
+      } else {
+        setState(() {
+          activityAddingMeal = [];
+        });
       }
-    } catch (e) {
-      print("Veri getirilirken hata oluştu: $e");
-      setState(() {
-        activityAddingMeal = [];
-        eatingFoodCalculate();
-      });
+    } else {
+      activityAddingMeal = [];
     }
   }
 
@@ -477,21 +455,20 @@ class _HomePageState extends State<HomePage> {
     int mealTotalEatingCalories = 0;
     int mealTotalEatingProtein = 0;
     int mealTotalEatingCarbs = 0;
-    int mealTotalEatingFat =
-        0; // 'Yag' yerine 'Fat' kullanmak daha tutarlı olabilir
+    int mealTotalEatingFat = 0;
 
     for (var meal in activityAddingMeal) {
-      mealTotalEatingCalories += (meal['calories'] ?? 0) as int;
-      mealTotalEatingProtein += (meal['protein'] ?? 0) as int;
-      mealTotalEatingCarbs += (meal['carbs'] ?? 0) as int;
-      mealTotalEatingFat += (meal['fat'] ?? 0) as int;
+      mealTotalEatingCalories += ((meal['calories'] as num)).toInt();
+      mealTotalEatingProtein += (meal['protein'] as num).toInt();
+      mealTotalEatingCarbs += (meal['carbs'] as num).toDouble().toInt();
+      mealTotalEatingFat += ((meal['fat'] as num)).toInt();
     }
 
     setState(() {
       dailyCalories -= mealTotalEatingCalories;
-      dailyCarbs += mealTotalEatingCarbs;
-      dailyProtein += mealTotalEatingProtein;
-      dailyFat += mealTotalEatingFat;
+      dailyProtein -= mealTotalEatingProtein;
+      dailyCarbs -= mealTotalEatingCarbs;
+      dailyFat -= mealTotalEatingFat;
     });
   }
 
@@ -634,8 +611,39 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               width: 5,
                             ),
-                            Icon(
-                              Icons.info_outline,
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        "Günlük Yemekler",
+                                        style: fontStyle(
+                                            20, Colors.black, FontWeight.bold),
+                                      ),
+                                      content: Text(
+                                        "Burada yediğiniz yemekleri görebileceğiniz bir ekrandır.",
+                                        style: fontStyle(18, Colors.black,
+                                            FontWeight.normal),
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text(
+                                            "Kapat",
+                                            style: fontStyle(
+                                                20, mainColor, FontWeight.bold),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.info_outline),
                               color: Colors.black,
                             ),
                           ],
@@ -659,9 +667,9 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(child: dailyMeals("Meals")),
-                                  Expanded(child: dailyMeals("Activity")),
-                                  Expanded(child: dailyMeals("Water")),
+                                  Expanded(child: dailyMeals("Yemekler")),
+                                  Expanded(child: dailyMeals("Aktivite")),
+                                  Expanded(child: dailyMeals("Su")),
                                 ],
                               ),
                             ),
@@ -1548,6 +1556,7 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               currentDayIndex = index;
               updateDailyValues();
+              // eatingFoodCalculate();
             });
           },
           child: Container(

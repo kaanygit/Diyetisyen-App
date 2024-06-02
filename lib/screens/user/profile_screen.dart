@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
+import 'package:diyetisyenapp/widget/privacy.dart';
+import 'package:diyetisyenapp/widget/term_condition.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -192,6 +195,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: InkWell(
         onTap: () {
+          if (text == "Arkadaşlarınla Paylaş") {
+            _launchURL('https://diyetisyenapp.com/');
+          } else if ("Gizlilik Politikası" == text) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PrivacyPage(),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TermsOfUsePage(),
+              ),
+            );
+          }
           print("bastın");
         },
         child: Column(
@@ -209,5 +229,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Bağlantı açılamadı: $url';
+    }
   }
 }

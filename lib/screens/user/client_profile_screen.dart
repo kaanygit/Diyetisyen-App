@@ -1,7 +1,11 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
+import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
+import 'package:diyetisyenapp/widget/flash_message.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ClientProfileScreen extends StatefulWidget {
   final String uid;
@@ -18,6 +22,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
   double weight = 0;
   String profilePhoto = "";
   String unliked_food = "";
+  String alergy_food = "";
   List<Map<String, dynamic>> dietOptions = [];
   Map<String, dynamic> selectedDiet = {};
 
@@ -40,6 +45,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
           weight = (userDoc['weight'] ?? 0).toDouble();
           profilePhoto = userDoc['profilePhoto'] ?? '';
           unliked_food = userDoc['unliked_food'] ?? "";
+          alergy_food = userDoc["alergy_food"] ?? "";
         });
       }
     } catch (e) {
@@ -91,42 +97,6 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     }
   }
 
-  Future<void> removeClient() async {
-    try {
-      String dieticianId =
-          'dietician_id_placeholder'; // Replace with actual dietician ID
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Remove client UID from dietician-danisanlar collection
-      await firestore
-          .collection('dietician-danisanlar')
-          .doc(dieticianId)
-          .collection('clients')
-          .doc(widget.uid)
-          .delete();
-
-      // Remove dietician UID from dietician-person collection
-      await firestore.collection('dietician-person').doc(widget.uid).delete();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Kullanıcı başarıyla çıkarıldı."),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      Navigator.of(context).pop(); // Navigate back to the previous screen
-    } catch (e) {
-      print("Error removing client: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Kullanıcı çıkarılırken hata oluştu."),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
   void showConfirmationDialog() {
     showDialog(
       context: context,
@@ -137,71 +107,92 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Seçilen Diyet Listesi:"),
+                Text(
+                  "Seçilen Diyet Listesi:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: selectedDiet.entries.map((entry) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                    List<Widget> entryWidgets =
+                        []; // Widget list for each entry
+                    entryWidgets.add(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${entry.key}:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 5),
+                        ],
+                      ),
+                    );
+
+                    // Check if the value is a map
+                    if (entry.value is Map<String, dynamic>) {
+                      // Iterate over inner map entries
+                      (entry.value as Map<String, dynamic>)
+                          .forEach((key, value) {
+                        entryWidgets.add(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 5),
+                              Text(
+                                '$key:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 5),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: (value as Map<String, dynamic>)
+                                    .entries
+                                    .map((mealEntry) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 5),
+                                      Text(
+                                        '${mealEntry.key}: ${mealEntry.value['diet']}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                          'Calories: ${mealEntry.value['calories']} kcal'),
+                                      Text(
+                                          'Protein: ${mealEntry.value['protein']}%'),
+                                      Text(
+                                          'Carbs: ${mealEntry.value['carbs']}%'),
+                                      Text('Fat: ${mealEntry.value['fat']}%'),
+                                      Text(
+                                          'Water: ${mealEntry.value['water']} ml'),
+                                      SizedBox(height: 10),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                    } else {
+                      // If the value is not a map, directly add it
+                      entryWidgets.add(
                         Text(
-                          '${entry.key}:',
+                          '${entry.value}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 5),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (entry.key == 'meals')
-                              ...entry.value.entries.map((mealEntry) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${mealEntry.key}:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Diet: ${mealEntry.value['diet']}',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                'Calories: ${mealEntry.value['calories']} kcal'),
-                                            Text(
-                                                'Protein: ${mealEntry.value['protein']}%'),
-                                            Text(
-                                                'Carbs: ${mealEntry.value['carbs']}%'),
-                                            Text(
-                                                'Fat: ${mealEntry.value['fat']}%'),
-                                            Text(
-                                                'Water: ${mealEntry.value['water']} ml'),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                  ],
-                                );
-                              }).toList()
-                            else
-                              Text('${entry.value}'),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                      ],
+                      );
+                    }
+
+                    // Add entry widgets to the main list
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: entryWidgets,
                     );
                   }).toList(),
                 ),
@@ -246,7 +237,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               child: Text("Evet, Çıkar"),
               onPressed: () {
                 Navigator.of(context).pop();
-                removeClient();
+                removeUserDietcian();
               },
             ),
           ],
@@ -280,8 +271,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
             Center(
               child: CircleAvatar(
                 radius: 60,
-                backgroundImage: profilePhoto.isEmpty
-                    ? AssetImage('assets/images/default_avatar.jpg')
+                backgroundImage: profilePhoto == null || profilePhoto == ""
+                    ? AssetImage('assets/images/avatar.jpg')
                     : NetworkImage(profilePhoto) as ImageProvider,
               ),
             ),
@@ -314,9 +305,18 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               unliked_food == "" ? "Veri Bulunamadı" : unliked_food,
               style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
+            SizedBox(height: 10),
+            Text(
+              "Alerjisi Olduğu Yiyecekler:",
+              style: fontStyle(20, Colors.black, FontWeight.bold),
+            ),
+            Text(
+              alergy_food == "" ? "Veri Bulunamadı" : alergy_food,
+              style: fontStyle(16, Colors.black, FontWeight.normal),
+            ),
             SizedBox(height: 20),
             Text(
-              "Örnek Diyet Listeleri:",
+              "Diyet Listeleri:",
               style: fontStyle(20, Colors.black, FontWeight.bold),
             ),
             Column(
@@ -334,7 +334,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
             ),
             SizedBox(height: 20),
             MyButton(
-              onPressed: () => print("hello"),
+              onPressed: showRemoveClientDialog,
               // showRemoveClientDialog,
               text: "Kullanıcıyı Çıkar",
               buttonColor: mainColor, buttonTextSize: 16,
@@ -344,5 +344,53 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> removeUserDietcian() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final String dietcianUid = user!.uid;
+      final String userUid = widget.uid;
+
+      // user'ın uid'sinin altındaki dietician-person-uid yerine [] atanacak
+      await firestore.collection('users').doc(userUid).update({
+        'dietician-person-uid': [],
+      });
+
+      // diyetisyenin uid'sinin altındaki dietician-danisanlar-uid ve danisanlar-istek listelerinden user'ın uid'si silinecek
+      await firestore.collection('users').doc(dietcianUid).update({
+        'danisanlar-istek': FieldValue.arrayRemove([userUid]),
+      });
+      await firestore.collection('users').doc(dietcianUid).update({
+        'dietician-danisanlar-uid': FieldValue.arrayRemove([userUid]),
+      });
+
+      // messages koleksiyon altından mesajlara bakılıp receiverId ve senderId birbirlerine olan mesajları sileceksin
+      QuerySnapshot messages = await firestore
+          .collection('messages')
+          .where('receiverId', isEqualTo: dietcianUid)
+          .where('senderId', isEqualTo: userUid)
+          .get();
+      for (DocumentSnapshot message in messages.docs) {
+        await message.reference.delete();
+      }
+      messages = await firestore
+          .collection('messages')
+          .where('receiverId', isEqualTo: userUid)
+          .where('senderId', isEqualTo: dietcianUid)
+          .get();
+      for (DocumentSnapshot message in messages.docs) {
+        await message.reference.delete();
+      }
+
+      showSuccessSnackBar(context, "Kullanıcı başarıyla kaldırıldı.");
+
+      Navigator.pop(context); // Önceki ekrana geri dön
+      Navigator.pop(context); // Önceki ekrana geri dön
+    } catch (e) {
+      print("Kullanıcı verisi silinirken hata oluştu: $e");
+      showErrorSnackBar(context, "Kullanıcı verisi silinirken hata oluştu: $e");
+    }
   }
 }

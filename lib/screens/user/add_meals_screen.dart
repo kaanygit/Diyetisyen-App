@@ -23,12 +23,14 @@ class _AddMealsState extends State<AddMeals> {
   bool _showAiBox = true;
   bool _isLoading = false;
   int _maxMealsToShow = 10;
+  bool isDietData = false;
   final ScrollController _scrollController = ScrollController();
   late Future<void> _imageLoaderFuture;
 
   @override
   void initState() {
     super.initState();
+    getProfileDietDataAvaliable();
     _getFoodsFromFirestore();
     _scrollController.addListener(_scrollListener);
     _imageLoaderFuture = _loadImages();
@@ -96,6 +98,31 @@ class _AddMealsState extends State<AddMeals> {
     }
   }
 
+  Future<void> getProfileDietDataAvaliable() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      QuerySnapshot<Map<String, dynamic>> snapshotEating = await firestore
+          .collection('users')
+          .doc(user!.uid)
+          .collection('dietProgram')
+          .get();
+
+      if (snapshotEating.docs.isNotEmpty) {
+        setState(() {
+          isDietData = true;
+        });
+      } else {
+        setState(() {
+          isDietData = false;
+        });
+      }
+    } catch (e) {
+      print("Diyet Listesi getirilirken hata oluştu : $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,58 +147,73 @@ class _AddMealsState extends State<AddMeals> {
                     enabled: true,
                   ),
                   if (_showAiBox) _buildAiBox(),
-                  Expanded(
-                    child: GridView.builder(
-                      controller: _scrollController,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 3 / 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: _displayedMeals.length,
-                      itemBuilder: (context, index) {
-                        final meal = _displayedMeals[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MealDetailScreen(meal: meal),
-                              ),
-                            );
-                          },
-                          child: Card(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      meal['photoUrl'] ?? '',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    meal['name'] ?? 'Unnamed',
-                                    style: fontStyle(
-                                      15,
-                                      Colors.black,
-                                      FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                  isDietData
+                      ? Expanded(
+                          child: GridView.builder(
+                            controller: _scrollController,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 3 / 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
                             ),
+                            itemCount: _displayedMeals.length,
+                            itemBuilder: (context, index) {
+                              final meal = _displayedMeals[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MealDetailScreen(meal: meal),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            meal['photoUrl'] ?? '',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          meal['name'] ?? 'Unnamed',
+                                          style: fontStyle(
+                                            15,
+                                            Colors.black,
+                                            FontWeight.normal,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                        )
+                      : Expanded(
+                          child: Center(
+                          child: Text(
+                            "Lütfen diyet listenizi diyetisyeninizden isteyiniz !",
+                            style: fontStyle(
+                              25,
+                              mainColor,
+                              FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )),
                 ],
               ),
             );

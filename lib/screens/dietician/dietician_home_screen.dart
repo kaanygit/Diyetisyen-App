@@ -4,12 +4,15 @@ import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
+import 'package:diyetisyenapp/widget/privacy.dart';
+import 'package:diyetisyenapp/widget/term_condition.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DieticianHomeScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -475,11 +478,9 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildProfileButton(context, "Profil Düzenle"),
-                  _buildProfileButton(context, "Share with friends"),
-                  _buildProfileButton(context, "Privacy policy"),
-                  _buildProfileButton(context, "Terms & Conditions"),
-                  _buildProfileButton(context, "Language"),
+                  _buildProfileButton(context, "Arkadaşlarınla Paylaş"),
+                  _buildProfileButton(context, "Gizlilik Politikası"),
+                  _buildProfileButton(context, "Kullanım Koşulları"),
                 ],
               ),
             ),
@@ -491,6 +492,23 @@ class ProfileScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
+                  SizedBox(height: 5),
+                  MyButton(
+                      text: "Profili Düzenle",
+                      buttonColor: Colors.amber,
+                      buttonTextColor: Colors.white,
+                      buttonTextSize: 15,
+                      buttonTextWeight: FontWeight.bold,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileEditScreen(
+                                currentUserUid: currentUserUid),
+                          ),
+                        );
+                      }),
+                  SizedBox(height: 5),
                   MyButton(
                     onPressed: () async {
                       await Future.delayed(Duration(seconds: 2));
@@ -554,7 +572,26 @@ class ProfileScreen extends StatelessWidget {
               ),
             );
           } else {
-            print("Tapped on $text");
+            if (text == "Arkadaşlarınla Paylaş") {
+              print("Arkadaşlarınla Paylaş");
+              _launchURL('https://diyetisyenapp.com/');
+            } else if (text == "Gizlilik Koşulları") {
+              print("Gizlilik Koşulları");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PrivacyPage(),
+                ),
+              );
+            } else {
+              print("Kullanım Koşulları");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TermsOfUsePage(),
+                ),
+              );
+            }
           }
         },
         child: Row(
@@ -569,6 +606,14 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Bağlantı açılamadı: $url';
+    }
   }
 }
 
