@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
@@ -6,13 +8,16 @@ import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:diyetisyenapp/widget/privacy.dart';
 import 'package:diyetisyenapp/widget/term_condition.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart' as path;
 
 class DieticianHomeScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -165,6 +170,26 @@ class ClientChats extends StatelessWidget {
         List<String> clientUids =
             List<String>.from(dieticianData['dietician-danisanlar-uid']);
 
+        if (clientUids.isEmpty) {
+          return Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage("assets/images/dietbot.png"),
+                radius: 50,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Danışanınız Bulunmamaktadır:(',
+                style: fontStyle(20, mainColor, FontWeight.bold),
+              ),
+            ],
+          ));
+        }
+
         return ListView.builder(
           padding: EdgeInsets.all(16.0),
           itemCount: clientUids.length,
@@ -188,7 +213,11 @@ class ClientChats extends StatelessWidget {
                     userSnapshot.data!.data() as Map<String, dynamic>?;
 
                 if (userData == null) {
-                  return ListTile(title: Text('No user data'));
+                  return ListTile(
+                    title: Center(
+                      child: Text('İsteğiniz yok'),
+                    ),
+                  );
                 }
 
                 String clientName = userData['displayName'] ?? 'Unknown User';
@@ -219,8 +248,8 @@ class ClientChats extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 20,
-                                  backgroundImage: userPhoto.isEmpty
-                                      ? AssetImage("assets/images/gemini.jpg")
+                                  backgroundImage: userPhoto == "null"
+                                      ? AssetImage("assets/images/avatar.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,
                                 ),
@@ -282,11 +311,31 @@ class RequestedUsers extends StatelessWidget {
 
         if (dieticianData == null ||
             !dieticianData.containsKey('danisanlar-istek')) {
-          return Center(child: Text('No requested users available'));
+          return Center(child: Text('İsteğiniz yok'));
         }
 
         List<String> requestUids =
             List<String>.from(dieticianData['danisanlar-istek']);
+
+        if (requestUids.isEmpty) {
+          return Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage("assets/images/dietbot.png"),
+                radius: 50,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Yeni istek bulunmamaktadır:(',
+                style: fontStyle(20, mainColor, FontWeight.bold),
+              ),
+            ],
+          ));
+        }
 
         return ListView.builder(
           padding: EdgeInsets.all(16.0),
@@ -311,7 +360,11 @@ class RequestedUsers extends StatelessWidget {
                     userSnapshot.data!.data() as Map<String, dynamic>?;
 
                 if (userData == null) {
-                  return ListTile(title: Text('No user data'));
+                  return ListTile(
+                    title: Center(
+                      child: Text('İsteğiniz yok'),
+                    ),
+                  );
                 }
 
                 String userName = userData['displayName'] ?? 'Unknown User';
@@ -575,7 +628,7 @@ class ProfileScreen extends StatelessWidget {
             if (text == "Arkadaşlarınla Paylaş") {
               print("Arkadaşlarınla Paylaş");
               _launchURL('https://diyetisyenapp.com/');
-            } else if (text == "Gizlilik Koşulları") {
+            } else if (text == "Gizlilik Politikası") {
               print("Gizlilik Koşulları");
               Navigator.push(
                 context,
@@ -632,10 +685,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   TextEditingController _displayNameController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
   TextEditingController _titleController = TextEditingController();
-  TextEditingController _profilePhotoController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _welcomeMessageController = TextEditingController();
+  File? _image;
+  String? _profilePhotoUrl;
 
   @override
   void initState() {
@@ -655,7 +709,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             _displayNameController.text = userData['displayName'] ?? '';
             _ageController.text = userData['age']?.toString() ?? '';
             _titleController.text = userData['title'] ?? '';
-            _profilePhotoController.text = userData['profilePhoto'] ?? '';
+            _profilePhotoUrl = userData['profilePhoto'] ?? '';
             _phoneNumberController.text = userData['phoneNumber'] ?? '';
             _addressController.text = userData['address'] ?? '';
             _welcomeMessageController.text = userData['welcomeMessage'] ?? '';
@@ -674,7 +728,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         'displayName': _displayNameController.text,
         'age': int.tryParse(_ageController.text) ?? 0,
         'title': _titleController.text,
-        'profilePhoto': _profilePhotoController.text,
+        'profilePhoto': _profilePhotoUrl,
         'phoneNumber': _phoneNumberController.text,
         'address': _addressController.text,
         'welcomeMessage': _welcomeMessageController.text,
@@ -691,6 +745,36 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     }
   }
 
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      await uploadImageToFirebase();
+    }
+  }
+
+  Future<void> uploadImageToFirebase() async {
+    try {
+      String fileName = path.basename(_image!.path); // Corrected method call
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child('uploads/$fileName');
+      UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String url = await taskSnapshot.ref.getDownloadURL();
+
+      setState(() {
+        _profilePhotoUrl = url;
+      });
+    } catch (e) {
+      print('Error uploading image: $e');
+      // Handle error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -702,6 +786,27 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              // width: MediaQuery.of(context).size.width,
+              alignment: Alignment.center,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage:
+                    _profilePhotoUrl == null || _profilePhotoUrl!.isEmpty
+                        ? AssetImage('assets/images/avatar.jpg')
+                        : NetworkImage(_profilePhotoUrl!) as ImageProvider,
+              ),
+            ),
+            SizedBox(height: 10),
+            MyButton(
+              onPressed: pickImage,
+              text: 'Profil Fotoğrafı Seç',
+              buttonColor: mainColor3,
+              buttonTextColor: mainColor,
+              buttonTextSize: 15,
+              buttonTextWeight: FontWeight.normal,
+            ),
+            SizedBox(height: 10),
             MyTextField(
               controller: _displayNameController,
               hintText: 'Adınız',
@@ -725,14 +830,20 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               keyboardType: TextInputType.text,
               enabled: true,
             ),
-            SizedBox(height: 10),
-            MyTextField(
-              controller: _profilePhotoController,
-              hintText: 'Profil Fotoğrafı URL',
-              obscureText: false,
-              keyboardType: TextInputType.text,
-              enabled: true,
-            ),
+            // SizedBox(height: 10),
+            // Display the current profile photo or a placeholder
+            // CircleAvatar(
+            //   radius: 50,
+            //   backgroundImage:
+            //       _profilePhotoUrl == null || _profilePhotoUrl!.isEmpty
+            //           ? AssetImage('assets/images/avatar.jpg')
+            //           : NetworkImage(_profilePhotoUrl!) as ImageProvider,
+            // ),
+            // SizedBox(height: 10),
+            // ElevatedButton(
+            //   onPressed: pickImage,
+            //   child: Text('Profil Fotoğrafı Seç'),
+            // ),
             SizedBox(height: 10),
             MyTextField(
               controller: _phoneNumberController,

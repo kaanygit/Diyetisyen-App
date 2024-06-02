@@ -265,8 +265,8 @@ class _AddMealsState extends State<AddMeals> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              AiObjectDetectionScreen(imagePath: pickedFile.path),
+          builder: (context) => AiObjectDetectionScreen(
+              imagePath: pickedFile.path, dietData: isDietData),
         ),
       );
     }

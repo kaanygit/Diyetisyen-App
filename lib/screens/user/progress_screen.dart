@@ -51,27 +51,53 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           .get();
       DocumentSnapshot snapshotProfile =
           await firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot snapshotDietProgramAvaliable = await firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection("dietProgram")
+          .doc("weeklyProgram")
+          .get();
 
-      if (snapshot.exists && snapshotProfile.exists) {
-        dynamic data = snapshot.data();
-        dynamic profileDatas = snapshotProfile.data();
-        setState(() {
-          dietData = data as Map<String, dynamic>;
-          profileData = profileDatas as Map<String, dynamic>;
-        });
-        dietDataIfStatement();
-      } else {
-        showErrorSnackBar(context, "Hata1");
-      }
-      if (snapshotProfile.exists) {
+      if (snapshotDietProgramAvaliable.exists) {
         setState(() {
           getDietcianPersonAvaliable = true;
         });
+        if (snapshot.exists && snapshotProfile.exists) {
+          dynamic data = snapshot.data();
+          dynamic profileDatas = snapshotProfile.data();
+          setState(() {
+            dietData = data as Map<String, dynamic>;
+            profileData = profileDatas as Map<String, dynamic>;
+          });
+          dietDataIfStatement();
+        } else {
+          showErrorSnackBar(context, "Hata1");
+        }
       } else {
         setState(() {
           getDietcianPersonAvaliable = false;
         });
       }
+      // if (snapshot.exists && snapshotProfile.exists) {
+      //   dynamic data = snapshot.data();
+      //   dynamic profileDatas = snapshotProfile.data();
+      //   setState(() {
+      //     dietData = data as Map<String, dynamic>;
+      //     profileData = profileDatas as Map<String, dynamic>;
+      //   });
+      //   dietDataIfStatement();
+      // } else {
+      //   showErrorSnackBar(context, "Hata1");
+      // }
+      // if (snapshotDietProgramAvaliable.exists) {
+      //   setState(() {
+      //     getDietcianPersonAvaliable = true;
+      //   });
+      // } else {
+      //   setState(() {
+      //     getDietcianPersonAvaliable = false;
+      //   });
+      // }
     } catch (e) {
       print("Profil verileri getirilirken hata oluştu : $e");
       showErrorSnackBar(context, "Profil verileri getirilirken hata oluştu");
@@ -204,7 +230,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 children: [
                   Text(
                     'Gelişim',
-                    style: fontStyle(18, Colors.black, FontWeight.normal),
+                    style: fontStyle(18, mainColor, FontWeight.bold),
                   ),
                   DropdownButton<int>(
                     value: selectedWeek,
@@ -264,7 +290,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
             appBar: AppBar(
               title: Text(
                 "Gelişim",
-                style: fontStyle(18, Colors.black, FontWeight.normal),
+                style: fontStyle(18, mainColor, FontWeight.bold),
               ),
             ),
             body: Padding(

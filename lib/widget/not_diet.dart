@@ -62,10 +62,13 @@ class _NotDietState extends State<NotDiet> {
             children: [
               if (profilePhoto.isEmpty)
                 Container(
-                  child: Image.asset(
-                    "assets/images/avatar.jpg",
-                    width: 100,
-                    height: 100,
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage(
+                      "assets/images/avatar.jpg",
+                      // width: 100,
+                      // height: 100,
+                    ),
+                    radius: 40,
                   ),
                 ),
               if (profilePhoto.isNotEmpty)

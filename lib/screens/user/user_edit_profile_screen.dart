@@ -4,6 +4,9 @@ import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class EditProfileScreen extends StatefulWidget {
   final String currentUserUid;
@@ -23,11 +26,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _educationLevelController;
   late TextEditingController _heightController;
   late TextEditingController _phoneNumberController;
-  late TextEditingController _profilePhotoController;
   late TextEditingController _targetWeightController;
   late TextEditingController _weightController;
 
   bool isLoading = false;
+  File? _image;
+  String? _profilePhotoUrl;
 
   @override
   void initState() {
@@ -39,7 +43,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _educationLevelController = TextEditingController();
     _heightController = TextEditingController();
     _phoneNumberController = TextEditingController();
-    _profilePhotoController = TextEditingController();
     _targetWeightController = TextEditingController();
     _weightController = TextEditingController();
 
@@ -69,7 +72,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _educationLevelController.text = userData['educationLevel'] ?? '';
           _heightController.text = userData['height']?.toString() ?? '';
           _phoneNumberController.text = userData['phoneNumber'] ?? '';
-          _profilePhotoController.text = userData['profilePhoto'] ?? '';
+          _profilePhotoUrl = userData['profilePhoto'] ?? '';
           _targetWeightController.text =
               userData['targetWeight']?.toString() ?? '';
           _weightController.text = userData['weight']?.toString() ?? '';
@@ -82,6 +85,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _uploadProfilePhoto() async {
+    if (_image == null) return;
+
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profilePhotos/${widget.currentUserUid}.jpg');
+
+      var uploadTask = await storageRef.putFile(_image!);
+      var downloadUrl = await (await uploadTask).ref.getDownloadURL();
+
+      setState(() {
+        _profilePhotoUrl = downloadUrl;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.currentUserUid)
+          .update({
+        'profilePhoto': _profilePhotoUrl,
+      });
+    } catch (e) {
+      print('Error uploading profile photo: $e');
+      // Handle error
     }
   }
 
@@ -98,10 +139,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'educationLevel': _educationLevelController.text.trim(),
         'height': double.tryParse(_heightController.text.trim()) ?? 0.0,
         'phoneNumber': _phoneNumberController.text.trim(),
-        'profilePhoto': _profilePhotoController.text.trim(),
         'targetWeight':
             double.tryParse(_targetWeightController.text.trim()) ?? 0.0,
         'weight': double.tryParse(_weightController.text.trim()) ?? 0.0,
+        'profilePhoto': _profilePhotoUrl ?? '',
       });
       Navigator.pop(context);
       showSuccessSnackBar(context, "Profil Güncelleme Başarılı");
@@ -121,7 +162,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _educationLevelController.dispose();
     _heightController.dispose();
     _phoneNumberController.dispose();
-    _profilePhotoController.dispose();
     _targetWeightController.dispose();
     _weightController.dispose();
     super.dispose();
@@ -140,6 +180,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        if (_profilePhotoUrl != null &&
+                            _profilePhotoUrl!.isNotEmpty)
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: NetworkImage(_profilePhotoUrl!),
+                          )
+                        else if (_image != null)
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: FileImage(_image!),
+                          )
+                        else
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.grey,
+                            child: Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.white,
+                            ),
+                          ),
+                        SizedBox(height: 10),
+                        TextButton(
+                          onPressed: _pickImage,
+                          child: Text('Fotoğraf Yükle'),
+                        ),
+                      ],
+                    ),
+                  ),
                   _buildEditableTextField("Ad", _displayNameController),
                   _buildEditableTextField("Yaş", _ageController),
                   _buildEditableTextField("Adres", _addressController),
@@ -150,8 +222,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _buildEditableTextField("Boy", _heightController),
                   _buildEditableTextField(
                       "Telefon Numarası", _phoneNumberController),
-                  _buildEditableTextField(
-                      "Profil Fotoğrafı", _profilePhotoController),
                   _buildEditableTextField(
                       "Hedef Kilo", _targetWeightController),
                   _buildEditableTextField("Kilo", _weightController),
@@ -164,7 +234,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       buttonTextColor: Colors.white,
                       buttonTextSize: 18,
                       buttonTextWeight: FontWeight.bold,
-                      onPressed: saveProfile)
+                      onPressed: () async {
+                        if (_image != null) {
+                          await _uploadProfilePhoto();
+                        }
+                        saveProfile();
+                      })
                 ],
               ),
             ),

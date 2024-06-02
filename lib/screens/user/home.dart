@@ -1,23 +1,68 @@
 import 'package:diyetisyenapp/screens/user/add_meals_screen.dart';
 import 'package:diyetisyenapp/screens/user/chat/chat_screen.dart';
+import 'package:diyetisyenapp/screens/user/finally_diet_screen.dart';
 import 'package:diyetisyenapp/screens/user/home_page.dart';
 import 'package:diyetisyenapp/screens/user/profile_screen.dart';
 import 'package:diyetisyenapp/screens/user/progress_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-  final ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
+class _HomeScreenState extends State<HomeScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static  List<Widget> widgetOptions = <Widget>[
+  ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
+
+  static List<Widget> widgetOptions = <Widget>[
     HomePage(),
     ChatScreen(),
     AddMeals(),
     ProgressScreenPage(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    checkDietProgram();
+  }
+
+  Future<void> checkDietProgram() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final uid = user.uid;
+      final userRef = _firestore.collection('users').doc(uid);
+      final dietProgramRef = userRef.collection('dietProgram');
+      final weeklyProgramRef = dietProgramRef.doc('weeklyProgram');
+
+      weeklyProgramRef.get().then((weeklyProgramSnapshot) {
+        if (weeklyProgramSnapshot.exists) {
+          final startDate = weeklyProgramSnapshot['startDate'] as Timestamp;
+          final currentDate = Timestamp.now();
+
+          // Calculate the difference in days
+          final differenceInDays =
+              currentDate.toDate().difference(startDate.toDate()).inDays;
+
+          if (differenceInDays > 28) {
+            // If more than 28 days have passed, navigate to another screen
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => FinallyDietScreen()),
+            );
+          }
+        }
+      }).catchError((error) {
+        print('Error checking diet program: $error');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

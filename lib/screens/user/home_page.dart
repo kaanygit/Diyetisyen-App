@@ -676,7 +676,7 @@ class _HomePageState extends State<HomePage> {
                             const SizedBox(
                               height: 15,
                             ),
-                            if (selectedMeal == "Meals")
+                            if (selectedMeal == "Yemekler")
                               Container(
                                 child: isLoading
                                     ? CircularProgressIndicator()
@@ -703,7 +703,7 @@ class _HomePageState extends State<HomePage> {
                                         ],
                                       ),
                               )
-                            else if (selectedMeal == "Activity")
+                            else if (selectedMeal == "Aktivite")
                               Container(
                                 child: Column(
                                   children: [
@@ -1603,6 +1603,7 @@ class _HomePageState extends State<HomePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text('Yemek: ${meal['diet']} kcal'),
               Text('Kalori: ${meal['calories']} kcal'),
               Text('Protein: ${meal['protein']} %'),
               Text('Karbonhidrat: ${meal['carbs']} %'),

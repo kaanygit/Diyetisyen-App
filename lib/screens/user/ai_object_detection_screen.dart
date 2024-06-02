@@ -7,9 +7,11 @@ import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:flutter/material.dart';
 
 class AiObjectDetectionScreen extends StatefulWidget {
+  final bool dietData;
   final String imagePath;
 
-  const AiObjectDetectionScreen({required this.imagePath});
+  const AiObjectDetectionScreen(
+      {required this.imagePath, required this.dietData});
 
   @override
   _AiObjectDetectionScreenState createState() =>
@@ -109,13 +111,17 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                               SizedBox(height: 25),
                               MyButton(
                                   text: "Yemeği Ekle",
-                                  buttonColor: mainColor,
+                                  buttonColor:
+                                      widget.dietData ? mainColor : Colors.grey,
                                   buttonTextColor: Colors.white,
                                   buttonTextSize: 20,
                                   buttonTextWeight: FontWeight.normal,
                                   onPressed: () async {
-                                    await FirebaseOperations()
-                                        .addMealsFirebase(context, foodData!);
+                                    widget.dietData
+                                        ? await FirebaseOperations()
+                                            .addMealsFirebase(
+                                                context, foodData!)
+                                        : null;
                                   }),
                             ],
                           )

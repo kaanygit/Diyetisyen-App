@@ -136,8 +136,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Accept User'),
-          content: Text('Do you want to accept this user?'),
+          title: Text('Kullanıcıyı Kabul Et'),
+          content: Text(
+              'Kullanıcıyı danışanınız olarak kabul etmek istiyor musunuz?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -146,7 +147,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   textFieldDisable = true;
                 });
               },
-              child: Text('No'),
+              child: Text('Hayır'),
             ),
             TextButton(
               onPressed: () async {
@@ -169,7 +170,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   disableInput = false; // Enable TextField after acceptance
                 });
               },
-              child: Text('Yes'),
+              child: Text('Evet'),
             ),
           ],
         );
