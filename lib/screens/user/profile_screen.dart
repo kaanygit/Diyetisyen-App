@@ -58,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Text("Profil"),
             ),
             Icon(
-              Icons.power_off_outlined,
+              Icons.person,
               color: mainColor,
             )
           ],

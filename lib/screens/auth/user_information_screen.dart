@@ -355,7 +355,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Diyetisyen AI App uygulamamıza Hoşgeldiniz 🥳",
+              "Diyetisyen App uygulamamıza Hoşgeldiniz 🥳",
               style: fontStyle(
                 MediaQuery.of(context).size.width / 10,
                 Colors.white,

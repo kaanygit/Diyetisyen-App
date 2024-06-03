@@ -323,8 +323,393 @@
         "yağ": 5,
         "karbonhidrat": 25,
         "photoUrl":"https://elmaciksu.com.tr/wp-content/uploads/2020/09/elmaciksu-cunku-dogal-mineralli.jpg" 
-      }
-    
+      },
+      "cikolata": {
+    "name": "Çikolata",
+    "kalori": 546,
+    "protein": 5.3,
+    "yağ": 31.3,
+    "karbonhidrat": 60.4,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/189-1896270_transparent-background-chocolate-png-png-download.png"
+  },
+  "cips": {
+    "name": "Cips",
+    "kalori": 536,
+    "protein": 6.7,
+    "yağ": 33.5,
+    "karbonhidrat": 51.1,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-potato-chipsfood-potato-chips-snacks-food-fries-9415246274757lhlvz.png"
+  },
+  "çikolata": {
+    "name": "Çikolata",
+    "kalori": 546,
+    "protein": 5.3,
+    "yağ": 31.3,
+    "karbonhidrat": 60.4,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/189-1896270_transparent-background-chocolate-png-png-download.png"
+  },
+  "patates cipsi": {
+    "name": "Patates Cipsi",
+    "kalori": 536,
+    "protein": 6.7,
+    "yağ": 33.5,
+    "karbonhidrat": 51.1,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-potato-chipsfood-potato-chips-snacks-food-fries-9415246274757lhlvz.png"
+  },
+  "bisküvi": {
+    "name": "Bisküvi",
+    "kalori": 458,
+    "protein": 6.4,
+    "yağ": 16.9,
+    "karbonhidrat": 68.6,
+    "photoUrl": "https://www.stickpng.com/assets/images/580b57fcd9996e24bc43c1e1.png"
+  },
+  "kraker": {
+    "name": "Kraker",
+    "kalori": 421,
+    "protein": 7.9,
+    "yağ": 11.2,
+    "karbonhidrat": 72.1,
+    "photoUrl": "https://cdn.shopify.com/s/files/1/0149/4863/4588/products/product-image-999908988.jpg"
+  },
+  "şekerleme": {
+    "name": "Şekerleme",
+    "kalori": 396,
+    "protein": 2.2,
+    "yağ": 3.3,
+    "karbonhidrat": 89.5,
+    "photoUrl": "https://thumbs.dreamstime.com/b/colorful-candy-isolated-white-background-117189025.jpg"
+  },
+  "kurabiye": {
+    "name": "Kurabiye",
+    "kalori": 458,
+    "protein": 4.5,
+    "yağ": 22.3,
+    "karbonhidrat": 62.3,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/148-1481831_chocolate-chip-cookies-png-transparent-png.png"
+  },
+  "patlamış mısır": {
+    "name": "Patlamış Mısır",
+    "kalori": 382,
+    "protein": 9.4,
+    "yağ": 4.3,
+    "karbonhidrat": 74.2,
+    "photoUrl": "https://cdn.shopify.com/s/files/1/0255/2563/0324/products/Popcorn-768x768.jpg"
+  },
+  "şeker": {
+    "name": "Şeker",
+    "kalori": 387,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 99.8,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/220-2201216_transparent-sugar-png-png-download.png"
+  },
+  "lolipop": {
+    "name": "Lolipop",
+    "kalori": 375,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 99.5,
+    "photoUrl": "https://www.stickpng.com/assets/images/584bf242a6515b1e0ad75af6.png"
+  },
+  "jelibon": {
+    "name": "Jelibon",
+    "kalori": 396,
+    "protein": 2.4,
+    "yağ": 0,
+    "karbonhidrat": 92.1,
+    "photoUrl": "https://image.shutterstock.com/image-vector/colorful-jelly-beans-sweet-chewy-260nw-1220094362.jpg"
+  },
+  "çikolatalı kek": {
+    "name": "Çikolatalı Kek",
+    "kalori": 371,
+    "protein": 4.3,
+    "yağ": 19.8,
+    "karbonhidrat": 46.2,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/61-611368_chocolate-cake-png-transparent-png.png"
+  },
+  "kurutulmuş üzüm": {
+    "name": "Kurutulmuş Üzüm",
+    "kalori": 299,
+    "protein": 3.1,
+    "yağ": 0.5,
+    "karbonhidrat": 79.2,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/144-1441226_raisin-png-transparent-png.png"
+  },
+  "kraker çubuk": {
+    "name": "Kraker Çubuk",
+    "kalori": 481,
+    "protein": 7.8,
+    "yağ": 20.5,
+    "karbonhidrat": 68.7,
+    "photoUrl": "https://www.pngfind.com/pngs/m/104-1040180_bread-stick-png-transparent-png.png"
+  },
+  "karamel mısır": {
+    "name": "Karamel Mısır",
+    "kalori": 500,
+    "protein": 3.6,
+    "yağ": 27.2,
+    "karbonhidrat": 62.4,
+    "photoUrl": "https://www.pngfind.com/pngs/m/215-2152515_caramel-popcorn-png-transparent-png.png"
+  },
+  "şekerli dondurma": {
+    "name": "Şekerli Dondurma",
+    "kalori": 207,
+    "protein": 3.5,
+    "yağ": 10.9,
+    "karbonhidrat": 24.8,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/49-493993_ice-cream-png-transparent-png.png"
+  },
+  "sakız": {
+    "name": "Sakız",
+    "kalori": 8,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 2,
+    "photoUrl": "https://www.pngfind.com/pngs/m/5-53680_bubble-gum-png-transparent-png.png"
+  },
+  "soda": {
+    "name": "Soda",
+    "kalori": 0,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 0,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/88-883047_free-png-soda-png-image-with-transparent-background.png"
+  },
+  "şekerleme çubukları": {
+    "name": "Şekerleme Çubukları",
+    "kalori": 353,
+    "protein": 3.1,
+    "yağ": 0.8,
+    "karbonhidrat": 84.3,
+    "photoUrl": "https://www.seekpng.com/png/detail/280-2802966_candy-stick-png-hd-candy-bar-sticks.png"
+  },
+  "waffle": {
+    "name": "Waffle",
+    "kalori": 291,
+    "protein": 3.6,
+    "yağ": 15,
+    "karbonhidrat": 33.2,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-wafflewafflepastry-sweet-snack-dessert-waffle-941524608039pneeh.png"
+  },
+  "kurabiye çubukları": {
+    "name": "Kurabiye Çubukları",
+    "kalori": 411,
+    "protein": 4.7,
+    "yağ": 15.2,
+    "karbonhidrat": 63.1,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/252-2525017_cookie-stick-png-transparent-png.png"
+  },
+  "portakal suyu": {
+    "name": "Portakal Suyu",
+    "kalori": 45,
+    "protein": 0.9,
+    "yağ": 0.2,
+    "karbonhidrat": 10.4,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/496-4962817_orange-juice-png-transparent-png.png"
+  },
+  "kahve": {
+    "name": "Kahve",
+    "kalori": 2,
+    "protein": 0.3,
+    "yağ": 0,
+    "karbonhidrat": 0,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/158-1582483_coffee-png-transparent-png.png"
+  },
+  "çay": {
+    "name": "Çay",
+    "kalori": 1,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 0,
+    "photoUrl": "https://www.pngfind.com/pngs/m/98-981296_green-tea-png-transparent-png.png"
+  },
+  "limonata": {
+    "name": "Limonata",
+    "kalori": 35,
+    "protein": 0.1,
+    "yağ": 0.1,
+    "karbonhidrat": 9.1,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/503-5039957_lemonade-png-transparent-png.png"
+  },
+  "kola": {
+    "name": "Kola",
+    "kalori": 139,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 33.9,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/74-741655_can-of-soda-png-transparent-png.png"
+  },
+  "limonlu soda": {
+    "name": "Limonlu Soda",
+    "kalori": 43,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 10.8,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-sodasoda-of-sodium-carbonate-fruit-beverage-941524633076ptnm3.png"
+  },
+  "maden suyu": {
+    "name": "Maden Suyu",
+    "kalori": 0,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 0,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/159-1596541_mineral-water-png-transparent-png.png"
+  },
+  "enerji içeceği": {
+    "name": "Enerji İçeceği",
+    "kalori": 45,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 11,
+    "photoUrl": "https://www.pngfind.com/pngs/m/173-1739343_energy-drink-png-transparent-png.png"
+  },
+  "meyve suyu": {
+    "name": "Meyve Suyu",
+    "kalori": 54,
+    "protein": 0.5,
+    "yağ": 0.2,
+    "karbonhidrat": 12.9,
+    "photoUrl": "https://www.pngfind.com/pngs/m/123-1234732_apple-juice-png-transparent-png.png"
+  },
+  "kola": {
+    "name": "Kola",
+    "kalori": 139,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 33.9,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/74-741655_can-of-soda-png-transparent-png.png"
+  },
+  "limonlu soda": {
+    "name": "Limonlu Soda",
+    "kalori": 43,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 10.8,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-sodasoda-of-sodium-carbonate-fruit-beverage-941524633076ptnm3.png"
+  },
+  "portakal gazozu": {
+    "name": "Portakal Gazozu",
+    "kalori": 39,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 9.6,
+    "photoUrl": "https://www.pngfind.com/pngs/m/340-3402333_orange-fizzy-drink-png-orange-soda-transparent-png.png"
+  },
+  "limon gazozu": {
+    "name": "Limon Gazozu",
+    "kalori": 41,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 10.1,
+    "photoUrl": "https://www.pngfind.com/pngs/m/89-896119_transparent-limonade-clipart-lemonade-clipart-png-download.png"
+  },
+  "kokteyl": {
+    "name": "Kokteyl",
+    "kalori": 125,
+    "protein": 0.1,
+    "yağ": 0.1,
+    "karbonhidrat": 34.3,
+    "photoUrl": "https://www.pngfind.com/pngs/m/85-854166_png-download-drink-clipart-cocktail-drink-png-transparent.png"
+  },
+  "tonik": {
+    "name": "Tonik",
+    "kalori": 43,
+    "protein": 0.1,
+    "yağ": 0,
+    "karbonhidrat": 10.8,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/415-4158282_tonic-water-png-image-png-download-for-soft.png"
+  },
+  "meyve sodası": {
+    "name": "Meyve Sodası",
+    "kalori": 53,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 13.2,
+    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-fruit-drinkbeveragesweet-fruitsfresh-fruitsfruit-juicefruitssmoothie-941524631110k1bw7.png"
+  },
+  "karpuz": {
+    "name": "Karpuz",
+    "kalori": 30,
+    "protein": 0.6,
+    "yağ": 0.2,
+    "karbonhidrat": 8,
+    "photoUrl": "https://www.pngfind.com/pngs/m/152-1528166_watermelon-fruit-png-transparent-png.png"
+  },
+  "erik": {
+    "name": "Erik",
+    "kalori": 44,
+    "protein": 0.7,
+    "yağ": 0.2,
+    "karbonhidrat": 11,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/389-3897960_plum-png-image-plum-fruit-png-transparent-png.png"
+  },
+  "şeftali": {
+    "name": "Şeftali",
+    "kalori": 39,
+    "protein": 0.9,
+    "yağ": 0.2,
+    "karbonhidrat": 9,
+    "photoUrl": "https://www.pngfind.com/pngs/m/30-306615_peach-png-image-free-download-fruit-peach-png.png"
+  },
+  "mango": {
+    "name": "Mango",
+    "kalori": 60,
+    "protein": 0.8,
+    "yağ": 0.4,
+    "karbonhidrat": 15,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/42-421578_mango-png-image-mango-png-transparent-png.png"
+  },
+  "avokado": {
+    "name": "Avokado",
+    "kalori": 160,
+    "protein": 2,
+    "yağ": 14,
+    "karbonhidrat": 8.5,
+    "photoUrl": "https://www.pngfind.com/pngs/m/306-3061763_transparent-avocado-png-avocado-png-transparent-png-download.png"
+  },
+  "marlboro": {
+    "name": "Marlboro",
+    "nikotin": 0.8,
+    "katran": 10,
+    "karbonmonoksit": 12,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/244-2449681_cigarettes-png-picture-cigarette-png-transparent-png.png"
+  },
+  "camel": {
+    "name": "Camel",
+    "nikotin": 0.6,
+    "katran": 8,
+    "karbonmonoksit": 10,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/178-1781868_camel-cigarettes-png-transparent-png.png"
+  },
+  "winston": {
+    "name": "Winston",
+    "nikotin": 0.7,
+    "katran": 9,
+    "karbonmonoksit": 11,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/550-5504064_winston-cigarettes-png-download-cigarette-png-transparent-png.png"
+  },
+  "lucky-strike": {
+    "name": "Lucky Strike",
+    "nikotin": 0.9,
+    "katran": 12,
+    "karbonmonoksit": 13,
+    "photoUrl": "https://www.pngfind.com/pngs/m/66-661546_lucky-strike-cigarettes-hd-png-download.png"
+  },
+  "dunhill": {
+    "name": "Dunhill",
+    "nikotin": 0.7,
+    "katran": 9,
+    "karbonmonoksit": 10,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/396-3960101_dunhill-cigarettes-png-image-free-download-dunhill-cigarettes.png"
+  },
+  "sigara": {
+    "name": "Sigara",
+    "nikotin": 0.8,
+    "katran": 10,
+    "karbonmonoksit": 12,
+    "photoUrl": "https://www.pngitem.com/pimgs/m/244-2449681_cigarettes-png-picture-cigarette-png-transparent-png.png"
   }
+}
   
   

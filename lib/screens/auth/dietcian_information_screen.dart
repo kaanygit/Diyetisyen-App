@@ -131,7 +131,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   //     }
   //   }
   // }
-   Future<void> _pickImage() async {
+  Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -290,7 +290,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Diyetisyen AI App uygulamamıza Hoşgeldiniz 🥳",
+              "Diyetisyen App uygulamamıza Hoşgeldiniz 🥳",
               style: fontStyle(
                 MediaQuery.of(context).size.width / 10,
                 Colors.white,

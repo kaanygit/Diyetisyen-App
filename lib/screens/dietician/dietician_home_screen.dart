@@ -56,18 +56,24 @@ class DieticianHomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Image.asset(
+                    "assets/images/icon2.png",
+                    width: 200,
+                    height: 200,
+                  ),
                   Text(
-                    "Admin tarafından onay bekleniyor.Beklediğiniz için teşekkür ederiz.:)",
-                    style: fontStyle(25, mainColor, FontWeight.bold),
+                    "Admin tarafından onay bekleniyor.Beklediğiniz için teşekkür ederiz :)",
+                    style: fontStyle(20, mainColor, FontWeight.bold),
+                    textAlign: TextAlign.center,
                   ),
                   SizedBox(
                     height: 20,
                   ),
                   MyButton(
-                      text: "Sign Out",
-                      buttonColor: mainColor,
+                      text: "Çıkış Yap",
+                      buttonColor: Colors.redAccent,
                       buttonTextColor: Colors.white,
-                      buttonTextSize: 25,
+                      buttonTextSize: 22,
                       buttonTextWeight: FontWeight.normal,
                       onPressed: () async {
                         await Future.delayed(Duration(seconds: 2));
@@ -248,7 +254,8 @@ class ClientChats extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 20,
-                                  backgroundImage: userPhoto == "null" && userPhoto.isEmpty
+                                  backgroundImage: userPhoto == "null" &&
+                                          userPhoto.isEmpty
                                       ? AssetImage("assets/images/avatar.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,

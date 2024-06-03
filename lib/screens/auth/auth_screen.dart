@@ -296,14 +296,17 @@ class _AuthScreenState extends State<AuthScreen> {
             if (text == "Admin") {
               setState(() {
                 _loginPageSelectionType = 2;
+                _selectedOption = "Admin";
               });
             } else if (text == "Diyetisyen") {
               setState(() {
                 _loginPageSelectionType = 1;
+                _selectedOption = "Diyetisyen";
               });
             } else {
               setState(() {
                 _loginPageSelectionType = 0;
+                _selectedOption = "Kullanıcı";
               });
             }
             print(_loginPageSelectionType);
@@ -327,14 +330,18 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                  child: Text("DiyetisyenApp",
-                      style: fontStyle(25, mainColor, FontWeight.bold))
-                  //  Image.asset(
-                  //   "assets/images/icon.png",
-                  //   width: 250,
-                  //   height: 250,
-                  // ),
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/icon2.png",
+                    width: 250,
+                    height: 250,
                   ),
+                  Text("Diyetisyen App",
+                      style: fontStyle(25, mainColor, FontWeight.bold)),
+                ],
+              )),
               const SizedBox(height: 30),
               TextField(
                 keyboardType: TextInputType.emailAddress,
@@ -405,7 +412,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: SignInButton(
                       buttonType: ButtonType.google,
                       buttonSize: ButtonSize.medium,
-                      onPressed: _signInWithGoogle,
+                      onPressed: FirebaseOperations().signInWithGoogle,
                       btnText: "Google ile Giriş Yap",
                     )),
                   ],
@@ -447,14 +454,18 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                  child: Text("DiyetisyenApp",
-                      style: fontStyle(25, mainColor, FontWeight.bold))
-                  //  Image.asset(
-                  //   "assets/images/icon.png",
-                  //   width: 250,
-                  //   height: 250,
-                  // ),
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/icon2.png",
+                    width: 250,
+                    height: 250,
                   ),
+                  Text("Diyetisyen App",
+                      style: fontStyle(25, mainColor, FontWeight.bold)),
+                ],
+              )),
               const SizedBox(height: 24),
               TextField(
                 keyboardType: TextInputType.multiline,
@@ -494,24 +505,25 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: _selectedOption,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedOption = newValue!;
-                    });
-                  },
-                  items: <String>['Kullanıcı', 'Diyetisyen', 'Admin']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
+              // Container(
+              //   child: DropdownButton<String>(
+              //     isExpanded: true,
+              //     value: _selectedOption,
+              //     onChanged: (String? newValue) {
+              //       setState(() {
+              //         _selectedOption = newValue!;
+              //       });
+              //     },
+              //     items: <String>['Kullanıcı', 'Diyetisyen', 'Admin']
+              //         .map<DropdownMenuItem<String>>((String value) {
+              //       return DropdownMenuItem<String>(
+              //         value: value,
+              //         child: Text(value),
+              //       );
+              //     }).toList(),
+              //   ),
+              // ),
+
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -561,7 +573,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: SignInButton(
                       buttonType: ButtonType.google,
                       buttonSize: ButtonSize.medium,
-                      onPressed: _signInWithGoogle,
+                      onPressed: FirebaseOperations().signInWithGoogle,
                       btnText: "Google ile Giriş Yap",
                     )),
                   ],
@@ -578,7 +590,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       "Giriş Yap",
                       style: TextStyle(color: Colors.lightGreen),
                     ),

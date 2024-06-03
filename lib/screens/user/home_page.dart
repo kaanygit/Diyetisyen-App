@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchProfilePhotos();
     fetchDietProgram();
-    getEatingFood();
+    // getEatingFood();
     // eatingFoodCalculate();
   }
 
@@ -1111,7 +1111,7 @@ class _HomePageState extends State<HomePage> {
         ? Column(
             children: [
               GestureDetector(
-                onTap: () => print("Su"),
+                onTap: () => buildWaterInfo(meal['water'], mealType),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -1181,7 +1181,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         if (meal['drinkWater'] == true)
           GestureDetector(
-            onTap: () => print("Su"),
+            onTap: () => buildWaterInfo(meal['water'], mealType),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               decoration: BoxDecoration(
@@ -1218,18 +1218,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      // InkWell(
-                      //   onTap: () async {
-                      //     print("su zaten içildi");
-                      //   },
-                      //   child: Container(
-                      //       padding: EdgeInsets.all(8),
-                      //       decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(16),
-                      //           color: Colors.white),
-                      //       alignment: Alignment.topRight,
-                      //       child: const Icon(Icons.add_outlined)),
-                      // )
                     ],
                   ),
                 ],
@@ -1490,6 +1478,60 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void buildWaterInfo(int value, String gun) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage("assets/images/icon2.png"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Text(
+                    "$gun Detayları",
+                    style: fontStyle(18, Colors.black, FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  child: Text(
+                    "$value Bardak Su",
+                    style:
+                        fontStyle(15, Colors.grey.shade600, FontWeight.normal),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: Text('Kapat'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   InkWell dailyMeals(String x) {
     return InkWell(
       onTap: () {
@@ -1594,71 +1636,69 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-void showMealDetails(Map<dynamic, dynamic> meal, String mealType) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        contentPadding: EdgeInsets.zero,
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8.0),
-                  topRight: Radius.circular(8.0),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/220px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
+  void showMealDetails(Map<dynamic, dynamic> meal, String mealType) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0),
                   ),
-                  fit: BoxFit.cover,
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/icon2.png"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-
-              child: Container(
-                decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),
-      topRight: Radius.circular(10.0),)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$mealType Detayları',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0),
+                  )),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$mealType Detayları',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text('Yemek: ${meal['diet']} kcal'),
-                    Text('Kalori: ${meal['calories']} kcal'),
-                    Text('Protein: ${meal['protein']} %'),
-                    Text('Karbonhidrat: ${meal['carbs']} %'),
-                    Text('Yağ: ${meal['fat']} %'),
-                  ],
+                      SizedBox(height: 8.0),
+                      Text('Yemek: ${(meal['diet']) ?? (meal['name'])}'),
+                      Text('Kalori: ${meal['calories']} kcal'),
+                      Text('Protein Oranı: ${meal['protein']} %'),
+                      Text('Karbonhidrat Oranı: ${meal['carbs']} %'),
+                      Text('Yağ Oranı: ${meal['fat']} %'),
+                    ],
+                  ),
                 ),
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Kapat'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            child: Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
+        );
+      },
+    );
+  }
 }

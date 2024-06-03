@@ -30,6 +30,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
   int totalDailyCalories = 0;
   int totalDailyeatCalories = 0;
   String dailyEatingRatio = "";
+  int alertPercentage = 0;
 
   @override
   void initState() {
@@ -78,26 +79,6 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           getDietcianPersonAvaliable = false;
         });
       }
-      // if (snapshot.exists && snapshotProfile.exists) {
-      //   dynamic data = snapshot.data();
-      //   dynamic profileDatas = snapshotProfile.data();
-      //   setState(() {
-      //     dietData = data as Map<String, dynamic>;
-      //     profileData = profileDatas as Map<String, dynamic>;
-      //   });
-      //   dietDataIfStatement();
-      // } else {
-      //   showErrorSnackBar(context, "Hata1");
-      // }
-      // if (snapshotDietProgramAvaliable.exists) {
-      //   setState(() {
-      //     getDietcianPersonAvaliable = true;
-      //   });
-      // } else {
-      //   setState(() {
-      //     getDietcianPersonAvaliable = false;
-      //   });
-      // }
     } catch (e) {
       print("Profil verileri getirilirken hata oluştu : $e");
       showErrorSnackBar(context, "Profil verileri getirilirken hata oluştu");
@@ -106,7 +87,6 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
 
   Future<void> dietDataIfStatement() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     final List<String> days = [
       "Monday",
@@ -122,22 +102,26 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     DateTime now = DateTime.now();
     int daysSinceStart = now.difference(startDate!).inDays;
 
+    int selectedWeekStartDay = (selectedWeek - 1) * 7;
+    int dayIndex = daysSinceStart % 7;
+    String day = days[dayIndex];
+
+    totalDailyeatCalories = 0;
+    totalDailyCalories = 0;
+
     DocumentSnapshot<Map<String, dynamic>> snapshotEating = await firestore
         .collection('users')
         .doc(user!.uid)
         .collection('dietProgram')
         .doc('weeklyProgram')
         .collection('meals')
-        .doc('day_$daysSinceStart')
+        .doc('day_${selectedWeekStartDay + dayIndex}')
         .get();
-
 
     Map<String, dynamic>? ekstraYemeler = snapshotEating.data();
     if (ekstraYemeler != null) {
       List<dynamic> meals = ekstraYemeler['meals'];
-      print("DENEMEEE : $meals");
       meals.forEach((meal) {
-        print(meal);
         setState(() {
           totalDailyeatCalories += (meal['calories'] as num).toInt();
           totalCalories += (meal['calories'] as num).toInt();
@@ -146,50 +130,39 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           totalProtein += (meal['protein'] as num).toInt();
         });
       });
-      print("TEST:$totalCalories");
     }
 
-    int week = (daysSinceStart ~/ 7) % 4 + 1;
-    int dayIndex = daysSinceStart % 7;
-    String day = days[dayIndex];
+    void updateDailyCalories(String mealType) {
+      if (dietData['week$selectedWeek'][day][mealType]['eat'] == true) {
+        setState(() {
+          totalDailyeatCalories +=
+              dietData['week$selectedWeek'][day][mealType]['calories'] as int;
+          totalDailyCalories +=
+              dietData['week$selectedWeek'][day][mealType]['calories'] as int;
+        });
+      } else {
+        setState(() {
+          totalDailyCalories +=
+              dietData['week$selectedWeek'][day][mealType]['calories'] as int;
+        });
+      }
+    }
 
-    if (dietData['week$selectedWeek'][day]['breakfast']['eat'] == true) {
-      setState(() {
-        totalDailyeatCalories +=
-            dietData['week$week'][day]['breakfast']['calories'] as int;
-      });
-    }
-    if (dietData['week$selectedWeek'][day]['lunch']['eat'] == true) {
-      setState(() {
-        totalDailyeatCalories +=
-            dietData['week$week'][day]['lunch']['calories'] as int;
-      });
-    }
-    if (dietData['week$selectedWeek'][day]['dinner']['eat'] == true) {
-      setState(() {
-        totalDailyeatCalories +=
-            dietData['week$week'][day]['dinner']['calories'] as int;
-      });
-    }
-    setState(() {
-      totalDailyCalories +=
-          dietData['week$week'][day]['dinner']['calories'] as int;
-      totalDailyCalories +=
-          dietData['week$week'][day]['breakfast']['calories'] as int;
-      totalDailyCalories +=
-          dietData['week$week'][day]['lunch']['calories'] as int;
-    });
+    updateDailyCalories('breakfast');
+    updateDailyCalories('lunch');
+    updateDailyCalories('dinner');
 
     double percentageCompleted =
         (totalDailyeatCalories / totalDailyCalories) * 100;
     String formattedPercentage = percentageCompleted.toStringAsFixed(1);
     setState(() {
       dailyEatingRatio = formattedPercentage;
+      alertPercentage = (percentageCompleted).toInt();
+
+      print(percentageCompleted);
     });
-    print("testt $percentageCompleted");
 
     Map<String, dynamic> data = dietData['week$selectedWeek'];
-
     int dailyCalories = 0;
     int dailyFat = 0;
     int dailyProtein = 0;
@@ -219,11 +192,13 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
       totalCarbs += dailyCarbs;
       totalFat += dailyFat;
       totalProtein += dailyProtein;
+      print("TOTALL : $alertPercentage");
+      if ((alertPercentage) > 100) {
+        showAlertSnackBar(context,
+            "Günlük Kalori Düzeyinizi Aştınız Lütfen Dikkatli olunuz!");
+      }
     });
   }
-
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +210,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 children: [
                   Text(
                     'Gelişim',
-                    style: fontStyle(18, mainColor, FontWeight.bold),
+                    style: fontStyle(18, Colors.black, FontWeight.bold),
                   ),
                   DropdownButton<int>(
                     value: selectedWeek,
@@ -295,7 +270,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
             appBar: AppBar(
               title: Text(
                 "Gelişim",
-                style: fontStyle(18, mainColor, FontWeight.bold),
+                style: fontStyle(18, Colors.black, FontWeight.bold),
               ),
             ),
             body: Padding(
@@ -354,11 +329,11 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 ),
                 Row(
                   children: [
-                    _buildProgressCircle(totalFat, 'Fat'),
+                    _buildProgressCircle(totalFat, 'Yağ'),
                     SizedBox(width: 10.0),
                     _buildProgressCircle(totalProtein, 'Pro'),
                     SizedBox(width: 10.0),
-                    _buildProgressCircle(totalCarbs, 'Carb'),
+                    _buildProgressCircle(totalCarbs, 'Karb'),
                   ],
                 ),
               ],
