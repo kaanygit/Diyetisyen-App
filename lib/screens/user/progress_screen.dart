@@ -193,7 +193,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
       totalFat += dailyFat;
       totalProtein += dailyProtein;
       print("TOTALL : $alertPercentage");
-      if ((alertPercentage) > 100) {
+      if ((alertPercentage).toDouble() > 100.00) {
         showAlertSnackBar(context,
             "Günlük Kalori Düzeyinizi Aştınız Lütfen Dikkatli olunuz!");
       }
@@ -210,12 +210,13 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 children: [
                   Text(
                     'Gelişim',
-                    style: fontStyle(18, Colors.black, FontWeight.bold),
+                    style: fontStyle(18, Colors.black, FontWeight.normal),
                   ),
                   DropdownButton<int>(
                     value: selectedWeek,
                     dropdownColor: Colors.white,
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.white),
                     underline: const SizedBox(),
                     items: weeks.map((int week) {
                       return DropdownMenuItem<int>(
@@ -270,7 +271,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
             appBar: AppBar(
               title: Text(
                 "Gelişim",
-                style: fontStyle(18, Colors.black, FontWeight.bold),
+                style: fontStyle(18, Colors.black, FontWeight.normal),
               ),
             ),
             body: Padding(
@@ -299,7 +300,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           children: [
             Text(
               'Haftalık Gelişim',
-              style: fontStyle(18.0, Colors.black, FontWeight.bold),
+              style: fontStyle(18.0, Colors.black, FontWeight.normal),
             ),
             const SizedBox(height: 8.0),
             Row(
@@ -425,8 +426,8 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                   const SizedBox(height: 8.0),
                   Text(
                     '$totalDailyeatCalories Kcal',
-                    style:
-                        const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     '$dailyEatingRatio% Tamamlandı',
