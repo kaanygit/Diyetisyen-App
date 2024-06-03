@@ -1,5 +1,6 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
+import 'package:diyetisyenapp/screens/dietician/personal_dietcian_create_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -331,6 +332,16 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                   },
                 );
               }),
+            ),
+            SizedBox(height: 20),
+            MyButton(
+              onPressed: (){
+                Navigator.push(context,PageTransition(child: PersonalDietcianCreateScreen(userUid: widget.uid,), type: PageTransitionType.fade));
+              },
+              // showRemoveClientDialog,
+              text: "Kişiye özel diyet programı tanımla",
+              buttonColor: Colors.amber, buttonTextSize: 16,
+              buttonTextColor: Colors.black, buttonTextWeight: FontWeight.bold,
             ),
             SizedBox(height: 20),
             MyButton(
