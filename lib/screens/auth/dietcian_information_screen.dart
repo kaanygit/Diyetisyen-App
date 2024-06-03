@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
-import 'package:diyetisyenapp/screens/dietician/dietcian_profile_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -20,7 +19,7 @@ class DietcianInformationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: DietcianInformationForm(),
     );
   }
@@ -77,7 +76,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   void _nextPage() {
     if (_currentPage < 9) {
       _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     }
@@ -133,7 +132,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   // }
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     if (pickedFile != null) {
       setState(() {
@@ -142,7 +141,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
         Reference ref = FirebaseStorage.instance
             .ref()
             .child("profile_photos")
-            .child(_auth.currentUser!.uid);
+            .child(auth.currentUser!.uid);
         UploadTask uploadTask = ref.putFile(File(pickedFile.path));
         uploadTask.then((res) {
           res.ref.getDownloadURL().then((url) {
@@ -193,11 +192,11 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   }
 
   void _saveUserData() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_auth.currentUser?.uid)
+        .doc(auth.currentUser?.uid)
         .update(_dietcianData);
     Navigator.pushReplacement(
       context,
@@ -278,7 +277,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
 
   Widget _buildWelcomePage() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage("assets/images/food_background.jpg"),
           fit: BoxFit.cover,
@@ -298,7 +297,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -308,7 +307,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildGenderPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -316,9 +315,9 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Cinsiyetinizi Seçin",
               style: fontStyle(24, mainColor, FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -326,7 +325,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
                 color: Colors.white,
@@ -338,10 +337,10 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                     width: 40,
                     height: 40,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: RadioListTile(
-                      title: Text("Kadın"),
+                      title: const Text("Kadın"),
                       value: "kadın",
                       groupValue: _dietcianData['gender'],
                       onChanged: (value) {
@@ -361,9 +360,9 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -371,7 +370,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
                 color: Colors.white,
@@ -383,10 +382,10 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                     width: 40,
                     height: 40,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: RadioListTile(
-                      title: Text("Erkek"),
+                      title: const Text("Erkek"),
                       value: "erkek",
                       groupValue: _dietcianData['gender'],
                       onChanged: (value) {
@@ -421,7 +420,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
             "Profil Resminizi Yükleyiniz",
             style: fontStyle(20, mainColor, FontWeight.bold),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _image == null
               ? Text(
                   "Resim seçilmedi.",
@@ -436,7 +435,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
                     width: 200,
                   ),
                 ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           ElevatedButton(
@@ -454,7 +453,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildAgePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -462,7 +461,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Yaşınız kaç?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -488,7 +487,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildTitlePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -496,7 +495,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Lütfen Ünvanınızı Giriniz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -522,7 +521,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildExpertisePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -530,7 +529,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Uzmanlık Alanınız?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -556,7 +555,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildExperiencePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -564,7 +563,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Kaç yıllık deneyiminiz vardır?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -590,7 +589,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildWelcomeMessagePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -598,7 +597,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Kendinizi Tanıtınız",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -625,7 +624,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
   Widget _buildWhyDietcianPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -633,7 +632,7 @@ class _DietcianInformationFormState extends State<DietcianInformationForm> {
               "Neden Bizimle Birlikte Çalışmak İstiyorsunuz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(

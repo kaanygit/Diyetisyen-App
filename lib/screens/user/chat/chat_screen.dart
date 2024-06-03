@@ -1,6 +1,5 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
-import 'package:diyetisyenapp/screens/user/chat/chat_page.dart';
 import 'package:diyetisyenapp/screens/user/chat/dietitians_request_screen.dart';
 import 'package:diyetisyenapp/screens/user/chat/gemini_chat_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,8 +69,8 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             CircleAvatar(
                 radius: 20,
-                backgroundImage: profilePhoto == "" || profilePhoto == null
-                    ? AssetImage("assets/images/avatar.jpg")
+                backgroundImage: profilePhoto == ""
+                    ? const AssetImage("assets/images/avatar.jpg")
                     : NetworkImage(profilePhoto) as ImageProvider),
             Container(
               child: Text("Sohbet",
@@ -104,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
         print("Sayfaya gir");
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DietitiansRequestScreen()),
+          MaterialPageRoute(builder: (context) => const DietitiansRequestScreen()),
         );
       },
       child: Container(
@@ -274,7 +273,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => MessagingScreen(
+                  builder: (context) => const MessagingScreen(
                         receiverId: "ERbueLCOvFR9cVpyiqZavXoM7Pr2",
                       )),
             );

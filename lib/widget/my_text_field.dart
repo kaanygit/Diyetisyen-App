@@ -17,7 +17,7 @@ class MyTextField extends StatelessWidget {
 
   // Constructor with named parameters and required annotation where necessary
   const MyTextField({
-    Key? key, // key parameter added
+    super.key, // key parameter added
     required this.controller,
     required this.hintText,
     required this.obscureText,
@@ -31,7 +31,7 @@ class MyTextField extends StatelessWidget {
     this.onChanged,
     required this.enabled,
     this.maxLines,
-  }) : super(key: key); // key parameter passed to super constructor
+  }); // key parameter passed to super constructor
 
   @override
   Widget build(BuildContext context) {

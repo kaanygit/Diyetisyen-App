@@ -8,12 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:diyetisyenapp/database/messaging.dart';
 import 'package:diyetisyenapp/model/message.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class MessagingScreen extends StatefulWidget {
   final String receiverId;
 
-  MessagingScreen({required this.receiverId});
+  const MessagingScreen({super.key, required this.receiverId});
 
   @override
   _MessagingScreenState createState() => _MessagingScreenState();
@@ -136,8 +135,8 @@ class _MessagingScreenState extends State<MessagingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Kullanıcıyı Kabul Et'),
-          content: Text(
+          title: const Text('Kullanıcıyı Kabul Et'),
+          content: const Text(
               'Kullanıcıyı danışanınız olarak kabul etmek istiyor musunuz?'),
           actions: [
             TextButton(
@@ -147,7 +146,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   textFieldDisable = true;
                 });
               },
-              child: Text('Hayır'),
+              child: const Text('Hayır'),
             ),
             TextButton(
               onPressed: () async {
@@ -170,7 +169,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                   disableInput = false; // Enable TextField after acceptance
                 });
               },
-              child: Text('Evet'),
+              child: const Text('Evet'),
             ),
           ],
         );
@@ -246,7 +245,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
               );
             }
           },
-          child: Text('${userName}'),
+          child: Text(userName),
         ),
       ),
       backgroundColor: Colors.white,
@@ -257,11 +256,11 @@ class _MessagingScreenState extends State<MessagingScreen> {
               stream: _streamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No messages'));
+                  return const Center(child: Text('No messages'));
                 }
 
                 List<Message> messages = snapshot.data ?? [];
@@ -282,9 +281,9 @@ class _MessagingScreenState extends State<MessagingScreen> {
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
                         child: Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           margin:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                              const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           decoration: BoxDecoration(
                             color: isMyMessage ? mainColor : Colors.grey[300],
                             borderRadius: BorderRadius.circular(12),
@@ -327,7 +326,7 @@ class _MessagingScreenState extends State<MessagingScreen> {
                 // ),
                 // ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   color: mainColor,
                   onPressed: disableInput
                       ? null // Disable IconButton based on condition

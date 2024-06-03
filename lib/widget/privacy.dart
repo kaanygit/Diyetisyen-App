@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PrivacyPage extends StatefulWidget {
-  const PrivacyPage({Key? key}) : super(key: key);
+  const PrivacyPage({super.key});
 
   @override
   _PrivacyPageState createState() => _PrivacyPageState();
@@ -12,9 +12,9 @@ class _PrivacyPageState extends State<PrivacyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gizlilik Politikası'),
+        title: const Text('Gizlilik Politikası'),
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: Column(

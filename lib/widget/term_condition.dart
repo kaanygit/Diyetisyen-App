@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class TermsOfUsePage extends StatelessWidget {
-  const TermsOfUsePage({Key? key}) : super(key: key);
+  const TermsOfUsePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kullanım Koşulları'),
+        title: const Text('Kullanım Koşulları'),
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

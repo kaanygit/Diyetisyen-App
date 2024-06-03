@@ -8,7 +8,7 @@ import 'package:page_transition/page_transition.dart';
 class DieticianDetailScreen extends StatelessWidget {
   final Map<String, dynamic> request;
 
-  DieticianDetailScreen({required this.request});
+  const DieticianDetailScreen({super.key, required this.request});
 
   @override
   Widget build(BuildContext context) {
@@ -29,28 +29,28 @@ class DieticianDetailScreen extends StatelessWidget {
         title: Text("$userName Bilgileri"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             CircleAvatar(
               radius: 60,
               backgroundImage: userPhoto.isEmpty
-                  ? AssetImage('assets/images/default_avatar.jpg')
+                  ? const AssetImage('assets/images/default_avatar.jpg')
                   : NetworkImage(userPhoto) as ImageProvider,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               userName,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               userEmail,
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildInfoRow('Deneyim', userExperience.toString()),
             _buildInfoRow('Uzmanlık', userExpertise),
             _buildInfoRow('Cinsiyet', userGender),
@@ -58,7 +58,7 @@ class DieticianDetailScreen extends StatelessWidget {
             _buildInfoRow('Neden Diyetisyen', userWhyDietician),
             _buildInfoRow('Yaş', userAge.toString()),
             _buildInfoRow('Eğitim Seviyesi', userEducationLevel),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             MyButton(
                 text: isDieticianConfirmed
                     ? "Diyetisyen Onayını Kaldır"
@@ -89,9 +89,9 @@ class DieticianDetailScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             info,
           ),
@@ -114,11 +114,11 @@ class DieticianDetailScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('İptal'),
+            child: const Text('İptal'),
           ),
           TextButton(
             onPressed: () => _confirmDietician(context, !isDieticianConfirmed),
-            child: Text('Evet'),
+            child: const Text('Evet'),
           ),
         ],
       ),
@@ -135,7 +135,7 @@ class DieticianDetailScreen extends StatelessWidget {
       Navigator.push(
         context,
         PageTransition(
-            type: PageTransitionType.fade, child: new AdminHomeScreen()),
+            type: PageTransitionType.fade, child: const AdminHomeScreen()),
       );
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

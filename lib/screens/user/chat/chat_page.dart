@@ -79,8 +79,8 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: profilePhoto == "" || profilePhoto == null
-                  ? AssetImage("assets/images/avatar.jpg")
+              backgroundImage: profilePhoto == ""
+                  ? const AssetImage("assets/images/avatar.jpg")
                   : NetworkImage(profilePhoto) as ImageProvider,
             ),
             const SizedBox(width: 10),

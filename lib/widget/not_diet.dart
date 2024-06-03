@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NotDiet extends StatefulWidget {
-  const NotDiet({Key? key}) : super(key: key);
+  const NotDiet({super.key});
 
   @override
   State<NotDiet> createState() => _NotDietState();
@@ -62,7 +62,7 @@ class _NotDietState extends State<NotDiet> {
             children: [
               if (profilePhoto.isEmpty)
                 Container(
-                  child: CircleAvatar(
+                  child: const CircleAvatar(
                     backgroundImage: AssetImage(
                       "assets/images/avatar.jpg",
                       // width: 100,

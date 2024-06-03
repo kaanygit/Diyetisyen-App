@@ -1,5 +1,4 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
-import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/personal_dietcian_create_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
@@ -10,7 +9,7 @@ import 'package:page_transition/page_transition.dart';
 
 class ClientProfileScreen extends StatefulWidget {
   final String uid;
-  const ClientProfileScreen({Key? key, required this.uid}) : super(key: key);
+  const ClientProfileScreen({super.key, required this.uid});
 
   @override
   State<ClientProfileScreen> createState() => _ClientProfileScreenState();
@@ -82,7 +81,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
           .set(selectedDiet);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Diyet programı başarıyla kaydedildi."),
           duration: Duration(seconds: 2),
         ),
@@ -90,7 +89,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     } catch (e) {
       print("Error adding diet program: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Diyet programı kaydedilirken hata oluştu."),
           duration: Duration(seconds: 2),
         ),
@@ -103,16 +102,16 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Diyet Programı Onayı"),
+          title: const Text("Diyet Programı Onayı"),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Seçilen Diyet Listesi:",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: selectedDiet.entries.map((entry) {
@@ -124,9 +123,9 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                         children: [
                           Text(
                             '${entry.key}:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                         ],
                       ),
                     );
@@ -140,12 +139,12 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
                                 '$key:',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: (value as Map<String, dynamic>)
@@ -155,13 +154,13 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
                                         '${mealEntry.key}: ${mealEntry.value['diet']}',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
                                           'Calories: ${mealEntry.value['calories']} kcal'),
                                       Text(
@@ -171,7 +170,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                                       Text('Fat: ${mealEntry.value['fat']}%'),
                                       Text(
                                           'Water: ${mealEntry.value['water']} ml'),
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                     ],
                                   );
                                 }).toList(),
@@ -185,7 +184,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                       entryWidgets.add(
                         Text(
                           '${entry.value}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       );
                     }
@@ -202,13 +201,13 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Vazgeç"),
+              child: const Text("Vazgeç"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: Text("Evet, Kaydet"),
+              child: const Text("Evet, Kaydet"),
               onPressed: () {
                 Navigator.of(context).pop();
                 addToDietProgram();
@@ -225,17 +224,17 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Kullanıcıyı Çıkarma Onayı"),
-          content: Text("Bu kullanıcıyı çıkarmak istediğinize emin misiniz?"),
+          title: const Text("Kullanıcıyı Çıkarma Onayı"),
+          content: const Text("Bu kullanıcıyı çıkarmak istediğinize emin misiniz?"),
           actions: <Widget>[
             TextButton(
-              child: Text("Vazgeç"),
+              child: const Text("Vazgeç"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: Text("Evet, Çıkar"),
+              child: const Text("Evet, Çıkar"),
               onPressed: () {
                 Navigator.of(context).pop();
                 removeUserDietcian();
@@ -253,10 +252,10 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title:
-            Text("Profil", style: TextStyle(fontSize: 25, color: Colors.black)),
+            const Text("Profil", style: TextStyle(fontSize: 25, color: Colors.black)),
         actions: [
           IconButton(
-            icon: Icon(Icons.chat, color: Colors.blue),
+            icon: const Icon(Icons.chat, color: Colors.blue),
             onPressed: () {
               // Chat icon pressed action
             },
@@ -265,24 +264,24 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: CircleAvatar(
                 radius: 60,
-                backgroundImage: profilePhoto == null || profilePhoto == ""
-                    ? AssetImage('assets/images/avatar.jpg')
+                backgroundImage: profilePhoto == ""
+                    ? const AssetImage('assets/images/avatar.jpg')
                     : NetworkImage(profilePhoto) as ImageProvider,
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               "Profil Bilgileri",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               "Adı: $name",
               style: fontStyle(16, Colors.black, FontWeight.normal),
@@ -297,7 +296,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
             ),
             Text("Kilo: ${weight.toStringAsFixed(1)} kg",
                 style: fontStyle(16, Colors.black, FontWeight.normal)),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               "Beğenmediği Yiyecekler:",
               style: fontStyle(20, Colors.black, FontWeight.bold),
@@ -306,7 +305,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               unliked_food == "" ? "Veri Bulunamadı" : unliked_food,
               style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               "Alerjisi Olduğu Yiyecekler:",
               style: fontStyle(20, Colors.black, FontWeight.bold),
@@ -315,7 +314,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               alergy_food == "" ? "Veri Bulunamadı" : alergy_food,
               style: fontStyle(16, Colors.black, FontWeight.normal),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               "Diyet Listeleri:",
               style: fontStyle(20, Colors.black, FontWeight.bold),
@@ -333,7 +332,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                 );
               }),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MyButton(
               onPressed: (){
                 Navigator.push(context,PageTransition(child: PersonalDietcianCreateScreen(userUid: widget.uid,), type: PageTransitionType.fade));
@@ -343,7 +342,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
               buttonColor: Colors.amber, buttonTextSize: 16,
               buttonTextColor: Colors.black, buttonTextWeight: FontWeight.bold,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MyButton(
               onPressed: showRemoveClientDialog,
               // showRemoveClientDialog,

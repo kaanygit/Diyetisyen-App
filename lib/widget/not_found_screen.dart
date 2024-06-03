@@ -6,8 +6,8 @@ class NotFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const NotFound(),
+    return const MaterialApp(
+      home: NotFound(),
     );
   }
 }
@@ -27,13 +27,13 @@ class _NotFoundState extends State<NotFound> {
   }
 
   Future<void> signOut() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     FirebaseOperations().signOut(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Text("Tanımsız kullanıcı tipi:"),
       ),

@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
 import 'package:diyetisyenapp/screens/dietician/message_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DietitiansRequestScreen extends StatefulWidget {
-  const DietitiansRequestScreen({Key? key}) : super(key: key);
+  const DietitiansRequestScreen({super.key});
 
   @override
   State<DietitiansRequestScreen> createState() =>
@@ -62,7 +60,7 @@ class _DietitiansRequestScreenState extends State<DietitiansRequestScreen> {
       ),
       backgroundColor: Colors.white,
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Loading durumu
+          ? const Center(child: CircularProgressIndicator()) // Loading durumu
           : SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Padding(

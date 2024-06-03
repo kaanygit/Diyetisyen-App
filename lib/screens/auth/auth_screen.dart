@@ -6,12 +6,10 @@ import 'package:diyetisyenapp/screens/auth/dietcian_information_screen.dart';
 import 'package:diyetisyenapp/screens/dietician/dietician_home_screen.dart';
 import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sign_button/sign_button.dart';
-import 'package:diyetisyenapp/constants/fonts.dart';
 
 class AuthScreenState extends StatelessWidget {
   const AuthScreenState({
@@ -105,7 +103,7 @@ class _AuthScreenState extends State<AuthScreen> {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new UserInformationScreen()),
+                  child: const UserInformationScreen()),
             );
             break;
           case 1:
@@ -114,7 +112,7 @@ class _AuthScreenState extends State<AuthScreen> {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new DietcianInformationScreen()),
+                  child: const DietcianInformationScreen()),
             );
             break;
           case 2:
@@ -122,7 +120,7 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
+                  type: PageTransitionType.fade, child: const AdminHomeScreen()),
             );
             break;
           default:
@@ -173,7 +171,7 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new HomeScreen()),
+                  type: PageTransitionType.fade, child: const HomeScreen()),
             );
             break;
           case 1:
@@ -182,7 +180,7 @@ class _AuthScreenState extends State<AuthScreen> {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new DieticianHomeScreen()),
+                  child: DieticianHomeScreen()),
             );
             break;
           case 2:
@@ -190,7 +188,7 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
+                  type: PageTransitionType.fade, child: const AdminHomeScreen()),
             );
             break;
           default:
@@ -216,7 +214,7 @@ class _AuthScreenState extends State<AuthScreen> {
       Navigator.pushReplacement(
         context,
         PageTransition(
-            type: PageTransitionType.fade, child: UserInformationScreen()),
+            type: PageTransitionType.fade, child: const UserInformationScreen()),
       );
     } else {
       showErrorSnackBar(
@@ -590,7 +588,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         loginPageController = !loginPageController;
                       });
                     },
-                    child: Text(
+                    child: const Text(
                       "Giriş Yap",
                       style: TextStyle(color: Colors.lightGreen),
                     ),

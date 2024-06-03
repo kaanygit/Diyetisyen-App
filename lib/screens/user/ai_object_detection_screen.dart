@@ -11,7 +11,7 @@ class AiObjectDetectionScreen extends StatefulWidget {
   final String imagePath;
 
   const AiObjectDetectionScreen(
-      {required this.imagePath, required this.dietData});
+      {super.key, required this.imagePath, required this.dietData});
 
   @override
   _AiObjectDetectionScreenState createState() =>
@@ -80,16 +80,16 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Center(
                           child: Text(
                             'Algılanan Yiyecek: ${detectedFood ?? "Bulunamadı"}',
                             style: fontStyle(24, Colors.black, FontWeight.bold),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Divider(color: Colors.grey[400]),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         if (foodData != null)
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                                 style: fontStyle(
                                     20, Colors.black, FontWeight.bold),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               _buildNutrientRow(
                                   'Kalori', '${foodData!['kalori'] ?? 0} kcal'),
                               _buildNutrientRow(
@@ -108,7 +108,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                                   '${foodData!['karbonhidrat'] ?? 0} Gram'),
                               _buildNutrientRow('Protein',
                                   '${foodData!['protein'] ?? 0} Gram'),
-                              SizedBox(height: 25),
+                              const SizedBox(height: 25),
                               MyButton(
                                   text: "Yemeği Ekle",
                                   buttonColor:
@@ -136,7 +136,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                 ],
               ),
             )
-          : Center(
+          : const Center(
               child: CircularProgressIndicator(),
             ),
     );
@@ -147,7 +147,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          nutrient + ':',
+          '$nutrient:',
           style: fontStyle(18, Colors.black, FontWeight.normal),
         ),
         Text(

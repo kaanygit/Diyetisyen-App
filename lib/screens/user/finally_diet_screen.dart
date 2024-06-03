@@ -11,6 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:page_transition/page_transition.dart';
 
 class FinallyDietScreen extends StatefulWidget {
+  const FinallyDietScreen({super.key});
+
   @override
   _FinallyDietScreenState createState() => _FinallyDietScreenState();
 }
@@ -85,7 +87,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
         Navigator.pushReplacement(
           context,
           PageTransition(
-              type: PageTransitionType.fade, child: new HomeScreen()),
+              type: PageTransitionType.fade, child: const HomeScreen()),
         );
       } else {
         print("secenek otomatik geldi");
@@ -174,7 +176,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
           Navigator.pushReplacement(
             context,
             PageTransition(
-                type: PageTransitionType.fade, child: new HomeScreen()),
+                type: PageTransitionType.fade, child: const HomeScreen()),
           );
         }
       }
@@ -187,7 +189,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Diyetiniz Tamamlandı 🥳'),
+        title: const Text('Diyetiniz Tamamlandı 🥳'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -200,7 +202,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
                 'Diyet hakkında yorumunuzu alabilir miyim?',
                 style: fontStyle(18, mainColor, FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // TextField(
               //   decoration: InputDecoration(
               //     hintText: 'Yorumunuzu buraya girin',
@@ -218,14 +220,14 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
                 enabled: true,
                 maxLines: 5,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'Yeni diyetizini nasıl istiyorsunuz?',
                 style: fontStyle(18, mainColor, FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListTile(
-                title: Text('Diyetisyen'),
+                title: const Text('Diyetisyen'),
                 leading: Radio(
                   value: 'diyetisyen',
                   groupValue: _selectedDietType,
@@ -237,7 +239,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
                 ),
               ),
               ListTile(
-                title: Text('Otomatik'),
+                title: const Text('Otomatik'),
                 leading: Radio(
                   value: 'otomatik',
                   groupValue: _selectedDietType,
@@ -248,7 +250,7 @@ class _FinallyDietScreenState extends State<FinallyDietScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               MyButton(
                   text: "Gönder",
                   buttonColor: mainColor,

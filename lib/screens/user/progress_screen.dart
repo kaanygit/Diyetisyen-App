@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProgressScreenPage extends StatefulWidget {
-  ProgressScreenPage({Key? key}) : super(key: key);
+  const ProgressScreenPage({super.key});
 
   @override
   _ProgressScreenPageState createState() => _ProgressScreenPageState();
@@ -121,7 +121,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     Map<String, dynamic>? ekstraYemeler = snapshotEating.data();
     if (ekstraYemeler != null) {
       List<dynamic> meals = ekstraYemeler['meals'];
-      meals.forEach((meal) {
+      for (var meal in meals) {
         setState(() {
           totalDailyeatCalories += (meal['calories'] as num).toInt();
           totalCalories += (meal['calories'] as num).toInt();
@@ -129,7 +129,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
           totalFat += (meal['fat'] as num).toInt();
           totalProtein += (meal['protein'] as num).toInt();
         });
-      });
+      }
     }
 
     void updateDailyCalories(String mealType) {
@@ -215,13 +215,13 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                   DropdownButton<int>(
                     value: selectedWeek,
                     dropdownColor: Colors.white,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                    underline: SizedBox(),
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                    underline: const SizedBox(),
                     items: weeks.map((int week) {
                       return DropdownMenuItem<int>(
                         value: week,
                         child: Text('Week $week',
-                            style: TextStyle(color: Colors.black)),
+                            style: const TextStyle(color: Colors.black)),
                       );
                     }).toList(),
                     onChanged: (int? newValue) {
@@ -244,25 +244,25 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
             ),
             body: loadingValue
                 ? SingleChildScrollView(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildWeeklyProgressCard(),
-                        SizedBox(height: 16.0),
-                        Text(
+                        const SizedBox(height: 16.0),
+                        const Text(
                           'Son Değerleriniz',
                           style: TextStyle(
                               fontSize: 18.0, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         _buildWeightCard(),
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         _buildCaloriesCard(),
                       ],
                     ),
                   )
-                : Center(
+                : const Center(
                     child: CircularProgressIndicator(),
                   ),
           )
@@ -301,7 +301,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               'Haftalık Gelişim',
               style: fontStyle(18.0, Colors.black, FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -315,8 +315,8 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                       ),
                       Row(
                         children: [
-                          Icon(Icons.whatshot, color: Colors.red),
-                          SizedBox(width: 4.0),
+                          const Icon(Icons.whatshot, color: Colors.red),
+                          const SizedBox(width: 4.0),
                           Text(
                             '$totalCalories',
                             style:
@@ -330,9 +330,9 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 Row(
                   children: [
                     _buildProgressCircle(totalFat, 'Yağ'),
-                    SizedBox(width: 10.0),
+                    const SizedBox(width: 10.0),
                     _buildProgressCircle(totalProtein, 'Pro'),
-                    SizedBox(width: 10.0),
+                    const SizedBox(width: 10.0),
                     _buildProgressCircle(totalCarbs, 'Karb'),
                   ],
                 ),
@@ -356,7 +356,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Kilonuz',
                     style: TextStyle(fontSize: 16.0),
                   ),
@@ -368,7 +368,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                     'Hedef kilonuz : ${profileData['targetWeight'] ?? "0.0"} Kg',
                     style: fontStyle(16.0, Colors.grey, FontWeight.normal),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   MyButton(
                     text: "Yeni bir kilo giriniz",
                     buttonColor: mainColor,
@@ -388,8 +388,8 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 ],
               ),
             ),
-            SizedBox(width: 16.0),
-            Container(
+            const SizedBox(width: 16.0),
+            SizedBox(
               width: 80.0,
               height: 80.0,
               child: CustomPaint(
@@ -417,26 +417,26 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Kalori',
                     style:
                         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Text(
-                    '${totalDailyeatCalories} Kcal',
+                    '$totalDailyeatCalories Kcal',
                     style:
-                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                        const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '${dailyEatingRatio}% Tamamlandı',
-                    style: TextStyle(color: Colors.green, fontSize: 16.0),
+                    '$dailyEatingRatio% Tamamlandı',
+                    style: const TextStyle(color: Colors.green, fontSize: 16.0),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 16.0),
-            Container(
+            const SizedBox(width: 16.0),
+            SizedBox(
               width: 80.0,
               height: 80.0,
               child: CustomPaint(
@@ -464,7 +464,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                 value: percentage / 100.0,
                 strokeWidth: 6.0,
                 backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ),
             Column(
@@ -481,7 +481,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
             ),
           ],
         ),
-        SizedBox(height: 4.0),
+        const SizedBox(height: 4.0),
         Text(label),
       ],
     );
@@ -504,7 +504,7 @@ class CaloriesGraphPainter extends CustomPainter {
     final radius = size.width / 2;
 
     final rect = Rect.fromCircle(center: center, radius: radius);
-    final startAngle = -3.14 / 2;
+    const startAngle = -3.14 / 2;
     final sweepAngle = 2 * 3.14 * (percentage / 100);
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
@@ -541,7 +541,7 @@ class _WeightGraphPainter extends CustomPainter {
         'Percentage: $percentage'); // Hata ayıklama için yüzdelik değeri yazdır
 
     final rect = Rect.fromCircle(center: center, radius: radius);
-    final startAngle = -3.14 / 2;
+    const startAngle = -3.14 / 2;
     final sweepAngle = -2 * 3.14 * percentage; // current progress
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);

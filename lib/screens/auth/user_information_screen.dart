@@ -8,7 +8,6 @@ import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -17,15 +16,19 @@ import 'package:page_transition/page_transition.dart';
 import 'dart:async';
 
 class UserInformationScreen extends StatelessWidget {
+  const UserInformationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: UserInformationForm(),
     );
   }
 }
 
 class UserInformationForm extends StatefulWidget {
+  const UserInformationForm({super.key});
+
   @override
   _UserInformationFormState createState() => _UserInformationFormState();
 }
@@ -73,7 +76,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   void _nextPage() {
     if (_currentPage < 9) {
       _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeIn,
       );
     }
@@ -81,7 +84,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     if (pickedFile != null) {
       setState(() {
@@ -90,7 +93,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
         Reference ref = FirebaseStorage.instance
             .ref()
             .child("profile_photos")
-            .child(_auth.currentUser!.uid);
+            .child(auth.currentUser!.uid);
         UploadTask uploadTask = ref.putFile(File(pickedFile.path));
         uploadTask.then((res) {
           res.ref.getDownloadURL().then((url) {
@@ -169,12 +172,12 @@ class _UserInformationFormState extends State<UserInformationForm> {
   List<Map<String, dynamic>> dietOptions = [];
 
   Future<void> _saveUserData() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
     final random = Random();
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_auth.currentUser?.uid)
+        .doc(auth.currentUser?.uid)
         .update(_userData);
 
     // Kullanıcının seçtiği diyet programı "otomatik" ise
@@ -257,7 +260,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
         // Seçilen diyet seçeneğini Firebase'e kaydedelim
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(_auth.currentUser?.uid)
+            .doc(auth.currentUser?.uid)
             .collection('dietProgram')
             .doc('weeklyProgram')
             .set(selectedOption);
@@ -266,7 +269,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
 
     Navigator.pushReplacement(
       context,
-      PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
+      PageTransition(type: PageTransitionType.fade, child: const HomeScreen()),
     );
     showSuccessSnackBar(context,
         "Verileriniz başarılı bir şekilde kaydedildi. Aramıza hoşgeldiniz :)");
@@ -343,7 +346,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
 
   Widget _buildWelcomePage() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage("assets/images/food_background.jpg"),
           fit: BoxFit.cover,
@@ -363,7 +366,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -373,7 +376,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildGenderPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -381,9 +384,9 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Cinsiyetinizi Seçin",
               style: fontStyle(24, mainColor, FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -391,7 +394,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
                 color: Colors.white,
@@ -403,10 +406,10 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     width: 40,
                     height: 40,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: RadioListTile(
-                      title: Text("Kadın"),
+                      title: const Text("Kadın"),
                       value: "kadın",
                       groupValue: _userData['gender'],
                       onChanged: (value) {
@@ -426,9 +429,9 @@ class _UserInformationFormState extends State<UserInformationForm> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -436,7 +439,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
                 color: Colors.white,
@@ -448,10 +451,10 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     width: 40,
                     height: 40,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: RadioListTile(
-                      title: Text("Erkek"),
+                      title: const Text("Erkek"),
                       value: "erkek",
                       groupValue: _userData['gender'],
                       onChanged: (value) {
@@ -486,7 +489,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
             "Profil Resminizi Yükleyiniz",
             style: fontStyle(20, mainColor, FontWeight.bold),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _image == null
               ? Text(
                   "Resim seçilmedi.",
@@ -501,7 +504,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
                     width: 200,
                   ),
                 ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           ElevatedButton(
@@ -519,7 +522,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildAgePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -527,7 +530,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Yaşınız kaç?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -553,7 +556,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildWeightPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -561,7 +564,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Kaç Kilosunuz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -587,7 +590,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildHeightPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -595,7 +598,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Boyunuz Kaç cm?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -621,7 +624,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildTargetWeightPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -629,7 +632,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Hedef Kilonuz Kaç kg?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -655,7 +658,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildAlergyFoodsPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -663,7 +666,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Herhangi bir yiyeceğe alerjiniz varmı?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -689,7 +692,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildDislikedFoodsPage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -697,7 +700,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               "Hangi yemekleri sevmiyorsunuz?",
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             MyTextField(
@@ -723,7 +726,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
   Widget _buildDietPlanPreferencePage() {
     return Center(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -732,7 +735,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               style: fontStyle(20, mainColor, FontWeight.bold),
             ),
             RadioListTile(
-              title: Text("Otomatik önerilen"),
+              title: const Text("Otomatik önerilen"),
               value: "otomatik",
               groupValue: _userData['diet_program_choise'],
               onChanged: (value) {
@@ -743,7 +746,7 @@ class _UserInformationFormState extends State<UserInformationForm> {
               },
             ),
             RadioListTile(
-              title: Text("Diyetisyenin önerisi"),
+              title: const Text("Diyetisyenin önerisi"),
               value: "diyetisyen",
               groupValue: _userData['diet_program_choise'],
               onChanged: (value) {

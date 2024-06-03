@@ -13,7 +13,7 @@ class FirebaseMessagingService with ChangeNotifier {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  StreamController<List<Message>> _messagesController =
+  final StreamController<List<Message>> _messagesController =
       StreamController<List<Message>>.broadcast();
 
   FirebaseAuth get auth => _auth;

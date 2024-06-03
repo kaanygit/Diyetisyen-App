@@ -1,6 +1,4 @@
 import 'package:diyetisyenapp/constants/fonts.dart';
-import 'package:diyetisyenapp/database/firebase.dart';
-import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/not_diet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -482,8 +480,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: profilePhoto == null || profilePhoto == ""
-                  ? AssetImage("assets/images/avatar.jpg")
+              backgroundImage: profilePhoto == ""
+                  ? const AssetImage("assets/images/avatar.jpg")
                   : NetworkImage(profilePhoto) as ImageProvider,
             ),
             Container(
@@ -498,7 +496,7 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       body: !isLoading
-          ? !dietProgram.isEmpty || hasDietProgram
+          ? dietProgram.isNotEmpty || hasDietProgram
               ? SingleChildScrollView(
                   child: Column(
                     children: [
@@ -552,7 +550,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Container(
                                     child: Text(
-                                      "${dailyCalories}",
+                                      "$dailyCalories",
                                       style: fontStyle(
                                           MediaQuery.of(context).size.width / 4,
                                           Colors.white,
@@ -587,17 +585,17 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  proteinCarbsFat("Protein", "${dailyProtein}"),
+                                  proteinCarbsFat("Protein", "$dailyProtein"),
                                   proteinCarbsFat(
-                                      "Karbonhidrat", "${dailyCarbs}"),
-                                  proteinCarbsFat("Yağ", "${dailyFat}"),
+                                      "Karbonhidrat", "$dailyCarbs"),
+                                  proteinCarbsFat("Yağ", "$dailyFat"),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Container(
@@ -608,7 +606,7 @@ class _HomePageState extends State<HomePage> {
                             Text("Günlük Yemek",
                                 style: fontStyle(
                                     18, Colors.black, FontWeight.bold)),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             IconButton(
@@ -643,13 +641,13 @@ class _HomePageState extends State<HomePage> {
                                   },
                                 );
                               },
-                              icon: Icon(Icons.info_outline),
+                              icon: const Icon(Icons.info_outline),
                               color: Colors.black,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Container(
@@ -679,7 +677,7 @@ class _HomePageState extends State<HomePage> {
                             if (selectedMeal == "Yemekler")
                               Container(
                                 child: isLoading
-                                    ? CircularProgressIndicator()
+                                    ? const CircularProgressIndicator()
                                     : Column(
                                         children: [
                                           meals(
@@ -796,7 +794,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 )
-              : NotDiet()
+              : const NotDiet()
           : const Center(child: CircularProgressIndicator()),
     );
   }
@@ -949,7 +947,7 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           )
-        : Column();
+        : const Column();
   }
 
   Column activityScreen(Map<dynamic, dynamic> meal, String mealType,
@@ -1155,7 +1153,7 @@ class _HomePageState extends State<HomePage> {
                                   dietProgram, 1, dayss);
                             },
                             child: Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                     color: Colors.white),
@@ -1173,7 +1171,7 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           )
-        : Column();
+        : const Column();
   }
 
   Column waterActivity(Map<dynamic, dynamic> meal, String mealType, int dayss) {
@@ -1418,13 +1416,13 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text(
                               meal['foodName'] ?? 'No food name',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             Text(
                               "${meal['calories'] ?? 'No'} kcal",
                               style:
-                                  TextStyle(fontSize: 15, color: Colors.grey),
+                                  const TextStyle(fontSize: 15, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -1448,7 +1446,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 15,
         )
       ],
@@ -1458,7 +1456,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildMealInfo(String label, dynamic value) {
     return Container(
       padding: const EdgeInsets.all(5),
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -1467,11 +1465,11 @@ class _HomePageState extends State<HomePage> {
         children: [
           Text(
             "$label :",
-            style: TextStyle(fontSize: 10, color: Colors.grey),
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
           ),
           Text(
             "$value %",
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -1489,7 +1487,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                   height: 200,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(8.0),
                       topRight: Radius.circular(8.0),
@@ -1507,7 +1505,7 @@ class _HomePageState extends State<HomePage> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Container(
@@ -1522,7 +1520,7 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: [
               TextButton(
-                child: Text('Kapat'),
+                child: const Text('Kapat'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -1647,7 +1645,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 height: 200,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0),
@@ -1659,9 +1657,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10.0),
                     topRight: Radius.circular(10.0),
@@ -1672,12 +1670,12 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         '$mealType Detayları',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Text('Yemek: ${(meal['diet']) ?? (meal['name'])}'),
                       Text('Kalori: ${meal['calories']} kcal'),
                       Text('Protein Oranı: ${meal['protein']} %'),
@@ -1691,7 +1689,7 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             TextButton(
-              child: Text('Kapat'),
+              child: const Text('Kapat'),
               onPressed: () {
                 Navigator.of(context).pop();
               },

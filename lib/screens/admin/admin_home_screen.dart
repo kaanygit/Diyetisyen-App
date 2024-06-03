@@ -11,18 +11,18 @@ import 'package:diyetisyenapp/database/firebase.dart';
 // Varsayılan renkleri ekledim
 
 class AdminHomeScreen extends StatelessWidget {
-  const AdminHomeScreen({Key? key});
+  const AdminHomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: AdminMainScreen(),
     );
   }
 }
 
 class AdminMainScreen extends StatefulWidget {
-  const AdminMainScreen({Key? key}) : super(key: key);
+  const AdminMainScreen({super.key});
 
   @override
   _AdminMainScreenState createState() => _AdminMainScreenState();
@@ -42,7 +42,7 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Admin Paneli"),
+        title: const Text("Admin Paneli"),
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: SalomonBottomBar(
@@ -50,23 +50,23 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
         onTap: _onItemTapped,
         items: [
           SalomonBottomBarItem(
-            icon: Icon(Icons.person),
-            title: Text("Profil"),
+            icon: const Icon(Icons.person),
+            title: const Text("Profil"),
             selectedColor: mainColor, // mainColor burada tanımlı olmalı
           ),
           SalomonBottomBarItem(
-            icon: Icon(Icons.people),
-            title: Text("Diyetisyenler"),
+            icon: const Icon(Icons.people),
+            title: const Text("Diyetisyenler"),
             selectedColor: mainColor,
           ),
           SalomonBottomBarItem(
-            icon: Icon(Icons.request_page),
-            title: Text("Diyetisyen İstekleri"),
+            icon: const Icon(Icons.request_page),
+            title: const Text("Diyetisyen İstekleri"),
             selectedColor: mainColor,
           ),
           SalomonBottomBarItem(
-            icon: Icon(Icons.list),
-            title: Text("Diyet Listeleri"),
+            icon: const Icon(Icons.list),
+            title: const Text("Diyet Listeleri"),
             selectedColor: mainColor,
           ),
         ],
@@ -84,11 +84,13 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
 class DieticiansScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  DieticiansScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diyetisyenler"),
+        title: const Text("Diyetisyenler"),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -98,7 +100,7 @@ class DieticiansScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
@@ -107,7 +109,7 @@ class DieticiansScreen extends StatelessWidget {
           var dieticians = snapshot.data!.docs;
 
           if (dieticians.isEmpty) {
-            return Center(child: Text('Kayıtlı diyetisyen bulunamadı.'));
+            return const Center(child: Text('Kayıtlı diyetisyen bulunamadı.'));
           }
 
           return ListView.builder(
@@ -139,8 +141,8 @@ class DieticiansScreen extends StatelessWidget {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
@@ -149,7 +151,7 @@ class DieticiansScreen extends StatelessWidget {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 1,
               blurRadius: 5,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -158,22 +160,23 @@ class DieticiansScreen extends StatelessWidget {
             CircleAvatar(
               radius: 40,
               backgroundImage: dieticianPhoto.isEmpty
-                  ? AssetImage('assets/images/default_avatar.jpg')
+                  ? const AssetImage('assets/images/default_avatar.jpg')
                   : NetworkImage(dieticianPhoto) as ImageProvider,
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     dieticianName,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Text(
                     dieticianEmail,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -188,11 +191,13 @@ class DieticiansScreen extends StatelessWidget {
 class DieticianRequestsScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  DieticianRequestsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diyetisyen İstekleri"),
+        title: const Text("Diyetisyen İstekleri"),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -201,7 +206,7 @@ class DieticianRequestsScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
@@ -210,7 +215,8 @@ class DieticianRequestsScreen extends StatelessWidget {
           var requests = snapshot.data!.docs;
 
           if (requests.isEmpty) {
-            return Center(child: Text('Diyetisyenlik isteği bulunmamaktadır.'));
+            return const Center(
+                child: Text('Diyetisyenlik isteği bulunmamaktadır.'));
           }
 
           return ListView.builder(
@@ -240,8 +246,8 @@ class DieticianRequestsScreen extends StatelessWidget {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
@@ -250,7 +256,7 @@ class DieticianRequestsScreen extends StatelessWidget {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 1,
               blurRadius: 5,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -259,22 +265,23 @@ class DieticianRequestsScreen extends StatelessWidget {
             CircleAvatar(
               radius: 40,
               backgroundImage: userPhoto.isEmpty
-                  ? AssetImage('assets/images/avatar.jpg')
+                  ? const AssetImage('assets/images/avatar.jpg')
                   : NetworkImage(userPhoto) as ImageProvider,
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     userName,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Text(
                     userEmail,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -289,17 +296,19 @@ class DieticianRequestsScreen extends StatelessWidget {
 class DietListsScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  DietListsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diyet Listeleri"),
+        title: const Text("Diyet Listeleri"),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('diet_list').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
@@ -308,7 +317,7 @@ class DietListsScreen extends StatelessWidget {
           var dietLists = snapshot.data!.docs;
 
           if (dietLists.isEmpty) {
-            return Center(child: Text('Diyet listesi bulunmamaktadır.'));
+            return const Center(child: Text('Diyet listesi bulunmamaktadır.'));
           }
 
           return ListView.builder(
@@ -333,8 +342,8 @@ class DietListsScreen extends StatelessWidget {
         _showDietListDetails(context, dietList, docId);
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
@@ -343,7 +352,7 @@ class DietListsScreen extends StatelessWidget {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 1,
               blurRadius: 5,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -352,24 +361,24 @@ class DietListsScreen extends StatelessWidget {
           children: [
             Text(
               dietName,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               description,
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit, color: Colors.blue),
+                  icon: const Icon(Icons.edit, color: Colors.blue),
                   onPressed: () {
                     _showEditDietListDialog(context, dietList, docId);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     _showDeleteConfirmationDialog(context, docId);
                   },
@@ -388,7 +397,7 @@ class DietListsScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Diyet Listesi"),
+          title: const Text("Diyet Listesi"),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,7 +410,7 @@ class DietListsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("Kapat"),
+              child: const Text("Kapat"),
             ),
           ],
         );
@@ -419,8 +428,8 @@ class DietListsScreen extends StatelessWidget {
         widgets.add(Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
           child: Text(
-            "$weekKey",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            weekKey,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ));
 
@@ -432,11 +441,12 @@ class DietListsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "$dayKey",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    dayKey,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    icon: Icon(Icons.edit, color: Colors.blue),
+                    icon: const Icon(Icons.edit, color: Colors.blue),
                     onPressed: () {
                       _showEditDayDialog(
                           context, docId, weekKey, dayKey, dayValue);
@@ -452,8 +462,9 @@ class DietListsScreen extends StatelessWidget {
                   padding:
                       const EdgeInsets.only(left: 32.0, top: 2.0, bottom: 2.0),
                   child: Text(
-                    "$mealKey",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    mealKey,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ));
 
@@ -480,15 +491,15 @@ class DietListsScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Diyet Listesini Sil"),
-          content: Text(
+          title: const Text("Diyet Listesini Sil"),
+          content: const Text(
               "Bu diyet listesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("İptal"),
+              child: const Text("İptal"),
             ),
             TextButton(
               onPressed: () {
@@ -496,7 +507,7 @@ class DietListsScreen extends StatelessWidget {
                 Navigator.pop(context); // Close the confirmation dialog
                 Navigator.pop(context); // Close the diet list details dialog
               },
-              child: Text("Sil"),
+              child: const Text("Sil"),
             ),
           ],
         );
@@ -515,18 +526,18 @@ class DietListsScreen extends StatelessWidget {
             TextEditingController(text: dietList['description']);
 
         return AlertDialog(
-          title: Text("Diyet Listesini Düzenle"),
+          title: const Text("Diyet Listesini Düzenle"),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: 'Diyet Adı'),
+                  decoration: const InputDecoration(labelText: 'Diyet Adı'),
                 ),
                 TextField(
                   controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Açıklama'),
+                  decoration: const InputDecoration(labelText: 'Açıklama'),
                 ),
                 // Add more TextFields for other diet list details if needed
               ],
@@ -537,7 +548,7 @@ class DietListsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("İptal"),
+              child: const Text("İptal"),
             ),
             TextButton(
               onPressed: () {
@@ -550,7 +561,7 @@ class DietListsScreen extends StatelessWidget {
                   showSuccessSnackBar(context, "Veri Başarıyla Güncellendi");
                 });
               },
-              child: Text("Kaydet"),
+              child: const Text("Kaydet"),
             ),
           ],
         );
@@ -600,7 +611,7 @@ class DietListsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("İptal"),
+              child: const Text("İptal"),
             ),
             TextButton(
               onPressed: () {
@@ -623,7 +634,7 @@ class DietListsScreen extends StatelessWidget {
                   showSuccessSnackBar(context, "Veri Başarıyla Güncellendi");
                 });
               },
-              child: Text("Kaydet"),
+              child: const Text("Kaydet"),
             ),
           ],
         );
@@ -636,19 +647,21 @@ class ProfileScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     String? currentUserUid = _auth.currentUser?.uid;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profil"),
+        title: const Text("Profil"),
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: _firestore.collection('users').doc(currentUserUid).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
@@ -657,7 +670,7 @@ class ProfileScreen extends StatelessWidget {
           var userData = snapshot.data!.data() as Map<String, dynamic>?;
 
           if (userData == null) {
-            return Center(child: Text('Kullanıcı bilgileri bulunamadı.'));
+            return const Center(child: Text('Kullanıcı bilgileri bulunamadı.'));
           }
 
           String userName = userData['displayName'] ?? 'Kullanıcı Adı Yok';
@@ -677,27 +690,27 @@ class ProfileScreen extends StatelessWidget {
     BuildContext context,
   ) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
             radius: 60,
             backgroundImage: userPhoto.isEmpty
-                ? AssetImage("assets/images/avatar.jpg")
+                ? const AssetImage("assets/images/avatar.jpg")
                 : NetworkImage(userPhoto) as ImageProvider,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             userName,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             userEmail,
-            style: TextStyle(fontSize: 18, color: Colors.grey),
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           // MyButton(
           //   onPressed: () {
           //     // Profil düzenleme ekranına gitmek için navigasyon kodu eklenebilir
@@ -714,7 +727,7 @@ class ProfileScreen extends StatelessWidget {
           MyButton(
             onPressed: () async {
               try {
-                await Future.delayed(Duration(seconds: 2));
+                await Future.delayed(const Duration(seconds: 2));
                 FirebaseOperations().signOut(context);
               } catch (e) {
                 print("Çıkış yaparken hata oluştu: $e");

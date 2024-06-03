@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diyetisyenapp/screens/auth/user_information_screen.dart';
-import 'package:diyetisyenapp/screens/user/home.dart';
 import 'package:diyetisyenapp/widget/privacy.dart';
 import 'package:diyetisyenapp/widget/term_condition.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,14 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
-import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
 import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/buttons.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -66,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       backgroundColor: Colors.white,
       body: userData == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -77,14 +73,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         radius: 60,
                         backgroundImage: userData?.get('profilePhoto') == "" ||
                                 userData?.get('profilePhoto') == null
-                            ? AssetImage("assets/images/avatar.jpg")
+                            ? const AssetImage("assets/images/avatar.jpg")
                             : NetworkImage(userData?.get('profilePhoto'))
                                 as ImageProvider,
                       ),
                     ),
                     const SizedBox(height: 15),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         color: mainColor3,
                         borderRadius: BorderRadius.circular(15),
@@ -130,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           MyButton(
                             onPressed: () async {
-                              await Future.delayed(Duration(seconds: 2));
+                              await Future.delayed(const Duration(seconds: 2));
                               FirebaseOperations().signOut(context);
                             },
                             text: "Çıkış Yap",
@@ -139,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             buttonTextSize: 15,
                             buttonTextWeight: FontWeight.bold,
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           MyButton(
                             text: "Profili Düzenle",
                             buttonColor: Colors.yellow,
@@ -167,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildProfileInfo(String label, String value) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85,
       // padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -201,14 +197,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PrivacyPage(),
+                builder: (context) => const PrivacyPage(),
               ),
             );
           } else {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TermsOfUsePage(),
+                builder: (context) => const TermsOfUsePage(),
               ),
             );
           }

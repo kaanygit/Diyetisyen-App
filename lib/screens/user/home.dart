@@ -10,6 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -21,11 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
   ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
 
   static List<Widget> widgetOptions = <Widget>[
-    HomePage(),
-    ChatScreen(),
-    AddMeals(),
-    ProgressScreenPage(),
-    ProfileScreen(),
+    const HomePage(),
+    const ChatScreen(),
+    const AddMeals(),
+    const ProgressScreenPage(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (differenceInDays > 28) {
             // If more than 28 days have passed, navigate to another screen
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => FinallyDietScreen()),
+              MaterialPageRoute(builder: (context) => const FinallyDietScreen()),
             );
           }
         }

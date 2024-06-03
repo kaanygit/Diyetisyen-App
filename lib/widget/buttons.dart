@@ -10,14 +10,14 @@ class MyButton extends StatelessWidget {
   final VoidCallback onPressed; // onPressed parametresini ekledik
 
   const MyButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.buttonColor,
     required this.buttonTextColor,
     required this.buttonTextSize,
     required this.buttonTextWeight,
     required this.onPressed, // onPressed'i constructor'a ekledik
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

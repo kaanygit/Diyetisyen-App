@@ -162,13 +162,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: EasyLoading.init(), // Initialize EasyLoading
       debugShowCheckedModeBanner: false,
-      home: HomeScreenWrapper(),
+      home: const HomeScreenWrapper(),
     );
   }
 }
 
 class HomeScreenWrapper extends StatefulWidget {
-  const HomeScreenWrapper({Key? key}) : super(key: key);
+  const HomeScreenWrapper({super.key});
 
   @override
   _HomeScreenWrapperState createState() => _HomeScreenWrapperState();
@@ -262,9 +262,9 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                                       EasyLoading.dismiss();
                                       if (newUserSnapshot.hasData &&
                                           newUserSnapshot.data == true) {
-                                        return new UserInformationScreen();
+                                        return const UserInformationScreen();
                                       } else {
-                                        return new HomeScreen();
+                                        return const HomeScreen();
                                       }
                                     }
                                   },
@@ -285,9 +285,9 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                                       EasyLoading.dismiss();
                                       if (newDieticianSnapshot.hasData &&
                                           newDieticianSnapshot.data == true) {
-                                        return new DietcianInformationScreen();
+                                        return const DietcianInformationScreen();
                                       } else {
-                                        return new DieticianHomeScreen();
+                                        return DieticianHomeScreen();
                                       }
                                     }
                                   },
@@ -295,10 +295,10 @@ class _HomeScreenWrapperState extends State<HomeScreenWrapper> {
                               case 2:
                                 print(
                                     "Navigating to AdminHomeScreen for profile type 2");
-                                return new AdminHomeScreen();
+                                return const AdminHomeScreen();
                               default:
                                 print("Unknown profile type: $profileType");
-                                return NotFoundScreen();
+                                return const NotFoundScreen();
                             }
                           } else if (profileTypeSnapshot.hasError) {
                             print(

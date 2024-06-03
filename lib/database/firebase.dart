@@ -36,7 +36,7 @@ class FirebaseOperations {
           Navigator.push(
             context,
             PageTransition(
-                type: PageTransitionType.fade, child: new HomeScreen()),
+                type: PageTransitionType.fade, child: const HomeScreen()),
           );
           break;
         case 1:
@@ -45,7 +45,7 @@ class FirebaseOperations {
             context,
             PageTransition(
                 type: PageTransitionType.fade,
-                child: new DieticianHomeScreen()),
+                child: DieticianHomeScreen()),
           );
           break;
         case 2:
@@ -53,7 +53,7 @@ class FirebaseOperations {
           Navigator.push(
             context,
             PageTransition(
-                type: PageTransitionType.fade, child: new AdminHomeScreen()),
+                type: PageTransitionType.fade, child: const AdminHomeScreen()),
           );
           break;
         default:
@@ -133,7 +133,7 @@ class FirebaseOperations {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new UserInformationScreen()),
+                  child: const UserInformationScreen()),
             );
             break;
           case 1:
@@ -142,7 +142,7 @@ class FirebaseOperations {
               context,
               PageTransition(
                   type: PageTransitionType.fade,
-                  child: new DietcianInformationScreen()),
+                  child: const DietcianInformationScreen()),
             );
             break;
           case 2:
@@ -150,7 +150,7 @@ class FirebaseOperations {
             Navigator.pushReplacement(
               context,
               PageTransition(
-                  type: PageTransitionType.fade, child: new AdminHomeScreen()),
+                  type: PageTransitionType.fade, child: const AdminHomeScreen()),
             );
             break;
           default:
@@ -309,11 +309,11 @@ class FirebaseOperations {
 
       List<Map<String, dynamic>> dieticians = [];
 
-      snapshot.docs.forEach((doc) {
+      for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data();
         data['id'] = doc.id;
         dieticians.add(data);
-      });
+      }
 
       print("Diyetisyenler getirildi");
       return dieticians;
@@ -447,7 +447,7 @@ class FirebaseOperations {
       return await _firestore.collection('users').doc(uid).get();
     } catch (e) {
       print('Error fetching user profile: $e');
-      throw e; // Throw an error or handle it as per your application's error handling strategy
+      rethrow; // Throw an error or handle it as per your application's error handling strategy
     }
   }
 
@@ -457,7 +457,7 @@ class FirebaseOperations {
       await _firestore.collection('users').doc(uid).update(updatedData);
     } catch (e) {
       print('Error updating user profile: $e');
-      throw e; // Throw an error or handle it as per your application's error handling strategy
+      rethrow; // Throw an error or handle it as per your application's error handling strategy
     }
   }
 

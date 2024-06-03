@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DieticianProfileScreen extends StatefulWidget {
   final String uid;
-  const DieticianProfileScreen({Key? key, required this.uid}) : super(key: key);
+  const DieticianProfileScreen({super.key, required this.uid});
 
   @override
   State<DieticianProfileScreen> createState() => _DieticianProfileScreenState();
@@ -33,9 +33,7 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
         setState(() {
           name = dieticianDoc['displayName'] ?? 'Bilgi Bulunamadı';
           profilePhoto = dieticianDoc['profilePhoto'] ?? '';
-          experience = dieticianDoc['experience'] != null
-              ? dieticianDoc['experience']
-              : 0;
+          experience = dieticianDoc['experience'] ?? 0;
           expertise = dieticianDoc['expertise'] ?? 'Bilgi Bulunamadı';
           age = dieticianDoc['age'] ?? 0;
           educationLevel = dieticianDoc['educationLevel'] ?? 'Bilgi Bulunamadı';
@@ -60,14 +58,14 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
             CircleAvatar(
               radius: 20,
               backgroundImage: profilePhoto.isEmpty
-                  ? AssetImage("assets/images/avatar.jpg")
+                  ? const AssetImage("assets/images/avatar.jpg")
                   : NetworkImage(profilePhoto) as ImageProvider,
             ),
-            Text(
+            const Text(
               "Sohbet",
               style: TextStyle(fontSize: 25, color: Colors.black),
             ),
-            Icon(
+            const Icon(
               Icons.chat,
               color: Colors.blue, // Assuming mainColor is defined somewhere
             ),
@@ -77,48 +75,48 @@ class _DieticianProfileScreenState extends State<DieticianProfileScreen> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "Diyetisyen Profili",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ListTile(
-                leading: Icon(Icons.person),
+                leading: const Icon(Icons.person),
                 title: Text("Adı: $name"),
               ),
               ListTile(
-                leading: Icon(Icons.badge),
+                leading: const Icon(Icons.badge),
                 title: Text("Uzmanlık Alanı: $expertise"),
               ),
               ListTile(
-                leading: Icon(Icons.school),
+                leading: const Icon(Icons.school),
                 title: Text("Eğitim Seviyesi: $educationLevel"),
               ),
               ListTile(
-                leading: Icon(Icons.work),
+                leading: const Icon(Icons.work),
                 title: Text("Deneyim: ${experience.toString()}"),
               ),
               ListTile(
-                leading: Icon(Icons.calendar_today),
+                leading: const Icon(Icons.calendar_today),
                 title: Text("Yaş: $age"),
               ),
               ListTile(
-                leading: Icon(Icons.title),
+                leading: const Icon(Icons.title),
                 title: Text("Ünvan: $title"),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 "Hoş Geldiniz Mesajı:",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 welcomeMessage,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),

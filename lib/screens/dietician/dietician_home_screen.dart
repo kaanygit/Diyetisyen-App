@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:diyetisyenapp/constants/fonts.dart';
 import 'package:diyetisyenapp/database/firebase.dart';
-import 'package:diyetisyenapp/screens/auth/auth_screen.dart';
-import 'package:diyetisyenapp/screens/user/user_edit_profile_screen.dart';
 import 'package:diyetisyenapp/widget/flash_message.dart';
 import 'package:diyetisyenapp/widget/my_text_field.dart';
 import 'package:diyetisyenapp/widget/privacy.dart';
@@ -23,7 +21,7 @@ class DieticianHomeScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  DieticianHomeScreen({Key? key}) : super(key: key);
+  DieticianHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +36,7 @@ class DieticianHomeScreen extends StatelessWidget {
         future: _firestore.collection('users').doc(uid).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -66,7 +64,7 @@ class DieticianHomeScreen extends StatelessWidget {
                     style: fontStyle(20, mainColor, FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   MyButton(
@@ -76,7 +74,7 @@ class DieticianHomeScreen extends StatelessWidget {
                       buttonTextSize: 22,
                       buttonTextWeight: FontWeight.normal,
                       onPressed: () async {
-                        await Future.delayed(Duration(seconds: 2));
+                        await Future.delayed(const Duration(seconds: 2));
                         FirebaseOperations().signOut(context);
                       })
                 ],
@@ -92,7 +90,7 @@ class DieticianHomeScreen extends StatelessWidget {
 class DieticianMainContent extends StatefulWidget {
   final String currentUserUid;
 
-  DieticianMainContent({required this.currentUserUid});
+  const DieticianMainContent({super.key, required this.currentUserUid});
 
   @override
   _DieticianMainContentState createState() => _DieticianMainContentState();
@@ -128,18 +126,18 @@ class _DieticianMainContentState extends State<DieticianMainContent> {
         onTap: _onItemTapped,
         items: [
           SalomonBottomBarItem(
-              icon: Icon(Icons.chat),
-              title: Text("Sohbet Kutuları"),
+              icon: const Icon(Icons.chat),
+              title: const Text("Sohbet Kutuları"),
               selectedColor: mainColor,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.person_add),
-              title: Text("İstekler"),
+              icon: const Icon(Icons.person_add),
+              title: const Text("İstekler"),
               selectedColor: mainColor,
               unselectedColor: Colors.grey),
           SalomonBottomBarItem(
-              icon: Icon(Icons.account_circle),
-              title: Text("Profil"),
+              icon: const Icon(Icons.account_circle),
+              title: const Text("Profil"),
               selectedColor: mainColor,
               unselectedColor: Colors.grey),
         ],
@@ -152,7 +150,7 @@ class ClientChats extends StatelessWidget {
   final String currentUserUid;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  ClientChats({required this.currentUserUid});
+  ClientChats({super.key, required this.currentUserUid});
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +158,7 @@ class ClientChats extends StatelessWidget {
       stream: _firestore.collection('users').doc(currentUserUid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -170,7 +168,7 @@ class ClientChats extends StatelessWidget {
 
         if (dieticianData == null ||
             !dieticianData.containsKey('dietician-danisanlar-uid')) {
-          return Center(child: Text('No clients available'));
+          return const Center(child: Text('No clients available'));
         }
 
         List<String> clientUids =
@@ -181,11 +179,11 @@ class ClientChats extends StatelessWidget {
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 backgroundImage: AssetImage("assets/images/dietbot.png"),
                 radius: 50,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Text(
@@ -197,7 +195,7 @@ class ClientChats extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           itemCount: clientUids.length,
           itemBuilder: (context, index) {
             String clientId = clientUids[index];
@@ -206,20 +204,20 @@ class ClientChats extends StatelessWidget {
               future: _firestore.collection('users').doc(clientId).get(),
               builder: (context, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox(
+                  return const SizedBox(
                     height: 72.0,
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
                 if (userSnapshot.hasError) {
-                  return ListTile(title: Text('Error fetching data'));
+                  return const ListTile(title: Text('Error fetching data'));
                 }
 
                 var userData =
                     userSnapshot.data!.data() as Map<String, dynamic>?;
 
                 if (userData == null) {
-                  return ListTile(
+                  return const ListTile(
                     title: Center(
                       child: Text('İsteğiniz yok'),
                     ),
@@ -256,21 +254,21 @@ class ClientChats extends StatelessWidget {
                                   radius: 20,
                                   backgroundImage: userPhoto == "null" &&
                                           userPhoto.isEmpty
-                                      ? AssetImage("assets/images/avatar.jpg")
+                                      ? const AssetImage("assets/images/avatar.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("$clientName",
+                                    Text(clientName,
                                         style: fontStyle(
                                             15, Colors.black, FontWeight.bold)),
                                     Text(
-                                      "$clientId",
+                                      clientId,
                                       style: fontStyle(
                                           15, Colors.grey, FontWeight.normal),
                                     ),
@@ -300,7 +298,7 @@ class RequestedUsers extends StatelessWidget {
   final String currentUserUid;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  RequestedUsers({required this.currentUserUid});
+  RequestedUsers({super.key, required this.currentUserUid});
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +306,7 @@ class RequestedUsers extends StatelessWidget {
       stream: _firestore.collection('users').doc(currentUserUid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -318,7 +316,7 @@ class RequestedUsers extends StatelessWidget {
 
         if (dieticianData == null ||
             !dieticianData.containsKey('danisanlar-istek')) {
-          return Center(child: Text('İsteğiniz yok'));
+          return const Center(child: Text('İsteğiniz yok'));
         }
 
         List<String> requestUids =
@@ -329,11 +327,11 @@ class RequestedUsers extends StatelessWidget {
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 backgroundImage: AssetImage("assets/images/dietbot.png"),
                 radius: 50,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Text(
@@ -345,7 +343,7 @@ class RequestedUsers extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           itemCount: requestUids.length,
           itemBuilder: (context, index) {
             String requestId = requestUids[index];
@@ -354,20 +352,20 @@ class RequestedUsers extends StatelessWidget {
               future: _firestore.collection('users').doc(requestId).get(),
               builder: (context, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox(
+                  return const SizedBox(
                     height: 72.0,
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
                 if (userSnapshot.hasError) {
-                  return ListTile(title: Text('Error fetching data'));
+                  return const ListTile(title: Text('Error fetching data'));
                 }
 
                 var userData =
                     userSnapshot.data!.data() as Map<String, dynamic>?;
 
                 if (userData == null) {
-                  return ListTile(
+                  return const ListTile(
                     title: Center(
                       child: Text('İsteğiniz yok'),
                     ),
@@ -383,7 +381,7 @@ class RequestedUsers extends StatelessWidget {
                       dieticianData['dietician-danisanlar-uid']);
                   if (clientUids.contains(requestId)) {
                     // If the user is already a client, don't show in requests
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                 }
 
@@ -414,21 +412,21 @@ class RequestedUsers extends StatelessWidget {
                                   radius: 20,
                                   backgroundImage: userPhoto == "" ||
                                           userPhoto == "null"
-                                      ? AssetImage("assets/images/avatar.jpg")
+                                      ? const AssetImage("assets/images/avatar.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("$userName",
+                                    Text(userName,
                                         style: fontStyle(
                                             15, Colors.black, FontWeight.bold)),
                                     Text(
-                                      "$requestId",
+                                      requestId,
                                       style: fontStyle(
                                           15, Colors.grey, FontWeight.normal),
                                     ),
@@ -458,7 +456,7 @@ class ProfileScreen extends StatelessWidget {
   final String currentUserUid;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  ProfileScreen({required this.currentUserUid});
+  ProfileScreen({super.key, required this.currentUserUid});
 
   @override
   Widget build(BuildContext context) {
@@ -467,7 +465,7 @@ class ProfileScreen extends StatelessWidget {
         future: _firestore.collection('users').doc(currentUserUid).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
@@ -476,7 +474,7 @@ class ProfileScreen extends StatelessWidget {
           var userData = snapshot.data!.data() as Map<String, dynamic>?;
 
           if (userData == null) {
-            return Center(child: Text('Kullanıcı bilgileri bulunamadı.'));
+            return const Center(child: Text('Kullanıcı bilgileri bulunamadı.'));
           }
 
           String userName = userData['displayName'] ?? 'Kullanıcı Adı Yok';
@@ -507,12 +505,12 @@ class ProfileScreen extends StatelessWidget {
             CircleAvatar(
               radius: 60,
               backgroundImage: userPhoto == "" || userPhoto == "ProfilFoto"
-                  ? AssetImage("assets/images/avatar.jpg")
+                  ? const AssetImage("assets/images/avatar.jpg")
                   : NetworkImage(userPhoto) as ImageProvider,
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: mainColor2,
                 borderRadius: BorderRadius.circular(15),
@@ -527,7 +525,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
                 color: mainColor2,
@@ -544,7 +542,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
@@ -552,7 +550,7 @@ class ProfileScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   MyButton(
                       text: "Profili Düzenle",
                       buttonColor: Colors.amber,
@@ -568,10 +566,10 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         );
                       }),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   MyButton(
                     onPressed: () async {
-                      await Future.delayed(Duration(seconds: 2));
+                      await Future.delayed(const Duration(seconds: 2));
                       FirebaseOperations().signOut(context);
                     },
                     text: "Çıkış Yap",
@@ -580,7 +578,7 @@ class ProfileScreen extends StatelessWidget {
                     buttonTextSize: 15,
                     buttonTextWeight: FontWeight.bold,
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
@@ -597,11 +595,11 @@ class ProfileScreen extends StatelessWidget {
   ) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title + ":",
+          Text("$title:",
               style: fontStyle(15, Colors.black, FontWeight.bold)),
           Text(
             value.toString(),
@@ -615,13 +613,13 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileButton(BuildContext context, String text) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
       ),
       child: InkWell(
         onTap: () async {
           if (text == 'Çıkış Yap') {
-            await Future.delayed(Duration(seconds: 2));
+            await Future.delayed(const Duration(seconds: 2));
             FirebaseOperations().signOut(context);
           } else if (text == 'Profil Düzenle') {
             Navigator.push(
@@ -640,7 +638,7 @@ class ProfileScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PrivacyPage(),
+                  builder: (context) => const PrivacyPage(),
                 ),
               );
             } else {
@@ -648,7 +646,7 @@ class ProfileScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TermsOfUsePage(),
+                  builder: (context) => const TermsOfUsePage(),
                 ),
               );
             }
@@ -661,7 +659,7 @@ class ProfileScreen extends StatelessWidget {
               text,
               style: fontStyle(15, Colors.black, FontWeight.bold),
             ),
-            Icon(Icons.arrow_right),
+            const Icon(Icons.arrow_right),
           ],
         ),
       ),
@@ -680,8 +678,7 @@ class ProfileScreen extends StatelessWidget {
 class ProfileEditScreen extends StatefulWidget {
   final String currentUserUid;
 
-  const ProfileEditScreen({Key? key, required this.currentUserUid})
-      : super(key: key);
+  const ProfileEditScreen({super.key, required this.currentUserUid});
 
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
@@ -689,12 +686,12 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  TextEditingController _displayNameController = TextEditingController();
-  TextEditingController _ageController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _phoneNumberController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _welcomeMessageController = TextEditingController();
+  final TextEditingController _displayNameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _welcomeMessageController = TextEditingController();
   File? _image;
   String? _profilePhotoUrl;
 
@@ -786,10 +783,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil Düzenle'),
+        title: const Text('Profil Düzenle'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -800,11 +797,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 radius: 50,
                 backgroundImage:
                     _profilePhotoUrl == null || _profilePhotoUrl!.isEmpty
-                        ? AssetImage('assets/images/avatar.jpg')
+                        ? const AssetImage('assets/images/avatar.jpg')
                         : NetworkImage(_profilePhotoUrl!) as ImageProvider,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyButton(
               onPressed: pickImage,
               text: 'Profil Fotoğrafı Seç',
@@ -813,7 +810,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               buttonTextSize: 15,
               buttonTextWeight: FontWeight.normal,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _displayNameController,
               hintText: 'Adınız',
@@ -821,7 +818,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               keyboardType: TextInputType.text,
               enabled: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _ageController,
               hintText: 'Yaşınız',
@@ -829,7 +826,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               keyboardType: TextInputType.number,
               enabled: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _titleController,
               hintText: 'Ünvanınız',
@@ -851,7 +848,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             //   onPressed: pickImage,
             //   child: Text('Profil Fotoğrafı Seç'),
             // ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _phoneNumberController,
               hintText: 'Telefon Numaranız',
@@ -859,7 +856,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               keyboardType: TextInputType.phone,
               enabled: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _addressController,
               hintText: 'Adresiniz',
@@ -868,7 +865,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               maxLines: 3,
               enabled: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             MyTextField(
               controller: _welcomeMessageController,
               hintText: 'Hoş Geldiniz Mesajı',
@@ -877,7 +874,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               maxLines: 8,
               enabled: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MyButton(
                 text: "Kaydet",
                 buttonColor: mainColor,

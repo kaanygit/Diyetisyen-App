@@ -6,7 +6,7 @@ import 'package:diyetisyenapp/widget/flash_message.dart';
 
 class PersonalDietcianCreateScreen extends StatefulWidget {
   final String userUid;
-  const PersonalDietcianCreateScreen({required this.userUid, Key? key}) : super(key: key);
+  const PersonalDietcianCreateScreen({required this.userUid, super.key});
 
   @override
   State<PersonalDietcianCreateScreen> createState() => _PersonalDietcianCreateScreenState();
@@ -160,36 +160,36 @@ class _PersonalDietcianCreateScreenState extends State<PersonalDietcianCreateScr
       children: [
         TextFormField(
           controller: mealData['calories'],
-          decoration: InputDecoration(labelText: 'Kalori'),
+          decoration: const InputDecoration(labelText: 'Kalori'),
           keyboardType: TextInputType.number,
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
         TextFormField(
           controller: mealData['carbs'],
-          decoration: InputDecoration(labelText: 'Karbonhidrat'),
+          decoration: const InputDecoration(labelText: 'Karbonhidrat'),
           keyboardType: TextInputType.number,
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
         TextFormField(
           controller: mealData['diet'],
-          decoration: InputDecoration(labelText: 'Diyette Yenecekler'),
+          decoration: const InputDecoration(labelText: 'Diyette Yenecekler'),
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
         TextFormField(
           controller: mealData['fat'],
-          decoration: InputDecoration(labelText: 'Yağ'),
+          decoration: const InputDecoration(labelText: 'Yağ'),
           keyboardType: TextInputType.number,
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
         TextFormField(
           controller: mealData['protein'],
-          decoration: InputDecoration(labelText: 'Protein'),
+          decoration: const InputDecoration(labelText: 'Protein'),
           keyboardType: TextInputType.number,
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
         TextFormField(
           controller: mealData['water'],
-          decoration: InputDecoration(labelText: 'Kaç Bardak Su'),
+          decoration: const InputDecoration(labelText: 'Kaç Bardak Su'),
           keyboardType: TextInputType.number,
           validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
         ),
@@ -204,10 +204,10 @@ class _PersonalDietcianCreateScreenState extends State<PersonalDietcianCreateScr
       children: [
         Text('Breakfast', style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['breakfast']),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text('Lunch', style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['lunch']),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text('Dinner', style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['dinner']),
       ],

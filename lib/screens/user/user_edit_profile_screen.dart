@@ -11,8 +11,7 @@ import 'dart:io';
 class EditProfileScreen extends StatefulWidget {
   final String currentUserUid;
 
-  const EditProfileScreen({Key? key, required this.currentUserUid})
-      : super(key: key);
+  const EditProfileScreen({super.key, required this.currentUserUid});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -108,7 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .child('profilePhotos/${widget.currentUserUid}.jpg');
 
       var uploadTask = await storageRef.putFile(_image!);
-      var downloadUrl = await (await uploadTask).ref.getDownloadURL();
+      var downloadUrl = await (uploadTask).ref.getDownloadURL();
 
       setState(() {
         _profilePhotoUrl = downloadUrl;
@@ -171,12 +170,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil Bilgileri Güncelleme'),
+        title: const Text('Profil Bilgileri Güncelleme'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -195,7 +194,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             backgroundImage: FileImage(_image!),
                           )
                         else
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.grey,
                             child: Icon(
@@ -204,10 +203,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: Colors.white,
                             ),
                           ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextButton(
                           onPressed: _pickImage,
-                          child: Text('Fotoğraf Yükle'),
+                          child: const Text('Fotoğraf Yükle'),
                         ),
                       ],
                     ),
@@ -225,7 +224,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _buildEditableTextField(
                       "Hedef Kilo", _targetWeightController),
                   _buildEditableTextField("Kilo", _weightController),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   MyButton(
@@ -249,7 +248,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildEditableTextField(
       String label, TextEditingController controller) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

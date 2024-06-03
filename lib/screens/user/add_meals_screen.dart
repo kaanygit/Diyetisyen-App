@@ -20,8 +20,8 @@ class _AddMealsState extends State<AddMeals> {
   List<Map<String, dynamic>> _meals = [];
   List<Map<String, dynamic>> _filteredMeals = [];
   List<Map<String, dynamic>> _displayedMeals = [];
-  bool _showAiBox = true;
-  bool _isLoading = false;
+  final bool _showAiBox = true;
+  final bool _isLoading = false;
   int _maxMealsToShow = 10;
   bool isDietData = false;
   final ScrollController _scrollController = ScrollController();
@@ -142,7 +142,7 @@ class _AddMealsState extends State<AddMeals> {
                     hintText: "Arama",
                     onChanged: _filterMeals,
                     obscureText: false,
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     keyboardType: TextInputType.multiline,
                     enabled: true,
                   ),
@@ -152,7 +152,7 @@ class _AddMealsState extends State<AddMeals> {
                           child: GridView.builder(
                             controller: _scrollController,
                             gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 3 / 2,
                               crossAxisSpacing: 10,
@@ -218,7 +218,7 @@ class _AddMealsState extends State<AddMeals> {
               ),
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
@@ -238,8 +238,8 @@ class _AddMealsState extends State<AddMeals> {
         child: Row(
           children: [
             Icon(Icons.lightbulb, size: 50, color: mainColor),
-            SizedBox(width: 16),
-            Expanded(
+            const SizedBox(width: 16),
+            const Expanded(
               child: Text('Yapay Zeka ile Yiyecek Tanıma'),
             ),
             ElevatedButton(
@@ -276,7 +276,7 @@ class _AddMealsState extends State<AddMeals> {
 class MealDetailScreen extends StatelessWidget {
   final Map<String, dynamic> meal;
 
-  const MealDetailScreen({required this.meal});
+  const MealDetailScreen({super.key, required this.meal});
 
   @override
   Widget build(BuildContext context) {
@@ -304,22 +304,22 @@ class MealDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Center(
                 child: Text(
                   meal['name'] ?? 'Unnamed',
                   style: fontStyle(25, mainColor, FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Divider(color: Colors.grey[400]),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildNutrientRow('Kalori', '${meal['kalori'] ?? 0} kcal'),
               _buildNutrientRow('Yağ', '${meal['yağ'] ?? 0} Gram'),
               _buildNutrientRow(
                   'Karbonhidrat', '${meal['karbonhidrat'] ?? 0} Gram'),
               _buildNutrientRow('Protein', '${meal['protein'] ?? 0} Gram'),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               MyButton(
                   text: "Yemeği Ekle",
                   buttonColor: mainColor,
@@ -342,12 +342,12 @@ class MealDetailScreen extends StatelessWidget {
       children: [
         Text(
           '$nutrient:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         Text(
           value,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
         ),
       ],
     );
