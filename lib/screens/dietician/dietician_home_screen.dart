@@ -248,7 +248,7 @@ class ClientChats extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 20,
-                                  backgroundImage: userPhoto == "null"
+                                  backgroundImage: userPhoto == "null" && userPhoto.isEmpty
                                       ? AssetImage("assets/images/avatar.jpg")
                                       : NetworkImage(userPhoto)
                                           as ImageProvider,

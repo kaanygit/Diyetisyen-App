@@ -131,9 +131,11 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
         .doc('day_$daysSinceStart')
         .get();
 
+
     Map<String, dynamic>? ekstraYemeler = snapshotEating.data();
     if (ekstraYemeler != null) {
       List<dynamic> meals = ekstraYemeler['meals'];
+      print("DENEMEEE : $meals");
       meals.forEach((meal) {
         print(meal);
         setState(() {
@@ -220,6 +222,9 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
     });
   }
 
+
+  
+
   @override
   Widget build(BuildContext context) {
     return getDietcianPersonAvaliable
@@ -255,7 +260,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                         totalDailyCalories = 0;
                         totalDailyeatCalories = 0;
                         dailyEatingRatio = "";
-                        getProfile();
+                        dietDataIfStatement();
                       });
                     },
                   ),

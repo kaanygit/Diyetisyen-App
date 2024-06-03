@@ -1530,7 +1530,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Text(
             x,
-            style: fontStyle(12, Colors.black, FontWeight.bold),
+            style: fontStyle(11, Colors.black, FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 5),
@@ -1594,32 +1594,71 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showMealDetails(Map<dynamic, dynamic> meal, String mealType) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('$mealType Detayları'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Yemek: ${meal['diet']} kcal'),
-              Text('Kalori: ${meal['calories']} kcal'),
-              Text('Protein: ${meal['protein']} %'),
-              Text('Karbonhidrat: ${meal['carbs']} %'),
-              Text('Yağ: ${meal['fat']} %'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+void showMealDetails(Map<dynamic, dynamic> meal, String mealType) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0),
+                ),
+                image: DecorationImage(
+                  image: NetworkImage(
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/220px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(16.0),
+
+              child: Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),
+      topRight: Radius.circular(10.0),)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$mealType Detayları',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text('Yemek: ${meal['diet']} kcal'),
+                    Text('Kalori: ${meal['calories']} kcal'),
+                    Text('Protein: ${meal['protein']} %'),
+                    Text('Karbonhidrat: ${meal['carbs']} %'),
+                    Text('Yağ: ${meal['fat']} %'),
+                  ],
+                ),
+              ),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            child: Text('Close'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 }
