@@ -21,13 +21,8 @@ class AiObjectDetectionScreen extends StatefulWidget {
 
 class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   String? detectedFood;
-  Map<String, dynamic>? foodData = {
-    "name": "",
-    "kalori": 0,
-    "protein": 0,
-    "yağ": 0,
-    "karbonhidrat": 0,
-  };
+  Map<String, dynamic>? foodData;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -36,17 +31,13 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   }
 
   Future<void> _fetchImageLabel() async {
-    final label = await Gemini().geminImageLabelingPrompt(widget.imagePath);
-    Map<String, dynamic> detectedFoodMap;
-
-    setState(() {
-      detectedFood = label ?? "Bir hata oluştu veya yiyecek algılanamadı.";
-    });
-
-    if (label != null) {
-      try {
-        detectedFoodMap = json.decode(label) as Map<String, dynamic>;
+    try {
+      final label = await Gemini().geminImageLabelingPrompt(widget.imagePath);
+      if (label != null) {
+        Map<String, dynamic> detectedFoodMap =
+            json.decode(label) as Map<String, dynamic>;
         setState(() {
+          detectedFood = label;
           foodData = {
             "name": detectedFoodMap["name"],
             "kalori": int.parse(detectedFoodMap["kalori"].toString()),
@@ -56,36 +47,24 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                 int.parse(detectedFoodMap["karbonhidrat"].toString()),
           };
         });
-      } catch (e) {
-        print("JSON parsing hatası: $e");
+      } else {
         setState(() {
+          detectedFood = "Bir hata oluştu veya yiyecek algılanamadı.";
           foodData = null;
         });
       }
-    } else {
+    } catch (e) {
+      print("JSON parsing hatası: $e");
       setState(() {
+        detectedFood = "Bir hata oluştu veya yiyecek algılanamadı.";
         foodData = null;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
-
-  // Future<void> _fetchFoodData(String label) async {
-  // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //     .collection('foods')
-  //     .where('name', isEqualTo: label.trim())
-  //     .get();
-
-  // if (querySnapshot.docs.isNotEmpty) {
-  //   setState(() {
-  //     foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-  //   });
-  // } else {
-  //   setState(() {
-  //     foodData = null;
-  //   });
-  // }
-
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +72,11 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
       appBar: AppBar(
         title: const Text('Aİ ile Yemek Tespiti'),
       ),
-      body: detectedFood != null
-          ? SingleChildScrollView(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -115,7 +97,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                         const SizedBox(height: 16),
                         Center(
                           child: Text(
-                            'Algılanan Yiyecek: ${foodData!['name'] ?? "Bulunamadı"}',
+                            'Algılanan Yiyecek: ${foodData?['name'] ?? "Bulunamadı"}',
                             style: fontStyle(24, Colors.black, FontWeight.bold),
                           ),
                         ),
@@ -133,13 +115,13 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                               ),
                               const SizedBox(height: 8),
                               _buildNutrientRow(
-                                  'Kalori', '${foodData!['kalori'] ?? 0} kcal'),
+                                  'Kalori', '${foodData?['kalori'] ?? 0} kcal'),
                               _buildNutrientRow(
-                                  'Yağ', '${foodData!['yağ'] ?? 0} Gram'),
+                                  'Yağ', '${foodData?['yağ'] ?? 0} Gram'),
                               _buildNutrientRow('Karbonhidrat',
-                                  '${foodData!['karbonhidrat'] ?? 0} Gram'),
+                                  '${foodData?['karbonhidrat'] ?? 0} Gram'),
                               _buildNutrientRow('Protein',
-                                  '${foodData!['protein'] ?? 0} Gram'),
+                                  '${foodData?['protein'] ?? 0} Gram'),
                               const SizedBox(height: 25),
                               MyButton(
                                   text: "Yemeği Ekle",
@@ -149,11 +131,10 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                                   buttonTextSize: 20,
                                   buttonTextWeight: FontWeight.normal,
                                   onPressed: () async {
-                                    widget.dietData
-                                        ? await FirebaseOperations()
-                                            .addMealsFirebase(
-                                                context, foodData!)
-                                        : null;
+                                    if (widget.dietData && foodData != null) {
+                                      await FirebaseOperations()
+                                          .addMealsFirebase(context, foodData!);
+                                    }
                                   }),
                             ],
                           )
@@ -167,9 +148,6 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                   ),
                 ],
               ),
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
             ),
     );
   }
