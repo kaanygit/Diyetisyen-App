@@ -71,8 +71,28 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     try {
       // Diyet programının başladığı günü ekleyin
       selectedDiet['startDate'] = DateTime.now();
-      selectedDiet['startDate'] = DateTime.now();
 
+      // Meals koleksiyonunu referans edin
+      var mealsCollectionRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .collection('dietProgram')
+          .doc('weeklyProgram')
+          .collection('meals');
+
+      // Meals koleksiyonunu kontrol edin
+      var mealsSnapshot = await mealsCollectionRef.get();
+
+      // Eğer meals koleksiyonunda öge varsa, koleksiyonu silin
+      if (mealsSnapshot.docs.isNotEmpty) {
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        for (var doc in mealsSnapshot.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+
+      // Diyet programını kaydedin
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.uid)
@@ -142,7 +162,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
                               const SizedBox(height: 5),
                               Text(
                                 '$key:',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               Column(
@@ -225,7 +246,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Kullanıcıyı Çıkarma Onayı"),
-          content: const Text("Bu kullanıcıyı çıkarmak istediğinize emin misiniz?"),
+          content:
+              const Text("Bu kullanıcıyı çıkarmak istediğinize emin misiniz?"),
           actions: <Widget>[
             TextButton(
               child: const Text("Vazgeç"),
@@ -251,8 +273,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title:
-            const Text("Profil", style: TextStyle(fontSize: 25, color: Colors.black)),
+        title: const Text("Profil",
+            style: TextStyle(fontSize: 25, color: Colors.black)),
         actions: [
           IconButton(
             icon: const Icon(Icons.chat, color: Colors.blue),
@@ -334,8 +356,14 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
             ),
             const SizedBox(height: 20),
             MyButton(
-              onPressed: (){
-                Navigator.push(context,PageTransition(child: PersonalDietcianCreateScreen(userUid: widget.uid,), type: PageTransitionType.fade));
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: PersonalDietcianCreateScreen(
+                          userUid: widget.uid,
+                        ),
+                        type: PageTransitionType.fade));
               },
               // showRemoveClientDialog,
               text: "Kişiye özel diyet programı tanımla",
