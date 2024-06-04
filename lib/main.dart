@@ -34,19 +34,19 @@ void main() async {
   runApp(const MyApp());
 }
 
-void addDataToFirestore() async {
-  // JSON dosyasını oku
-  String jsonString = await rootBundle.loadString('assets/data.json');
-  Map<String, dynamic> data = jsonDecode(jsonString);
+// void addDataToFirestore() async {
+//   // JSON dosyasını oku
+//   String jsonString = await rootBundle.loadString('assets/data.json');
+//   Map<String, dynamic> data = jsonDecode(jsonString);
 
-  // Firestore referansı al
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+//   // Firestore referansı al
+//   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Firestore'a verileri ekle
-  data.forEach((key, value) {
-    firestore.collection('foods').doc(key).set(value);
-  });
-}
+//   // Firestore'a verileri ekle
+//   data.forEach((key, value) {
+//     firestore.collection('foods').doc(key).set(value);
+//   });
+// }
 
 Future<void> saveDietPlans() async {
   // Create the diet plans
@@ -118,11 +118,11 @@ String generateDiet(String mealType) {
   // Replace with actual diet generation logic
   switch (mealType) {
     case 'breakfast':
-      return 'Oatmeal with fruits';
+      return 'Omlet,peynir,zeytin,2 dilim ekmek';
     case 'lunch':
-      return 'Grilled chicken with vegetables';
+      return 'Ton balıklı salata';
     case 'dinner':
-      return 'Salmon with quinoa';
+      return 'Izgara tavuk + pilav';
     default:
       return 'Meal';
   }
@@ -131,17 +131,17 @@ String generateDiet(String mealType) {
 // Placeholder functions for calculating nutritional values
 int calculateCalories(String diet) {
   // Replace with actual calculation logic
-  return 500;
+  return 800;
 }
 
 int calculateFat(String diet) {
   // Replace with actual calculation logic
-  return 20;
+  return 30;
 }
 
 int calculateProtein(String diet) {
   // Replace with actual calculation logic
-  return 30;
+  return 20;
 }
 
 int calculateCarbs(String diet) {

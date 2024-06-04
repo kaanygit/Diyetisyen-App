@@ -9,13 +9,23 @@ class PersonalDietcianCreateScreen extends StatefulWidget {
   const PersonalDietcianCreateScreen({required this.userUid, super.key});
 
   @override
-  State<PersonalDietcianCreateScreen> createState() => _PersonalDietcianCreateScreenState();
+  State<PersonalDietcianCreateScreen> createState() =>
+      _PersonalDietcianCreateScreenState();
 }
 
-class _PersonalDietcianCreateScreenState extends State<PersonalDietcianCreateScreen> {
+class _PersonalDietcianCreateScreenState
+    extends State<PersonalDietcianCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final int weeks = 4;
-  final List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  final List<String> days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
   final List<Map<String, dynamic>> dietData = [];
 
   @override
@@ -202,13 +212,15 @@ class _PersonalDietcianCreateScreenState extends State<PersonalDietcianCreateScr
     return ExpansionTile(
       title: Text(day),
       children: [
-        Text('Breakfast', style: fontStyle(15, mainColor, FontWeight.normal)),
+        Text('Kahvaltı', style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['breakfast']),
         const SizedBox(height: 8),
-        Text('Lunch', style: fontStyle(15, mainColor, FontWeight.normal)),
+        Text('Öğlen Yemeği',
+            style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['lunch']),
         const SizedBox(height: 8),
-        Text('Dinner', style: fontStyle(15, mainColor, FontWeight.normal)),
+        Text('Akşam Yemeği',
+            style: fontStyle(15, mainColor, FontWeight.normal)),
         _buildMealInput(dietData[index]['dinner']),
       ],
     );
@@ -228,7 +240,7 @@ class _PersonalDietcianCreateScreenState extends State<PersonalDietcianCreateScr
             itemCount: weeks,
             itemBuilder: (context, week) {
               return ExpansionTile(
-                title: Text('Week ${week + 1}'),
+                title: Text('Hafta ${week + 1}'),
                 children: days.map((day) => _buildDayInput(week, day)).toList(),
               );
             },

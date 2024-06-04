@@ -181,13 +181,15 @@ class _AddMealsState extends State<AddMeals> {
                                           child: Image.network(
                                             meal['photoUrl'] ?? '',
                                             fit: BoxFit.cover,
+                                            // width: 100, // Sabit genişlik
+                                            // height: 100, // Sabit yükseklik
                                           ),
                                         ),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                          meal['name'] ?? 'Unnamed',
+                                          capitalize(meal['name'] ?? 'Unnamed'),
                                           style: fontStyle(
                                             15,
                                             Colors.black,
@@ -223,6 +225,19 @@ class _AddMealsState extends State<AddMeals> {
         },
       ),
     );
+  }
+
+  String capitalize(String input) {
+    if (input == null || input.isEmpty) {
+      return input;
+    }
+    return input.toLowerCase().split(' ').map((word) {
+      if (word.isNotEmpty) {
+        return word[0].toUpperCase() + word.substring(1);
+      } else {
+        return '';
+      }
+    }).join(' ');
   }
 
   Widget _buildAiBox() {
