@@ -38,39 +38,35 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   Future<void> _fetchImageLabel() async {
     final label = await Gemini().geminImageLabelingPrompt(widget.imagePath);
     Map<String, dynamic> detectedFoodMap;
+
     setState(() {
       detectedFood = label ?? "Bir hata oluştu veya yiyecek algılanamadı.";
     });
-    // if (label != null) {
-    //   await _fetchFoodData(label);
-    // }
 
-    try {
-      detectedFoodMap = json.decode(label!) as Map<String, dynamic>;
+    if (label != null) {
+      try {
+        detectedFoodMap = json.decode(label) as Map<String, dynamic>;
+        setState(() {
+          foodData = {
+            "name": detectedFoodMap["name"],
+            "kalori": int.parse(detectedFoodMap["kalori"].toString()),
+            "protein": int.parse(detectedFoodMap["protein"].toString()),
+            "yağ": int.parse(detectedFoodMap["yağ"].toString()),
+            "karbonhidrat":
+                int.parse(detectedFoodMap["karbonhidrat"].toString()),
+          };
+        });
+      } catch (e) {
+        print("JSON parsing hatası: $e");
+        setState(() {
+          foodData = null;
+        });
+      }
+    } else {
       setState(() {
-        foodData = {
-          "name": detectedFoodMap["name"],
-          "kalori": int.parse(detectedFoodMap["kalori"].toString()),
-          "protein": int.parse(detectedFoodMap["protein"].toString()),
-          "yağ": int.parse(detectedFoodMap["yağ"].toString()),
-          "karbonhidrat": int.parse(detectedFoodMap["karbonhidrat"].toString()),
-        };
-      });
-    } catch (e) {
-      print("JSON parsing hatası: $e");
-      detectedFoodMap = {};
-      setState(() {
-        foodData = {
-          "name": "",
-          "kalori": 0,
-          "protein": 0,
-          "yağ": 0,
-          "karbonhidrat": 0,
-        };
+        foodData = null;
       });
     }
-
-    // detectedFoodMap artık {"name": "Waffle", "kalori": 350, "protein": 5, "yağ": 18, "karbonhidrat": 37} şeklinde bir map objesi oldu
   }
 
   // Future<void> _fetchFoodData(String label) async {
