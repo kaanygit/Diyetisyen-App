@@ -37,30 +37,59 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
 
   Future<void> _fetchImageLabel() async {
     final label = await Gemini().geminImageLabelingPrompt(widget.imagePath);
+    Map<String, dynamic> detectedFoodMap;
     setState(() {
       detectedFood = label ?? "Bir hata oluştu veya yiyecek algılanamadı.";
     });
-    if (label != null) {
-      await _fetchFoodData(label);
+    // if (label != null) {
+    //   await _fetchFoodData(label);
+    // }
+
+    try {
+      detectedFoodMap = json.decode(label!) as Map<String, dynamic>;
+      setState(() {
+        foodData = {
+          "name": detectedFoodMap["name"],
+          "kalori": int.parse(detectedFoodMap["kalori"].toString()),
+          "protein": int.parse(detectedFoodMap["protein"].toString()),
+          "yağ": int.parse(detectedFoodMap["yağ"].toString()),
+          "karbonhidrat": int.parse(detectedFoodMap["karbonhidrat"].toString()),
+        };
+      });
+    } catch (e) {
+      print("JSON parsing hatası: $e");
+      detectedFoodMap = {};
+      setState(() {
+        foodData = {
+          "name": "",
+          "kalori": 0,
+          "protein": 0,
+          "yağ": 0,
+          "karbonhidrat": 0,
+        };
+      });
     }
+
+    // detectedFoodMap artık {"name": "Waffle", "kalori": 350, "protein": 5, "yağ": 18, "karbonhidrat": 37} şeklinde bir map objesi oldu
   }
 
-  Future<void> _fetchFoodData(String label) async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('foods')
-        .where('name', isEqualTo: label.trim())
-        .get();
+  // Future<void> _fetchFoodData(String label) async {
+  // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  //     .collection('foods')
+  //     .where('name', isEqualTo: label.trim())
+  //     .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      setState(() {
-        foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-      });
-    } else {
-      setState(() {
-        foodData = null;
-      });
-    }
-  }
+  // if (querySnapshot.docs.isNotEmpty) {
+  //   setState(() {
+  //     foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+  //   });
+  // } else {
+  //   setState(() {
+  //     foodData = null;
+  //   });
+  // }
+
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +119,7 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
                         const SizedBox(height: 16),
                         Center(
                           child: Text(
-                            'Algılanan Yiyecek: ${detectedFood ?? "Bulunamadı"}',
+                            'Algılanan Yiyecek: ${foodData!['name'] ?? "Bulunamadı"}',
                             style: fontStyle(24, Colors.black, FontWeight.bold),
                           ),
                         ),
