@@ -221,7 +221,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                     items: weeks.map((int week) {
                       return DropdownMenuItem<int>(
                         value: week,
-                        child: Text('Week $week',
+                        child: Text('Hafta $week',
                             style: const TextStyle(color: Colors.black)),
                       );
                     }).toList(),
@@ -475,7 +475,7 @@ class _ProgressScreenPageState extends State<ProgressScreenPage> {
                   style: fontStyle(15, Colors.black, FontWeight.bold),
                 ),
                 Text(
-                  'Gram',
+                  '%',
                   style: fontStyle(12, Colors.grey, FontWeight.normal),
                 ),
               ],

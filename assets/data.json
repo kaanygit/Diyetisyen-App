@@ -1,5 +1,4 @@
 {
-    
       "elma": {
         "name":"elma",
         "kalori": 52,
@@ -182,7 +181,6 @@
       },
       "fasulye": {
         "name":"fasulye",
-
         "kalori": 31,
         "protein": 1.8,
         "yağ": 0.2,
@@ -191,7 +189,6 @@
       },
       "karnabahar": {
         "name":"karnabahar",
-
         "kalori": 25,
         "protein": 1.9,
         "yağ": 0.3,
@@ -200,7 +197,6 @@
       },
       "marul": {
         "name":"marul",
-
         "kalori": 15,
         "protein": 1.2,
         "yağ": 0.2,
@@ -571,22 +567,6 @@
     "yağ": 0.2,
     "karbonhidrat": 12.9,
     "photoUrl": "https://www.pngfind.com/pngs/m/123-1234732_apple-juice-png-transparent-png.png"
-  },
-  "kola": {
-    "name": "Kola",
-    "kalori": 139,
-    "protein": 0,
-    "yağ": 0,
-    "karbonhidrat": 33.9,
-    "photoUrl": "https://www.pngitem.com/pimgs/m/74-741655_can-of-soda-png-transparent-png.png"
-  },
-  "limonlu soda": {
-    "name": "Limonlu Soda",
-    "kalori": 43,
-    "protein": 0.1,
-    "yağ": 0,
-    "karbonhidrat": 10.8,
-    "photoUrl": "https://purepng.com/public/uploads/large/purepng.com-sodasoda-of-sodium-carbonate-fruit-beverage-941524633076ptnm3.png"
   },
   "portakal gazozu": {
     "name": "Portakal Gazozu",
