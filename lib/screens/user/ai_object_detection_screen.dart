@@ -46,27 +46,20 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   }
 
   Future<void> _fetchFoodData(String label) async {
-    // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-    //     .collection('foods')
-    //     .where('name', isEqualTo: label.trim())
-    //     .get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('foods')
+        .where('name', isEqualTo: label.trim())
+        .get();
 
-    // if (querySnapshot.docs.isNotEmpty) {
-    //   setState(() {
-    //     foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-    //   });
-    // } else {
-    //   setState(() {
-    //     foodData = null;
-    //   });
-    // }
-    setState(() {
-      final labelMap = jsonDecode(label);
-      foodData!['kalori'] = labelMap['kalori'];
-      foodData!['protein'] = labelMap['protein'];
-      foodData!['yağ'] = labelMap['yağ'];
-      foodData!['karbonhidrat'] = labelMap['karbonhidrat'];
-    });
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+      });
+    } else {
+      setState(() {
+        foodData = null;
+      });
+    }
   }
 
   @override
