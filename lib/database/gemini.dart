@@ -68,7 +68,7 @@ class Gemini {
           model: 'gemini-1.5-flash',
           apiKey: "AIzaSyCmd9Vek7eccUNUJmHJrCa7jWzmBlBrNOo");
       final prompt = TextPart(
-          "Resmi analiz et hangi gıda veya yemek ise bu gıdanın veya yemeğin  sadece cevap olarak söyle.Eğer yiyecek değil ise Bulunamadı cevabını yolla.");
+          "Resmi analiz et hangi gıda veya yemek ise bu gıdanın veya yemeğin sadece cevap olarak söyle.Eğer yiyecek değil ise Bulunamadı cevabını yolla.Eğer yiyecek ise {name:elma,kalori: 52,protein: 0.3,yağ: 0.2,karbonhidrat: 14,} bu şekilde sadece map ögesi döndür");
       final image = await File(imagePath).readAsBytes();
 
       final imageParts = [DataPart('image/jpeg', image)];

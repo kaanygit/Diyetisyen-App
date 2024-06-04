@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diyetisyenapp/constants/fonts.dart';
@@ -20,7 +21,13 @@ class AiObjectDetectionScreen extends StatefulWidget {
 
 class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   String? detectedFood;
-  Map<String, dynamic>? foodData;
+  Map<String, dynamic>? foodData = {
+    "name": "",
+    "kalori": 0,
+    "protein": 0,
+    "yağ": 0,
+    "karbonhidrat": 0,
+  };
 
   @override
   void initState() {
@@ -39,20 +46,27 @@ class _AiObjectDetectionScreenState extends State<AiObjectDetectionScreen> {
   }
 
   Future<void> _fetchFoodData(String label) async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('foods')
-        .where('name', isEqualTo: label.trim().toLowerCase())
-        .get();
+    // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    //     .collection('foods')
+    //     .where('name', isEqualTo: label.trim())
+    //     .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      setState(() {
-        foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
-      });
-    } else {
-      setState(() {
-        foodData = null;
-      });
-    }
+    // if (querySnapshot.docs.isNotEmpty) {
+    //   setState(() {
+    //     foodData = querySnapshot.docs.first.data() as Map<String, dynamic>?;
+    //   });
+    // } else {
+    //   setState(() {
+    //     foodData = null;
+    //   });
+    // }
+    setState(() {
+      final labelMap = jsonDecode(label);
+      foodData!['kalori'] = labelMap['kalori'];
+      foodData!['protein'] = labelMap['protein'];
+      foodData!['yağ'] = labelMap['yağ'];
+      foodData!['karbonhidrat'] = labelMap['karbonhidrat'];
+    });
   }
 
   @override
